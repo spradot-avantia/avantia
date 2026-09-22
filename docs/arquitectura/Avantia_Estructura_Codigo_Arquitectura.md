@@ -1,82 +1,81 @@
 # Estructura de Código y Arquitectura Técnica — Avantia
 
-> Stack: **Node.js (Express) + React (Vite)**, monorepo con npm workspaces.
-> Ver [decisiones/001-migracion-nextjs-a-node-react.md](../decisiones/001-migracion-nextjs-a-node-react.md)
-> para la razón del cambio de stack respecto a la versión anterior (Next.js).
+> Stack: **Next.js (App Router) + TypeScript**, monorepo con npm workspaces
+> (un único proyecto en `apps/web`).
+> Ver [decisiones/002-vuelta-a-nextjs.md](../decisiones/002-vuelta-a-nextjs.md)
+> para la razón de volver a Next.js respecto a la versión intermedia
+> (Node.js + Express + React).
+> Ver [Supuestos_y_Pendientes.md](Supuestos_y_Pendientes.md) para qué de este
+> documento es firme y qué sigue provisional o sin resolver.
 
 ## 1. Estructura de carpetas del proyecto
 
 ```
 avantia/
 ├── apps/
-│   ├── api/                          # Backend Node.js + Express + TypeScript
-│   │   └── src/
-│   │       ├── index.ts              # entrypoint, levanta el servidor HTTP
-│   │       ├── app.ts                # ensamblado del Express app
-│   │       ├── middleware/
-│   │       │   └── resolveTenant.ts  # PIEZA CLAVE: resuelve qué tenant
-│   │       │                         # corresponde según el hostname de la
-│   │       │                         # request, antes de las rutas de negocio
-│   │       ├── routes/
-│   │       │   ├── webhooks/
-│   │       │   │   ├── stripe.ts
-│   │       │   │   └── mercadopago.ts
-│   │       │   ├── ai/
-│   │       │   │   └── generarCurso.ts   # endpoint IA: material crudo -> curso
-│   │       │   └── tenants.ts            # alta/gestión/resolución de tenants
-│   │       ├── lib/
-│   │       │   ├── supabase/
-│   │       │   │   ├── server.ts     # cliente por-request, respeta RLS
-│   │       │   │   │                 # usando el JWT del usuario autenticado
-│   │       │   │   └── admin.ts      # cliente con service role — SOLO uso
-│   │       │   │                     # interno de backend, nunca expuesto
-│   │       │   │                     # al cliente, bypassa RLS
-│   │       │   ├── tenant/
-│   │       │   │   └── resolve.ts    # hostname -> tenant (con cache)
-│   │       │   ├── stripe.ts
-│   │       │   ├── mercadopago.ts
-│   │       │   └── ai/
-│   │       │       └── generarCurso.ts   # lógica de prompting contra la API del LLM
-│   │       └── types/
-│   │           └── tenant.ts
-│   │
-│   └── web/                          # Frontend React + Vite + TypeScript (SPA)
-│       └── src/
-│           ├── dashboard/            # Panel interno: donde el dueño de cada
-│           │   │                     # academia administra su cuenta
-│           │   ├── DashboardLayout.tsx
-│           │   ├── HomePage.tsx
-│           │   ├── cursos/
-│           │   │   ├── CursosPage.tsx
-│           │   │   ├── NuevoCursoPage.tsx    # creación de curso (flujo con IA)
-│           │   │   └── EditarCursoPage.tsx
-│           │   ├── estudiantes/
-│           │   │   └── EstudiantesPage.tsx
-│           │   └── configuracion/
-│           │       ├── DominioPage.tsx       # conectar dominio propio del tenant
-│           │       └── MarcaPage.tsx         # logo, colores, theming
-│           │
-│           ├── public-site/          # Sitio público de cada academia,
-│           │   │                     # resuelto en runtime según el hostname
-│           │   ├── PublicLayout.tsx  # aplica el theming del tenant
-│           │   ├── LandingPage.tsx   # landing de la academia
-│           │   ├── CursoVentaPage.tsx    # página de venta de un curso
-│           │   ├── AprenderPage.tsx      # reproductor del curso (alumno inscrito)
-│           │   └── CheckoutPage.tsx
-│           │
-│           ├── components/
-│           │   ├── ui/               # componentes genéricos reutilizables
-│           │   └── tenant/           # componentes que aplican el theming
-│           │                         # dinámico de cada academia
-│           │
-│           ├── lib/
-│           │   ├── supabaseClient.ts # cliente Supabase del navegador
-│           │   └── tenantContext.tsx # resuelve y provee el tenant activo
-│           │
-│           ├── router.tsx            # decide dashboard vs. sitio público
-│           │                         # según el hostname (ver sección 4)
-│           ├── App.tsx
-│           └── main.tsx
+│   └── web/                          # Next.js (App Router) + TypeScript
+│       ├── src/
+│       │   ├── middleware.ts         # PIEZA CLAVE: corre en el edge, decide
+│       │   │                         # panel vs. sitio público según el
+│       │   │                         # hostname, antes de cualquier render
+│       │   ├── app/
+│       │   │   ├── layout.tsx        # layout raíz (html/body)
+│       │   │   ├── (dashboard)/      # Panel interno: donde el dueño de cada
+│       │   │   │   │                 # academia administra su cuenta
+│       │   │   │   ├── layout.tsx
+│       │   │   │   ├── page.tsx              # resumen
+│       │   │   │   ├── cursos/
+│       │   │   │   │   ├── page.tsx
+│       │   │   │   │   ├── nuevo/page.tsx    # creación de curso (flujo con IA)
+│       │   │   │   │   └── [cursoId]/page.tsx
+│       │   │   │   ├── estudiantes/page.tsx
+│       │   │   │   └── configuracion/
+│       │   │   │       ├── dominio/page.tsx  # conectar dominio propio del tenant
+│       │   │   │       └── marca/page.tsx    # logo, colores, theming
+│       │   │   │
+│       │   │   ├── (public)/         # Sitio público de cada academia
+│       │   │   │   └── [domain]/     # segmento real: recibe el hostname que
+│       │   │   │       │             # reescribe middleware.ts
+│       │   │   │       ├── layout.tsx        # resuelve el tenant (Server
+│       │   │   │       │                     # Component) y aplica theming
+│       │   │   │       ├── page.tsx          # landing de la academia
+│       │   │   │       ├── curso/[slug]/page.tsx     # venta de un curso
+│       │   │   │       ├── aprender/[cursoId]/[leccionId]/page.tsx
+│       │   │   │       └── checkout/page.tsx
+│       │   │   │
+│       │   │   └── api/              # Route handlers (reemplazan a Express)
+│       │   │       ├── webhooks/
+│       │   │       │   ├── stripe/route.ts
+│       │   │       │   └── mercadopago/route.ts
+│       │   │       ├── ai/
+│       │   │       │   └── generar-curso/route.ts
+│       │   │       ├── tenants/
+│       │   │       │   ├── route.ts          # POST: alta de tenant
+│       │   │       │   └── resolve/route.ts  # GET: usado por Client Components
+│       │   │       └── health/route.ts
+│       │   │
+│       │   ├── components/
+│       │   │   ├── ui/               # componentes genéricos reutilizables
+│       │   │   └── tenant/           # componentes que aplican el theming
+│       │   │                         # dinámico de cada academia
+│       │   │
+│       │   ├── lib/
+│       │   │   ├── supabase/
+│       │   │   │   ├── server.ts     # cliente por-request (Server Components/
+│       │   │   │   │                 # route handlers), respeta RLS vía cookies
+│       │   │   │   ├── client.ts     # cliente del navegador (Client Components)
+│       │   │   │   └── admin.ts      # service role — SOLO server, bypassa RLS
+│       │   │   ├── tenant/
+│       │   │   │   └── resolve.ts    # hostname -> tenant (con cache)
+│       │   │   ├── tenantContext.tsx # expone el tenant ya resuelto a los
+│       │   │   │                     # Client Components del sitio público
+│       │   │   ├── stripe.ts
+│       │   │   ├── mercadopago.ts
+│       │   │   └── ai/
+│       │   │       └── generarCurso.ts   # lógica de prompting contra la API del LLM
+│       │   └── types/
+│       │       └── tenant.ts
+│       └── next.config.ts
 │
 ├── db/
 │   ├── migrations/                   # migraciones versionadas de Postgres
@@ -93,36 +92,38 @@ avantia/
 
 ### Por qué esta forma y no otra
 
-- **`apps/api` y `apps/web` están separados** porque, a diferencia de Next.js,
-  Node.js + React no ofrece un framework unificado que sirva páginas
-  renderizadas en servidor y funciones API desde el mismo proyecto. El
-  backend es un servicio Express persistente; el frontend es un SPA
-  compilado con Vite y servido como archivos estáticos.
+- **Un único proyecto Next.js** sirve panel, sitio público y API desde el
+  mismo codebase: las funciones serverless/edge de Next.js reemplazan al
+  servicio Express separado que tenía la versión intermedia del stack.
 
-- **`middleware/resolveTenant.ts` es el corazón del multi-tenancy en el
-  backend**, equivalente al `middleware.ts` de Next.js: se ejecuta en cada
-  request de Express, antes de las rutas de negocio, y determina a qué
-  tenant corresponde según el hostname (`academiadejuan.com` o
-  `juan.avantia.app`).
+- **`middleware.ts` es el corazón del multi-tenancy**: corre en el edge, en
+  cada request, y decide entre las dos familias de rutas según el hostname
+  (`academiadejuan.com` / `juan.avantia.app` -> sitio público;
+  `app.avantia.app` o `localhost` -> panel). Para el sitio público, reescribe
+  el pathname hacia el segmento real `[domain]` (los route groups
+  `(dashboard)` y `(public)` no agregan segmento a la URL, así que hace
+  falta un segmento real para que Next.js pueda distinguir cuál renderizar).
+  A propósito **no** consulta la base de datos ahí: eso sería costoso en
+  cada request de edge.
 
-- **En el frontend no hay edge middleware**, así que el sitio público
-  (`public-site/`) resuelve el tenant activo **en el cliente**: al cargar,
-  llama a `GET /api/tenants/resolve?hostname=...` contra el backend y
-  provee el resultado vía `tenantContext.tsx`. `router.tsx` decide en
-  runtime si mostrar el dashboard o el sitio público según el hostname,
-  reemplazando lo que en Next.js resolvían los route groups `(dashboard)` y
-  `(public)/[domain]` junto con el rewrite del middleware.
+- **`app/(public)/[domain]/layout.tsx` resuelve el tenant contra Supabase**,
+  ya en runtime Node.js (Server Component), y llama a `notFound()` si el
+  hostname no corresponde a ningún tenant. Esta es la pieza que le devuelve
+  al proyecto el SSR que se había perdido en la versión Node + React: el
+  HTML de las páginas de venta sale con el contenido y el theming del tenant
+  ya resueltos, sin esperar a que cargue JavaScript en el navegador.
 
-- **Dos clientes de Supabase en el backend, a propósito:** `server.ts`
-  recibe el JWT del usuario autenticado (enviado por el frontend en el
-  header `Authorization`) y respeta las políticas de Row-Level Security
-  (así un profesor nunca puede leer datos de otro tenant aunque haya un bug
-  en el código de la app, porque la base de datos misma lo bloquea).
-  `admin.ts`, con service role, existe aparte y separado justamente para
-  que sea imposible usarlo por error en una parte del código donde no
-  corresponde — por ejemplo, `resolve.ts` lo necesita porque resolver el
-  tenant de un hostname es una operación que por definición no puede
-  filtrarse por `tenant_id` de antemano.
+- **Dos clientes de Supabase en el servidor, a propósito:** `server.ts` usa
+  la sesión del usuario autenticado vía cookies (con `@supabase/ssr`) y
+  respeta las políticas de Row-Level Security (así un profesor de un tenant
+  nunca puede leer datos de otro tenant aunque haya un bug en el código de
+  la app, porque la base de datos misma lo bloquea). `admin.ts`, con service
+  role, existe aparte y separado justamente para que sea imposible usarlo
+  por error en una parte del código donde no corresponde — por ejemplo,
+  `lib/tenant/resolve.ts` lo necesita porque resolver el tenant de un
+  hostname es una operación que por definición no puede filtrarse por
+  `tenant_id` de antemano. Ninguno de los dos se importa nunca desde un
+  Client Component.
 
 ---
 
@@ -130,31 +131,30 @@ avantia/
 
 ```mermaid
 graph TD
-    A[Usuario visita academiadejuan.com] --> B[DNS apunta al hosting]
-    B --> C["Frontend: SPA de React (Vite build)"]
-    C --> D["tenantContext.tsx pide\nGET /api/tenants/resolve?hostname=..."]
-    D --> E["Backend Express:\nmiddleware/resolveTenant.ts"]
-    E --> F["lib/tenant/resolve.ts\n(hostname -> tenant_id, con cache)"]
-    F --> G[("Supabase Postgres\ntabla tenants")]
-    C -->|"con el tenant_id ya resuelto"| H["router.tsx renderiza\npublic-site/ con el theming del tenant"]
+    A[Usuario visita academiadejuan.com] --> B[DNS apunta a Vercel]
+    B --> C["middleware.ts (edge)\nreescribe hacia /academiadejuan.com/..."]
+    C --> D["app/(public)/[domain]/layout.tsx\n(Server Component)"]
+    D --> E["lib/tenant/resolve.ts\n(hostname -> tenant, con cache)"]
+    E --> F[("Supabase Postgres\ntabla tenants")]
+    D -->|"HTML ya renderizado\ncon el tenant resuelto"| G[Página pública con theming del tenant]
 
-    H --> I["Requests de datos del curso\ncon JWT del usuario (si aplica)"]
-    I --> J["lib/supabase/server.ts\n(respeta RLS)"]
-    J --> K[("Supabase Postgres\ntabla con tenant_id + RLS")]
-    K -->|"Políticas RLS filtran\nautomáticamente por tenant"| J
+    G --> H["Requests de datos del curso\ncon la sesión del usuario (si aplica)"]
+    H --> I["lib/supabase/server.ts\n(respeta RLS vía cookies)"]
+    I --> J[("Supabase Postgres\ntabla con tenant_id + RLS")]
+    J -->|"Políticas RLS filtran\nautomáticamente por tenant"| I
 
-    H --> L[Checkout de un curso]
-    L --> M["lib/stripe.ts o\nlib/mercadopago.ts"]
-    M --> N["Stripe Connect /\nMercado Pago Connect"]
-    N -->|split payment| O[Cuenta del tenant]
-    N -->|comisión| P[Cuenta de Avantia]
+    G --> K[Checkout de un curso]
+    K --> L["lib/stripe.ts o\nlib/mercadopago.ts"]
+    L --> M["Stripe Connect /\nMercado Pago Connect"]
+    M -->|split payment| N[Cuenta del tenant]
+    M -->|comisión| O[Cuenta de Avantia]
 
-    H --> Q[Reproductor de video]
-    Q --> R[Bunny Stream / Mux]
+    G --> P[Reproductor de video]
+    P --> Q[Bunny Stream / Mux]
 
-    S[Creación de curso con IA] --> T["routes/ai/generarCurso.ts"]
-    T --> U[API de Anthropic / OpenAI]
-    U --> K
+    R[Creación de curso con IA] --> S["app/api/ai/generar-curso/route.ts"]
+    S --> T[API de Anthropic / OpenAI]
+    T --> J
 ```
 
 ---
@@ -166,64 +166,54 @@ graph LR
     A[Desarrollador hace push\no abre Pull Request] --> B[GitHub - repo privado]
     B --> C["GitHub Actions:\nClaude Code revisa el PR"]
     C -->|"valida patrón de\naislamiento por tenant"| D{"¿Pasa la revisión?"}
-    D -->|Sí| E["apps/web: build estático\ndesplegado en Vercel"]
-    D -->|Sí| F["apps/api: servicio Node.js\ndesplegado como servicio persistente"]
-    D -->|No| G[Comentario en el PR\ncon los cambios sugeridos]
-    E --> H[Revisión humana del equipo]
-    F --> H
-    H -->|Aprobado, merge a main| I[Deploy a producción\nde ambas apps]
-    I --> J[("Supabase Postgres\nen producción")]
-    B -.->|"migraciones en\ndb/migrations"| J
+    D -->|Sí| E["apps/web: proyecto Next.js\ndesplegado en Vercel\n(edge + serverless)"]
+    D -->|No| F[Comentario en el PR\ncon los cambios sugeridos]
+    E --> G[Revisión humana del equipo]
+    G -->|Aprobado, merge a main| H[Deploy a producción]
+    H --> I[("Supabase Postgres\nen producción")]
+    B -.->|"migraciones en\ndb/migrations"| I
 ```
 
 ---
 
-## 4. Multi-tenancy sin edge middleware: cómo se resuelve
+## 4. Multi-tenancy con Next.js: cómo se resuelve
 
-A diferencia de Next.js, un SPA de React no tiene un paso de "rewrite" que
-corra antes del renderizado en el edge. El equivalente funcional se logra
-así:
+1. `apps/web/src/middleware.ts` corre en el **edge**, en cada request, y
+   decide según el hostname si la request es para el panel
+   (`app/(dashboard)`) o para el sitio público de un tenant — en ese caso
+   reescribe el pathname hacia `app/(public)/[domain]`, pasando el hostname
+   como parámetro de ruta.
+2. `app/(public)/[domain]/layout.tsx` resuelve el tenant real contra
+   Supabase (Server Component, runtime Node.js) y devuelve 404
+   (`notFound()`) si el hostname no corresponde a ninguna academia.
+3. El tenant resuelto se expone a los Client Components descendientes (ej.
+   el reproductor de video) vía `lib/tenantContext.tsx`, sin necesidad de un
+   segundo fetch en el navegador — a diferencia de la versión SPA, donde
+   `tenantContext.tsx` tenía que pedirlo por HTTP después de montar.
 
-1. `apps/api/src/middleware/resolveTenant.ts` resuelve el tenant en el
-   **backend**, en cada request a la API, a partir de `req.hostname`. Esto
-   es indispensable para los endpoints (ej. `generarCurso`, `tenants`) que
-   necesitan saber a qué tenant pertenece la operación.
-2. `apps/web/src/lib/tenantContext.tsx` resuelve el tenant en el
-   **frontend**, al cargar el sitio público, contra
-   `GET /api/tenants/resolve?hostname=...`, y lo provee vía contexto de
-   React a toda la sección `public-site/`.
-3. `apps/web/src/router.tsx` decide, según el hostname (`app.avantia.app`
-   vs. cualquier otro dominio), si montar las rutas del dashboard o las del
-   sitio público — el equivalente a los route groups `(dashboard)` /
-   `(public)/[domain]` de Next.js.
-
-**Trade-off importante:** al ser un SPA sin server-side rendering, las
-páginas públicas de venta de cursos (`CursoVentaPage.tsx`, `LandingPage.tsx`)
-no tienen contenido en el HTML inicial — se llenan después de que el
-JavaScript carga y resuelve el tenant. Esto es peor para SEO que la versión
-con Next.js (que podía prerenderizar esas páginas en el servidor). Si el SEO
-de las landings públicas se vuelve crítico para el negocio, la opción a
-evaluar es agregar server-side rendering solo para `apps/web/src/public-site`
-(por ejemplo con un framework de SSR para Vite, o sirviendo esas rutas desde
-`apps/api` con una plantilla renderizada en servidor), manteniendo el
-dashboard como SPA puro.
+**Ganancia frente a Node + React puro:** las páginas públicas de venta de
+cursos (`LandingPage`, `CursoVentaPage`) se renderizan en servidor, con el
+contenido y el theming del tenant ya en el HTML inicial — mejor SEO, sin el
+delay de loading que tenía la versión SPA.
 
 ---
 
 ## 5. Notas para la implementación
 
-- `middleware/resolveTenant.ts` corre en cada request al backend, así que
-  debe ser liviano: `lib/tenant/resolve.ts` cachea en memoria el resultado
-  por hostname (TTL de 60s) para no pegarle a la base de datos en cada
-  llamada.
+- `middleware.ts` corre en cada request, así que debe ser liviano: no
+  consulta la base de datos, solo hostname -> reescritura de path.
+  `lib/tenant/resolve.ts` (que sí consulta Supabase) corre en el layout,
+  runtime Node.js, y cachea en memoria el resultado por hostname (TTL de
+  60s) para no pegarle a la base de datos en cada render.
 - Las políticas RLS de `db/schema.sql` son la última línea de defensa, pero
   como quedó definido antes, no hay que confiar solo en ellas: cada consulta
   desde `lib/supabase/server.ts` debería además filtrar explícitamente por
   `tenant_id` a nivel de aplicación.
-- El endpoint `routes/ai/generarCurso.ts` es el único punto de la app que
-  llama a la API del LLM — mantenerlo centralizado ahí facilita controlar
-  costos y cambiar de proveedor (Anthropic/OpenAI) sin tocar el resto del
-  código.
-- El frontend nunca debe usar `lib/supabase/admin.ts` (no existe en
-  `apps/web` por diseño): toda operación con service role vive
-  exclusivamente en `apps/api`.
+- El route handler `app/api/ai/generar-curso/route.ts` es el único punto de
+  la app que llama a la API del LLM — mantenerlo centralizado ahí facilita
+  controlar costos y cambiar de proveedor (Anthropic/OpenAI) sin tocar el
+  resto del código. Pendiente: derivar el tenant de la sesión del usuario
+  logueado en vez de recibirlo en el body (ver TODO en el archivo).
+- El frontend (Client Components) nunca debe usar `lib/supabase/admin.ts`:
+  toda operación con service role vive exclusivamente en Server Components y
+  route handlers.

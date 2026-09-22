@@ -21,8 +21,9 @@ jobs:
             Revisá el diff de este Pull Request. Prestá especial atención a:
             - Cualquier tabla nueva en db/schema.sql o db/migrations/ sin su
               política de Row-Level Security (RLS) por tenant_id.
-            - Uso de apps/api/src/lib/supabase/admin.ts (service role) fuera
-              de código estrictamente interno del backend.
+            - Uso de apps/web/src/lib/supabase/admin.ts (service role) fuera
+              de Server Components o route handlers, o su importación desde
+              un Client Component ("use client").
             - Consultas a Supabase que no filtren explícitamente por
               tenant_id a nivel de aplicación.
             Comentá directamente en el PR con los hallazgos.

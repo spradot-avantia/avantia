@@ -3,15 +3,14 @@
 Plataforma multi-tenant para que academias vendan y dicten cursos online bajo su
 propio dominio.
 
-Stack: **Node.js (Express) + React (Vite)**, monorepo con npm workspaces.
+Stack: **Next.js (App Router) + TypeScript**, monorepo con npm workspaces.
 
 ## Estructura
 
 ```
 avantia/
 ├── apps/
-│   ├── api/     # Backend Node.js + Express + TypeScript
-│   └── web/     # Frontend React + Vite + TypeScript
+│   └── web/     # Next.js: panel interno, sitio público y API (route handlers)
 ├── db/          # Esquema y migraciones de Postgres (Supabase)
 ├── docs/        # Documentación del proyecto (arquitectura, decisiones, sprints, skills)
 └── .github/     # Workflows de CI (revisión de PRs con Claude Code)
@@ -24,21 +23,16 @@ Ver el detalle de arquitectura en
 
 ```bash
 npm install
-
-# terminal 1
-npm run dev:api
-
-# terminal 2
-npm run dev:web
+npm run dev
 ```
 
-Cada app tiene su propio `.env.example` con las variables necesarias
-(`apps/api/.env.example`, `apps/web/.env.example`).
+`apps/web` tiene su propio `.env.example` con las variables necesarias.
 
 ## Despliegue
 
-- `apps/web` se despliega como sitio estático (build de Vite) en Vercel.
-- `apps/api` se despliega como servicio Node.js persistente (no como funciones
-  serverless de Next.js) — ver ADR
+- Proyecto único de Next.js (panel, sitio público y API) desplegado en
+  Vercel con funciones serverless/edge integradas.
+- Ver ADR
   [docs/decisiones/001-migracion-nextjs-a-node-react.md](docs/decisiones/001-migracion-nextjs-a-node-react.md)
-  para la razón del cambio de stack y sus implicancias.
+  y su reversión en
+  [docs/decisiones/002-vuelta-a-nextjs.md](docs/decisiones/002-vuelta-a-nextjs.md).

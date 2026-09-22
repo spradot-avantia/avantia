@@ -1,9 +1,12 @@
-import { useTenant } from "../../lib/tenantContext.js";
+"use client";
+
+import { useTenant } from "../../lib/tenantContext";
 
 export function TenantLogo() {
-  const { tenant } = useTenant();
+  const tenant = useTenant();
 
-  if (!tenant?.logo_url) return null;
+  if (!tenant.theme.logoUrl) return null;
 
-  return <img src={tenant.logo_url} alt={tenant.nombre} />;
+  // eslint-disable-next-line @next/next/no-img-element -- logo remoto por tenant, sin dominio fijo para next/image
+  return <img src={tenant.theme.logoUrl} alt={tenant.nombre} />;
 }

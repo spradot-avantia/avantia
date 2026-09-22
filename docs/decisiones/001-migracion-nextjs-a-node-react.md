@@ -1,7 +1,7 @@
 # 001 — Migración de Next.js a Node.js + React
 
 - **Fecha:** 2026-09-15
-- **Estado:** Aceptada
+- **Estado:** Reemplazada por [002 — Vuelta a Next.js](002-vuelta-a-nextjs.md)
 
 ## Contexto
 

@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Solo para que el build no falle por los checks de "falta la env var"
+      # de lib/supabase/admin.ts, lib/stripe.ts, etc. Con
+      # `dynamic = "force-dynamic"` en las páginas que hacen fetch real, no
+      # se ejecuta ningún llamado de red real durante el build.
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+      SUPABASE_SERVICE_ROLE_KEY: placeholder
+      STRIPE_SECRET_KEY: placeholder
+      STRIPE_WEBHOOK_SECRET: placeholder
+      MERCADOPAGO_ACCESS_TOKEN: placeholder
+      ANTHROPIC_API_KEY: placeholder
+      OPENAI_API_KEY: placeholder
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm install
+      - run: npm run lint
+      - run: npm run build

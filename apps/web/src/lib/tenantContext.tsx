@@ -1,65 +1,34 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+"use client";
 
-export interface Tenant {
-  id: string;
-  slug: string;
-  nombre: string;
-  logo_url: string | null;
-  color_primario: string | null;
-}
+import { createContext, useContext, type ReactNode } from "react";
+import type { Tenant } from "../types/tenant";
 
-interface TenantContextValue {
-  tenant: Tenant | null;
-  loading: boolean;
-  error: string | null;
-}
-
-const TenantContext = createContext<TenantContextValue>({
-  tenant: null,
-  loading: true,
-  error: null,
-});
-
-const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+const TenantContext = createContext<Tenant | null>(null);
 
 /**
- * A diferencia de Next.js, acá no hay un middleware de edge que resuelva el
- * tenant antes de renderizar: al ser un SPA, el tenant se resuelve del lado
- * del cliente contra la API usando window.location.hostname. Esto implica un
- * pequeño delay antes de poder mostrar el theming del tenant (ver ADR
- * 002-migracion-nextjs-a-node-react.md para el detalle de este trade-off).
+ * A diferencia de la versión SPA (que resolvía el tenant en el cliente
+ * contra la API tras montar la página), acá el tenant ya llega resuelto
+ * desde app/(public)/[domain]/layout.tsx —un Server Component— y este
+ * provider solo lo expone a los Client Components descendientes que lo
+ * necesiten (ej. el reproductor de video). No hay fetch ni estado de
+ * loading: si el layout renderizó, el tenant existe.
  */
-export function TenantProvider({ children }: { children: ReactNode }) {
-  const [tenant, setTenant] = useState<Tenant | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const hostname = window.location.hostname;
-
-    fetch(`${apiUrl}/api/tenants/resolve?hostname=${hostname}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Academia no encontrada");
-        return res.json();
-      })
-      .then((data: Tenant) => setTenant(data))
-      .catch((err: Error) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
-
+export function TenantProvider({
+  tenant,
+  children,
+}: {
+  tenant: Tenant;
+  children: ReactNode;
+}) {
   return (
-    <TenantContext.Provider value={{ tenant, loading, error }}>
-      {children}
-    </TenantContext.Provider>
+    <TenantContext.Provider value={tenant}>{children}</TenantContext.Provider>
   );
 }
 
-export function useTenant() {
-  return useContext(TenantContext);
+export function useTenant(): Tenant {
+  const tenant = useContext(TenantContext);
+  if (!tenant) {
+    throw new Error("useTenant() debe usarse dentro de <TenantProvider>");
+  }
+  return tenant;
 }
