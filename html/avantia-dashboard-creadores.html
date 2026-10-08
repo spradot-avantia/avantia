@@ -1,0 +1,512 @@
+<title>Espacio del Creador Avantia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: barra de marca, resumen (indicadores), tarjetas de curso con avance por módulo, tabla de alumnos filtrable con panel de detalle. */
+:root {
+  --midnight: #0A1029; --azure: #2563EB; --violet: #8B5CF6; --lilac: #EDE9FE; --sand: #FAF9F6;
+  --grad: linear-gradient(135deg, #2563EB, #8B5CF6);
+  --bg: var(--sand);
+  --surface: #F2F0F7;
+  --card: #FDFCFA;
+  --ink: var(--midnight);
+  --ink-2: #3B4163;
+  --ink-3: #5A5F7A;
+  --line: #DEDCE8;
+  --track: #E6E3EF;
+  --accent: var(--azure);
+  --accent-ink: var(--sand);
+  --soft: var(--lilac);
+  --soft-ink: #3B2A8C;
+  --ok: #15803D; --ok-bg: #E3F4E8;
+  --warn: #A15C07; --warn-bg: #FBEFD9;
+  --risk: #B42318; --risk-bg: #FCE6E4;
+  --shadow: 0 1px 2px rgba(10,16,41,.05), 0 6px 18px rgba(10,16,41,.05);
+  --scrim: rgba(10,16,41,.35);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: var(--midnight); --surface: #111838; --card: #141C40;
+    --ink: var(--sand); --ink-2: #C9CCE0; --ink-3: #A3A8C6; --line: #252E58; --track: #232C57;
+    --accent: #6B98F7; --accent-ink: var(--midnight); --soft: #1C1F4A; --soft-ink: #D9D1FD;
+    --ok: #4ADE80; --ok-bg: #12301F; --warn: #FBBF24; --warn-bg: #33270C; --risk: #F87171; --risk-bg: #3A1519;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25); --scrim: rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: var(--midnight); --surface: #111838; --card: #141C40;
+  --ink: var(--sand); --ink-2: #C9CCE0; --ink-3: #A3A8C6; --line: #252E58; --track: #232C57;
+  --accent: #6B98F7; --accent-ink: var(--midnight); --soft: #1C1F4A; --soft-ink: #D9D1FD;
+  --ok: #4ADE80; --ok-bg: #12301F; --warn: #FBBF24; --warn-bg: #33270C; --risk: #F87171; --risk-bg: #3A1519;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25); --scrim: rgba(0,0,0,.55);
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.num { font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-inline: 20px; }
+
+/* Barra superior */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 16px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; letter-spacing: -0.03em; }
+.brand svg { width: 28px; height: 28px; flex: none; }
+.space { color: var(--ink-3); font-size: 14px; font-weight: 500; padding-left: 14px; border-left: 1px solid var(--line); }
+.who { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.who .meta { text-align: right; line-height: 1.25; }
+.who .meta small { display: block; color: var(--ink-3); font-size: 12px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; font-size: 13px; background: var(--soft); color: var(--soft-ink); flex: none; }
+
+/* Aviso de datos de ejemplo */
+.sample { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 20px; padding: 10px 14px; border-radius: 10px; background: var(--soft); color: var(--soft-ink); font-size: 13.5px; }
+.sample b { font-weight: 600; }
+
+main { padding-block: 8px 64px; }
+.head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-block: 28px 20px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.head h1 { font-size: clamp(26px, 3.4vw, 34px); font-weight: 700; margin-top: 6px; }
+.head p { color: var(--ink-3); margin-top: 6px; max-width: 62ch; }
+.asof { font-size: 13px; color: var(--ink-3); }
+
+/* Indicadores */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: grid; gap: 4px; }
+.kpi .label { font-size: 13px; color: var(--ink-3); font-weight: 500; }
+.kpi .value { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
+.kpi .hint { font-size: 12.5px; color: var(--ink-3); }
+.kpi.alert .value { color: var(--risk); }
+
+section { margin-top: 36px; }
+.sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.sec-head h2 { font-size: 20px; font-weight: 600; }
+.sec-head .note { font-size: 13px; color: var(--ink-3); }
+
+/* Cursos */
+.courses { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.course { text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: grid; gap: 14px; align-content: start; box-shadow: var(--shadow); cursor: pointer; transition: border-color .15s ease, transform .15s ease; }
+.course:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); transform: translateY(-1px); }
+.course[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent), var(--shadow); }
+.course.draft { cursor: default; background: var(--surface); box-shadow: none; }
+.course.draft:hover { transform: none; border-color: var(--line); }
+.course-top { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+.course h3 { font-size: 16px; font-weight: 600; line-height: 1.3; }
+.course .sub { font-size: 12.5px; color: var(--ink-3); margin-top: 4px; }
+.stats { display: flex; gap: 18px; flex-wrap: wrap; }
+.stat { display: grid; }
+.stat b { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+.stat span { font-size: 12px; color: var(--ink-3); }
+.funnel { display: grid; gap: 7px; }
+.funnel .ft { font-size: 12px; font-weight: 600; color: var(--ink-2); letter-spacing: .02em; }
+.frow { display: grid; grid-template-columns: 18px minmax(0, 1fr) 38px; align-items: center; gap: 8px; font-size: 12.5px; }
+.frow .m { color: var(--ink-3); font-weight: 600; }
+.frow .bar { height: 8px; border-radius: 99px; background: var(--track); overflow: hidden; }
+.frow .bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.frow .pct { text-align: right; color: var(--ink-2); }
+.frow .name { grid-column: 2 / 4; font-size: 12px; color: var(--ink-3); margin-top: -4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.draft-steps { display: grid; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.draft-steps div { display: flex; gap: 8px; align-items: center; }
+.draft-steps svg { width: 16px; height: 16px; flex: none; }
+.draft-steps .done { color: var(--ok); }
+.draft-steps .todo { color: var(--ink-3); }
+
+/* Pills */
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.p-pilot { background: var(--soft); color: var(--soft-ink); }
+.p-draft { background: var(--track); color: var(--ink-2); }
+.p-ok { background: var(--ok-bg); color: var(--ok); }
+.p-active { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
+.p-warn { background: var(--warn-bg); color: var(--warn); }
+.p-risk { background: var(--risk-bg); color: var(--risk); }
+
+/* Filtros */
+.filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.search { flex: 1 1 220px; min-width: 0; position: relative; }
+.search input { width: 100%; min-height: 40px; padding: 0 12px 0 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; }
+.search svg { position: absolute; left: 11px; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); color: var(--ink-3); }
+select { min-height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; max-width: 100%; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { min-height: 36px; padding: 0 12px; border-radius: 99px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
+.chip:hover { background: var(--soft); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip .c { font-variant-numeric: tabular-nums; opacity: .7; }
+
+/* Tabla */
+.table-box { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 760px; }
+th { text-align: left; font-size: 12px; font-weight: 600; color: var(--ink-3); letter-spacing: .04em; text-transform: uppercase; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface); white-space: nowrap; }
+th button { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: inherit; letter-spacing: inherit; text-transform: inherit; display: inline-flex; gap: 4px; align-items: center; }
+th button[data-dir]::after { content: attr(data-dir); color: var(--accent); }
+td { padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 14px; }
+tbody tr { cursor: pointer; }
+tbody tr:hover td { background: color-mix(in srgb, var(--soft) 55%, transparent); }
+tbody tr:last-child td { border-bottom: 0; }
+.person { display: flex; gap: 10px; align-items: center; }
+.person b { font-weight: 600; display: block; }
+.person small { color: var(--ink-3); font-size: 12.5px; }
+.prog { display: flex; align-items: center; gap: 10px; min-width: 150px; }
+.prog .bar { flex: 1; height: 8px; border-radius: 99px; background: var(--track); overflow: hidden; }
+.prog .bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.prog.done .bar i { background: var(--ok); }
+.prog span { width: 38px; text-align: right; font-size: 13px; font-weight: 600; }
+.muted { color: var(--ink-3); font-size: 13px; }
+.course-tag { font-size: 13px; color: var(--ink-2); max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.empty { padding: 32px 16px; text-align: center; color: var(--ink-3); }
+
+/* Panel de detalle */
+.scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 30; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 100%); background: var(--bg); border-left: 1px solid var(--line); z-index: 31; overflow-y: auto; padding: calc(20px + env(safe-area-inset-top, 0px)) 24px calc(24px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 22px; align-content: start; box-shadow: -12px 0 32px rgba(10,16,41,.12); }
+.drawer-head { display: flex; gap: 14px; align-items: start; }
+.drawer-head .avatar { width: 48px; height: 48px; font-size: 16px; }
+.drawer-head h3 { font-size: 20px; font-weight: 700; }
+.drawer-head p { color: var(--ink-3); font-size: 13.5px; margin-top: 2px; }
+.close { margin-left: auto; width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); cursor: pointer; display: grid; place-items: center; flex: none; }
+.close svg { width: 16px; height: 16px; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.fact { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 2px; }
+.fact span { font-size: 12px; color: var(--ink-3); }
+.fact b { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+.block h4 { margin: 0 0 10px; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.mods { display: grid; gap: 12px; }
+.mod { display: grid; gap: 6px; }
+.mod-top { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; }
+.mod-top b { font-weight: 600; }
+.mod-top span { color: var(--ink-3); white-space: nowrap; }
+.segs { display: flex; gap: 3px; }
+.segs i { flex: 1; height: 8px; border-radius: 3px; background: var(--track); }
+.segs i.on { background: var(--accent); }
+.segs.full i.on { background: var(--ok); }
+.timeline { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.timeline li { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 10px; font-size: 13.5px; }
+.timeline time { color: var(--ink-3); font-size: 12.5px; }
+.callout { padding: 12px 14px; border-radius: 12px; font-size: 13.5px; }
+.callout.risk { background: var(--risk-bg); color: var(--risk); }
+.callout.warn { background: var(--warn-bg); color: var(--warn); }
+.callout.ok { background: var(--ok-bg); color: var(--ok); }
+
+footer { margin-top: 40px; font-size: 12.5px; color: var(--ink-3); }
+
+@media (max-width: 960px) {
+  .courses { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .courses { grid-template-columns: minmax(0, 1fr); }
+  .space, .who .meta { display: none; }
+  .wrap { padding-inline: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2563EB"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>
+    <symbol id="mono" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="url(#g)"/><path d="M9 24 L16 7.5 L23 24" fill="none" stroke="#FAF9F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 18.5 C13 16, 15 21, 17.5 18.5 S21.5 17, 22 18" fill="none" stroke="#FAF9F6" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="check" viewBox="0 0 20 20"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="circle" viewBox="0 0 20 20"><circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.2 13.2L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><svg aria-hidden="true"><use href="#mono"/></svg>avantia</div>
+    <div class="space">Espacio del Creador</div>
+    <div class="who">
+      <div class="meta">Carolina Fuentes <small>Design partner</small></div>
+      <div class="avatar" aria-hidden="true">CF</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="sample" role="note"><b>Draft para discusión.</b> Todos los nombres, cursos y cifras son datos de ejemplo inventados para ilustrar la vista.</div>
+
+  <div class="head">
+    <div>
+      <div class="eyebrow">Panel del Creador</div>
+      <h1>Hola, Carolina</h1>
+      <p>Así van tus cursos y las personas del grupo piloto. Toca un curso para ver solo a sus alumnos, o un alumno para ver su detalle.</p>
+    </div>
+    <div class="asof">Actualizado al 1 de octubre de 2026</div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <section aria-labelledby="h-cursos">
+    <div class="sec-head">
+      <h2 id="h-cursos">Tus cursos</h2>
+      <span class="note">Barras: % del grupo que terminó cada módulo</span>
+    </div>
+    <div class="courses" id="courses"></div>
+  </section>
+
+  <section aria-labelledby="h-alumnos">
+    <div class="sec-head">
+      <h2 id="h-alumnos">Alumnos</h2>
+      <span class="note" id="count"></span>
+    </div>
+    <div class="filters">
+      <label class="search"><svg aria-hidden="true"><use href="#search"/></svg><input id="q" type="search" placeholder="Buscar por nombre o empresa" aria-label="Buscar alumno"></label>
+      <select id="course-filter" aria-label="Filtrar por curso"></select>
+      <div class="chips" id="chips" role="group" aria-label="Filtrar por estado"></div>
+    </div>
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr>
+            <th><button data-sort="name">Alumno</button></th>
+            <th><button data-sort="course">Curso</button></th>
+            <th><button data-sort="pct">Avance</button></th>
+            <th>Va en</th>
+            <th><button data-sort="last">Última actividad</button></th>
+            <th><button data-sort="status">Estado</button></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Draft de interfaz para el MVP de Avantia. Sin ingresos ni pagos en esta etapa.</footer>
+</main>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-modal="true" role="dialog" aria-labelledby="d-name"></aside>
+
+<script>
+(function () {
+  // ---------- Datos de ejemplo (inventados) ----------
+  const TODAY = new Date(2026, 9, 1);
+  const COURSES = [
+    { id: "c1", title: "Negociar contratos de suministro en minería", status: "pilot", start: "Piloto desde el 1 sep",
+      modules: [["Leer un contrato como un riesgo", 3], ["Preparar la negociación", 4], ["Cuando el proveedor tiene el poder", 3], ["Cerrar y dar seguimiento", 3], ["Caso integrador", 2]] },
+    { id: "c2", title: "Planificar una parada de planta sin sorpresas", status: "pilot", start: "Piloto desde el 15 sep",
+      modules: [["El costo real de una parada", 3], ["Alcance y ruta crítica", 4], ["Contratistas el día D", 3], ["Lecciones después de la parada", 2]] },
+    { id: "c3", title: "Gestión de contratistas en faena", status: "draft", start: "En construcción",
+      modules: [["Elegir bien antes de firmar", 0], ["Seguridad compartida", 0], ["Medir y corregir", 0]] }
+  ];
+  const DRAFT_STEPS = [["Entrevista guiada", true], ["Estructura de módulos", true], ["Revisión de casos", false], ["Apertura del piloto", false]];
+
+  const PEOPLE = [
+    ["Matías Herrera", "Jefe de abastecimiento", "Minera del Norte"], ["Fernanda Soto", "Analista de contratos", "Cobre Andino"],
+    ["Ignacio Vera", "Comprador senior", "Faena Sierra Alta"], ["Valentina Pizarro", "Supervisora de compras", "Minera del Norte"],
+    ["Diego Morales", "Ingeniero de contratos", "Servicios Atacama"], ["Camila Reyes", "Jefa de logística", "Cobre Andino"],
+    ["Tomás Riquelme", "Analista de abastecimiento", "Planta Los Pinos"], ["Antonia Muñoz", "Administradora de contratos", "Faena Sierra Alta"],
+    ["Benjamín Castro", "Comprador", "Servicios Atacama"], ["Josefa Navarro", "Coordinadora de proveedores", "Minera del Norte"],
+    ["Sebastián Rojas", "Jefe de bodega", "Planta Los Pinos"], ["Catalina Díaz", "Analista de costos", "Cobre Andino"],
+    ["Felipe Araya", "Ingeniero de procesos", "Faena Sierra Alta"], ["Martina Espinoza", "Planificadora", "Minera del Norte"],
+    ["Joaquín Tapia", "Comprador técnico", "Servicios Atacama"], ["Isidora Contreras", "Abogada interna", "Cobre Andino"],
+    ["Nicolás Bravo", "Jefe de contratos", "Planta Los Pinos"], ["Florencia Cortés", "Analista de abastecimiento", "Faena Sierra Alta"],
+    ["Lucas Fernández", "Supervisor de mantención", "Minera del Norte"], ["Emilia Alarcón", "Planificadora de mantención", "Planta Los Pinos"],
+    ["Vicente Sepúlveda", "Jefe de turno", "Cobre Andino"], ["Agustina Fuentealba", "Ingeniera de confiabilidad", "Faena Sierra Alta"],
+    ["Gaspar Olivares", "Superintendente de planta", "Planta Los Pinos"], ["Renata Molina", "Coordinadora de paradas", "Minera del Norte"],
+    ["Cristóbal Leiva", "Ingeniero de mantención", "Servicios Atacama"], ["Daniela Ortiz", "Analista de planificación", "Cobre Andino"],
+    ["Maximiliano Vargas", "Jefe de seguridad", "Faena Sierra Alta"], ["Amanda Carrasco", "Supervisora eléctrica", "Planta Los Pinos"],
+    ["Alonso Gallardo", "Ingeniero de proyectos", "Minera del Norte"], ["Trinidad Salazar", "Planificadora", "Servicios Atacama"],
+    ["Martín Figueroa", "Jefe de mantención", "Cobre Andino"], ["Paz Valenzuela", "Ingeniera de procesos", "Faena Sierra Alta"]
+  ];
+  // [cursoIdx, lecciones completadas, días desde última actividad]
+  const ENROLL = [
+    [0,15,2],[0,13,1],[0,11,3],[0,15,6],[0,9,0],[0,8,4],[0,10,1],[0,4,19],[0,7,5],[0,12,2],[0,3,16],[0,6,9],[0,14,1],[0,5,11],[0,2,23],[0,11,4],[0,8,2],[0,6,7],
+    [1,8,1],[1,6,2],[1,12,0],[1,4,3],[1,7,1],[1,2,15],[1,5,4],[1,9,2],[1,3,10],[1,6,1],[1,1,17],[1,10,3],[1,7,6],[1,4,12]
+  ];
+  const STATUS = {
+    done:   { label: "Terminó", cls: "p-ok", order: 3 },
+    active: { label: "Activo", cls: "p-active", order: 2 },
+    paused: { label: "En pausa", cls: "p-warn", order: 1 },
+    risk:   { label: "Sin actividad", cls: "p-risk", order: 0 }
+  };
+
+  const students = ENROLL.map(([ci, done, days], i) => {
+    const c = COURSES[ci];
+    const total = c.modules.reduce((a, m) => a + m[1], 0);
+    const [name, role, company] = PEOPLE[i];
+    let status = done >= total ? "done" : days <= 7 ? "active" : days <= 13 ? "paused" : "risk";
+    // módulo actual y avance por módulo
+    let left = done, current = null;
+    const mods = c.modules.map(([t, n], mi) => {
+      const d = Math.min(n, Math.max(0, left)); left -= n;
+      if (current === null && d < n) current = mi;
+      return { title: t, n, d };
+    });
+    // casos resueltos ~ una decisión por lección terminada (ejemplo)
+    const cases = done;
+    const last = new Date(TODAY); last.setDate(last.getDate() - days);
+    return { id: "s" + i, name, role, company, course: c, ci, done, total, pct: Math.round(done / total * 100), days, last, status, mods, current, cases };
+  });
+
+  // ---------- Utilidades ----------
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+  const initials = (n) => n.split(" ").map((p) => p[0]).slice(0, 2).join("");
+  const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  const fmtDate = (d) => d.getDate() + " " + MONTHS[d.getMonth()];
+  const ago = (days) => days === 0 ? "Hoy" : days === 1 ? "Ayer" : "Hace " + days + " días";
+  const pill = (st) => `<span class="pill ${STATUS[st].cls}">${STATUS[st].label}</span>`;
+  const avg = (arr) => arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0;
+
+  // ---------- Estado de la vista ----------
+  const state = { course: "all", status: "all", q: "", sort: "status", dir: 1 };
+  try { const saved = JSON.parse(localStorage.getItem("avantia-dash") || "{}"); Object.assign(state, saved, { q: "" }); } catch (e) {}
+  const save = () => { try { localStorage.setItem("avantia-dash", JSON.stringify({ course: state.course, status: state.status, sort: state.sort, dir: state.dir })); } catch (e) {} };
+
+  // ---------- Indicadores ----------
+  function renderKpis() {
+    const list = students;
+    const risk = list.filter((s) => s.status === "risk").length;
+    const done = list.filter((s) => s.status === "done").length;
+    const active = list.filter((s) => s.days <= 7).length;
+    $("#kpis").innerHTML = `
+      <div class="kpi"><span class="label">Alumnos en piloto</span><span class="value num">${list.length}</span><span class="hint">en ${COURSES.filter(c => c.status === "pilot").length} cursos abiertos</span></div>
+      <div class="kpi"><span class="label">Avance promedio</span><span class="value num">${avg(list.map((s) => s.pct))}%</span><span class="hint">de las lecciones de cada curso</span></div>
+      <div class="kpi"><span class="label">Activos esta semana</span><span class="value num">${active}</span><span class="hint">${done} ya terminaron su curso</span></div>
+      <div class="kpi alert"><span class="label">Sin actividad</span><span class="value num">${risk}</span><span class="hint">14 días o más sin entrar</span></div>`;
+  }
+
+  // ---------- Cursos ----------
+  function renderCourses() {
+    $("#courses").innerHTML = COURSES.map((c) => {
+      if (c.status === "draft") {
+        return `<div class="course draft">
+          <div class="course-top"><div><h3>${esc(c.title)}</h3><p class="sub">${c.modules.length} módulos planificados</p></div><span class="pill p-draft">Borrador</span></div>
+          <div class="draft-steps">${DRAFT_STEPS.map(([t, ok]) => `<div class="${ok ? "done" : "todo"}"><svg aria-hidden="true"><use href="#${ok ? "check" : "circle"}"/></svg><span>${t}</span></div>`).join("")}</div>
+          <p class="sub">Aún no tiene alumnos. Se abrirá al grupo piloto cuando apruebes los casos.</p>
+        </div>`;
+      }
+      const list = students.filter((s) => s.course === c);
+      const lessons = c.modules.reduce((a, m) => a + m[1], 0);
+      const funnel = c.modules.map(([t, n], mi) => {
+        const pct = Math.round(list.filter((s) => s.mods[mi].d === n).length / list.length * 100);
+        return `<div class="frow"><span class="m num">${mi + 1}</span><div class="bar"><i style="width:${pct}%"></i></div><span class="pct num">${pct}%</span><span class="name">${esc(t)}</span></div>`;
+      }).join("");
+      return `<button class="course" type="button" data-course="${c.id}" aria-pressed="${state.course === c.id}">
+        <div class="course-top"><div><h3>${esc(c.title)}</h3><p class="sub">${c.start} · ${c.modules.length} módulos · ${lessons} lecciones</p></div><span class="pill p-pilot">En piloto</span></div>
+        <div class="stats">
+          <div class="stat"><b class="num">${list.length}</b><span>alumnos</span></div>
+          <div class="stat"><b class="num">${avg(list.map((s) => s.pct))}%</b><span>avance prom.</span></div>
+          <div class="stat"><b class="num">${list.filter((s) => s.status === "done").length}</b><span>terminaron</span></div>
+          <div class="stat"><b class="num">${list.filter((s) => s.status === "risk").length}</b><span>sin actividad</span></div>
+        </div>
+        <div class="funnel"><span class="ft">Terminaron el módulo</span>${funnel}</div>
+      </button>`;
+    }).join("");
+    document.querySelectorAll(".course[data-course]").forEach((el) => el.addEventListener("click", () => {
+      state.course = state.course === el.dataset.course ? "all" : el.dataset.course;
+      $("#course-filter").value = state.course; save(); renderCourses(); renderTable();
+    }));
+  }
+
+  // ---------- Filtros ----------
+  function renderFilters() {
+    $("#course-filter").innerHTML = `<option value="all">Todos los cursos</option>` +
+      COURSES.filter((c) => c.status === "pilot").map((c) => `<option value="${c.id}">${esc(c.title)}</option>`).join("");
+    $("#course-filter").value = state.course;
+    $("#course-filter").addEventListener("change", (e) => { state.course = e.target.value; save(); renderCourses(); renderTable(); });
+    $("#q").addEventListener("input", (e) => { state.q = e.target.value; renderTable(); });
+    document.querySelectorAll("th button").forEach((b) => b.addEventListener("click", () => {
+      const k = b.dataset.sort; state.dir = state.sort === k ? -state.dir : (k === "pct" ? -1 : 1); state.sort = k; save(); renderTable();
+    }));
+  }
+  function renderChips(base) {
+    const opts = [["all", "Todos"], ["risk", "Sin actividad"], ["paused", "En pausa"], ["active", "Activos"], ["done", "Terminaron"]];
+    $("#chips").innerHTML = opts.map(([k, l]) => {
+      const n = k === "all" ? base.length : base.filter((s) => s.status === k).length;
+      return `<button type="button" class="chip" data-st="${k}" aria-pressed="${state.status === k}">${l} <span class="c">${n}</span></button>`;
+    }).join("");
+    document.querySelectorAll(".chip").forEach((b) => b.addEventListener("click", () => { state.status = b.dataset.st; save(); renderTable(); }));
+  }
+
+  // ---------- Tabla ----------
+  function renderTable() {
+    const q = state.q.trim().toLowerCase();
+    const base = students.filter((s) => (state.course === "all" || s.course.id === state.course) &&
+      (!q || (s.name + " " + s.company + " " + s.role).toLowerCase().includes(q)));
+    renderChips(base);
+    const list = base.filter((s) => state.status === "all" || s.status === state.status);
+    const key = {
+      name: (s) => s.name, course: (s) => s.course.title, pct: (s) => s.pct, last: (s) => s.days,
+      status: (s) => STATUS[s.status].order * 1000 + s.days * -1
+    }[state.sort];
+    list.sort((a, b) => { const x = key(a), y = key(b); return (x > y ? 1 : x < y ? -1 : a.name.localeCompare(b.name)) * state.dir; });
+    document.querySelectorAll("th button").forEach((b) => { if (b.dataset.sort === state.sort) b.dataset.dir = state.dir > 0 ? "↑" : "↓"; else delete b.dataset.dir; });
+    $("#count").textContent = list.length + (list.length === 1 ? " alumno" : " alumnos");
+    $("#rows").innerHTML = list.length ? list.map((s) => {
+      const cur = s.current === null ? "Curso completo" : `Módulo ${s.current + 1} · ${esc(s.mods[s.current].title)}`;
+      return `<tr data-id="${s.id}" tabindex="0">
+        <td><div class="person"><span class="avatar" aria-hidden="true">${initials(s.name)}</span><div><b>${esc(s.name)}</b><small>${esc(s.role)} · ${esc(s.company)}</small></div></div></td>
+        <td><div class="course-tag" title="${esc(s.course.title)}">${esc(s.course.title)}</div></td>
+        <td><div class="prog ${s.status === "done" ? "done" : ""}"><div class="bar"><i style="width:${s.pct}%"></i></div><span class="num">${s.pct}%</span></div><div class="muted num">${s.done} de ${s.total} lecciones</div></td>
+        <td><div class="muted">${cur}</div></td>
+        <td><div class="num">${ago(s.days)}</div><div class="muted num">${fmtDate(s.last)}</div></td>
+        <td>${pill(s.status)}</td>
+      </tr>`;
+    }).join("") : `<tr><td colspan="6" class="empty">Ningún alumno coincide con estos filtros.</td></tr>`;
+    document.querySelectorAll("#rows tr[data-id]").forEach((tr) => {
+      tr.addEventListener("click", () => openDrawer(tr.dataset.id));
+      tr.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDrawer(tr.dataset.id); } });
+    });
+  }
+
+  // ---------- Detalle del alumno ----------
+  let lastFocus = null;
+  function openDrawer(id) {
+    const s = students.find((x) => x.id === id);
+    lastFocus = document.activeElement;
+    const note = {
+      risk: ["risk", `Lleva ${s.days} días sin entrar. Quedó en el módulo ${s.current + 1}; puede ser un buen momento para escribirle.`],
+      paused: ["warn", `No entra hace ${s.days} días. Va en el módulo ${s.current + 1}.`],
+      active: ["ok", "Avanza a buen ritmo."],
+      done: ["ok", "Terminó el curso. Su opinión sobre el caso integrador sirve para mejorar la próxima versión."]
+    }[s.status];
+    // actividad reciente de ejemplo: últimas lecciones terminadas
+    const recent = [];
+    let k = s.done, d = s.days;
+    for (let mi = s.mods.length - 1; mi >= 0 && recent.length < 3; mi--) {
+      for (let li = s.mods[mi].d; li >= 1 && recent.length < 3; li--) {
+        const dt = new Date(TODAY); dt.setDate(dt.getDate() - d);
+        recent.push(`<li><time class="num">${fmtDate(dt)}</time><span>Terminó la lección ${li} de <b>${esc(s.mods[mi].title)}</b></span></li>`);
+        d += 1 + (k % 3); k--;
+      }
+    }
+    $("#drawer").innerHTML = `
+      <div class="drawer-head">
+        <span class="avatar" aria-hidden="true">${initials(s.name)}</span>
+        <div><h3 id="d-name">${esc(s.name)}</h3><p>${esc(s.role)} · ${esc(s.company)}</p><div style="margin-top:8px">${pill(s.status)}</div></div>
+        <button class="close" type="button" id="close" aria-label="Cerrar"><svg aria-hidden="true"><use href="#x"/></svg></button>
+      </div>
+      <div class="block"><h4>Curso</h4><p>${esc(s.course.title)}</p></div>
+      <div class="facts">
+        <div class="fact"><span>Avance</span><b class="num">${s.pct}%</b></div>
+        <div class="fact"><span>Lecciones</span><b class="num">${s.done}/${s.total}</b></div>
+        <div class="fact"><span>Casos decididos</span><b class="num">${s.cases}</b></div>
+      </div>
+      <div class="callout ${note[0]}">${note[1]}</div>
+      <div class="block"><h4>Avance por módulo</h4><div class="mods">${s.mods.map((m, i) => `
+        <div class="mod"><div class="mod-top"><b>${i + 1}. ${esc(m.title)}</b><span class="num">${m.d} de ${m.n}</span></div>
+        <div class="segs ${m.d === m.n ? "full" : ""}">${Array.from({ length: m.n }, (_, j) => `<i class="${j < m.d ? "on" : ""}"></i>`).join("")}</div></div>`).join("")}
+      </div></div>
+      <div class="block"><h4>Actividad reciente</h4>${recent.length ? `<ul class="timeline">${recent.join("")}</ul>` : `<p class="muted">Todavía no termina ninguna lección.</p>`}</div>
+      <p class="muted">Datos de ejemplo.</p>`;
+    $("#drawer").hidden = false; $("#scrim").hidden = false;
+    $("#close").addEventListener("click", closeDrawer);
+    $("#close").focus();
+  }
+  function closeDrawer() {
+    $("#drawer").hidden = true; $("#scrim").hidden = true;
+    if (lastFocus) lastFocus.focus();
+  }
+  $("#scrim").addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#drawer").hidden) closeDrawer(); });
+
+  renderKpis(); renderFilters(); renderCourses(); renderTable();
+})();
+</script>

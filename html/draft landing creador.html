@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Academia Carolina Fuentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: aviso de ejemplo, barra de la academia, portada de la Creadora, catálogo de cursos, detalle del curso (panel), cómo se aprende, sobre la Creadora, pie "con tecnología avantia". */
+:root {
+  --midnight: #0A1029; --azure: #2563EB; --violet: #8B5CF6; --lilac: #EDE9FE; --sand: #FAF9F6;
+  --grad: linear-gradient(135deg, #2563EB, #8B5CF6);
+  --bg: var(--sand); --surface: #F2F0F7; --card: #FDFCFA;
+  --ink: var(--midnight); --ink-2: #3B4163; --ink-3: #5A5F7A;
+  --line: #DEDCE8; --accent: var(--azure); --accent-ink: var(--sand);
+  --soft: var(--lilac); --soft-ink: #3B2A8C;
+  --ok: #15803D; --ok-bg: #E3F4E8;
+  --shadow: 0 1px 2px rgba(10,16,41,.05), 0 6px 18px rgba(10,16,41,.05);
+  --scrim: rgba(10,16,41,.4);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: var(--midnight); --surface: #111838; --card: #141C40;
+    --ink: var(--sand); --ink-2: #C9CCE0; --ink-3: #A3A8C6; --line: #252E58;
+    --accent: #6B98F7; --accent-ink: var(--midnight); --soft: #1C1F4A; --soft-ink: #D9D1FD;
+    --ok: #4ADE80; --ok-bg: #12301F;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25); --scrim: rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: var(--midnight); --surface: #111838; --card: #141C40;
+  --ink: var(--sand); --ink-2: #C9CCE0; --ink-3: #A3A8C6; --line: #252E58;
+  --accent: #6B98F7; --accent-ink: var(--midnight); --soft: #1C1F4A; --soft-ink: #D9D1FD;
+  --ok: #4ADE80; --ok-bg: #12301F;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25); --scrim: rgba(0,0,0,.6);
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+button { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.num { font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; }
+@media (max-width: 480px) { .wrap { padding-inline: 16px; } }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+
+.sample { background: var(--soft); color: var(--soft-ink); font-size: 13.5px; }
+.sample .wrap { padding-block: 9px; }
+.sample b { font-weight: 600; }
+
+/* Barra de la academia (marca blanca) */
+.nav { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; gap: 16px; height: 64px; }
+.acad { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.acad .mark { width: 34px; height: 34px; border-radius: 10px; background: var(--ink); color: var(--bg); display: grid; place-items: center; font-weight: 700; font-size: 14px; letter-spacing: -0.02em; flex: none; }
+.acad b { display: block; font-weight: 600; font-size: 15px; line-height: 1.2; }
+.acad small { display: block; font-size: 12px; color: var(--ink-3); }
+.nav nav { margin-left: auto; display: flex; gap: 22px; font-size: 14px; font-weight: 500; }
+.nav nav a { text-decoration: none; color: var(--ink-2); }
+.nav nav a:hover { color: var(--accent); }
+@media (max-width: 720px) { .nav nav { display: none; } }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 10px; border: 1px solid transparent; font-weight: 600; font-size: 15px; cursor: pointer; text-decoration: none; transition: transform .15s ease, background .15s ease; }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { background: color-mix(in srgb, var(--accent) 88%, var(--ink)); }
+.btn-ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn svg { width: 18px; height: 18px; }
+
+/* Portada */
+.hero { padding-block: 56px 40px; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.hero h1 { font-size: clamp(32px, 4.6vw, 50px); font-weight: 700; letter-spacing: -0.035em; margin-top: 12px; }
+.hero .lead { font-size: 18px; color: var(--ink-2); margin-top: 18px; max-width: 54ch; }
+.hero .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.facts { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); }
+.facts div { font-size: 13.5px; color: var(--ink-3); }
+.facts b { display: block; font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; }
+.profile { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 28px; box-shadow: var(--shadow); }
+.portrait { width: 88px; height: 88px; border-radius: 50%; background: var(--grad); color: #FAF9F6; display: grid; place-items: center; font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
+.profile h2 { font-size: 22px; font-weight: 700; margin-top: 18px; }
+.profile .role { color: var(--ink-3); font-size: 14.5px; margin-top: 4px; }
+.profile ul { margin-top: 18px; display: grid; gap: 10px; }
+.profile li { display: flex; gap: 10px; font-size: 14.5px; color: var(--ink-2); }
+.profile li svg { width: 20px; height: 20px; color: var(--accent); flex: none; margin-top: 1px; }
+.quote { margin-top: 20px; padding: 14px 16px; border-radius: 12px; background: var(--surface); font-size: 14.5px; color: var(--ink-2); font-style: italic; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; gap: 32px; padding-top: 36px; } }
+
+section { padding-block: 48px; }
+.sec-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.sec-head h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 700; margin-top: 8px; }
+.sec-head p { color: var(--ink-3); max-width: 52ch; margin-top: 8px; }
+
+/* Catálogo */
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 960px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+.course { background: var(--card); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); transition: border-color .15s ease, transform .15s ease; }
+.course:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); transform: translateY(-2px); }
+.cover { height: 128px; position: relative; padding: 16px; display: flex; align-items: flex-start; justify-content: space-between; background: var(--surface); border-bottom: 1px solid var(--line); }
+.cover svg.art { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--accent); opacity: .9; }
+.cover.featured { background: var(--grad); border-bottom: none; }
+.cover.featured svg.art { color: #FAF9F6; opacity: .35; }
+.tag { position: relative; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--card); color: var(--ink-2); border: 1px solid var(--line); }
+.tag.open { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+.course .body { padding: 20px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.course h3 { font-size: 19px; font-weight: 600; }
+.course .promise { font-size: 14.5px; color: var(--ink-2); }
+.meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--ink-3); }
+.meta span { display: inline-flex; gap: 6px; align-items: center; }
+.meta svg { width: 15px; height: 15px; }
+.course .foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.price b { display: block; font-size: 15px; font-weight: 600; }
+.price small { font-size: 12.5px; color: var(--ink-3); }
+.course .btn { min-height: 40px; padding: 0 14px; font-size: 14px; }
+
+/* Cómo se aprende */
+.how { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .how { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .how { grid-template-columns: 1fr; } }
+.step { padding: 22px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); }
+.step .n { width: 32px; height: 32px; border-radius: 9px; background: var(--soft); color: var(--soft-ink); display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+.step h3 { font-size: 17px; font-weight: 600; margin-top: 16px; }
+.step p { font-size: 14.5px; color: var(--ink-3); margin-top: 6px; }
+
+/* Sobre la Creadora */
+.about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 40px; align-items: start; }
+@media (max-width: 820px) { .about { grid-template-columns: 1fr; gap: 24px; } }
+.about p + p { margin-top: 14px; }
+.about .text p { color: var(--ink-2); }
+.timeline { display: grid; gap: 0; border-left: 2px solid var(--line); margin-left: 6px; }
+.timeline li { position: relative; padding: 0 0 20px 22px; }
+.timeline li::before { content: ""; position: absolute; left: -7px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent); }
+.timeline time { font-size: 13px; color: var(--ink-3); font-weight: 500; }
+.timeline b { display: block; font-weight: 600; margin-top: 2px; }
+.timeline span { font-size: 14.5px; color: var(--ink-2); }
+
+/* Llamado final */
+.cta { margin-block: 16px 64px; padding: 40px; border-radius: 24px; background: var(--ink); color: var(--bg); display: flex; gap: 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.cta h2 { font-size: clamp(22px, 2.8vw, 28px); font-weight: 700; }
+.cta p { margin-top: 8px; opacity: .8; max-width: 52ch; }
+.cta .btn-primary { background: var(--bg); color: var(--ink); }
+@media (max-width: 520px) { .cta { padding: 28px 22px; } }
+
+footer { border-top: 1px solid var(--line); padding-block: 24px 40px; font-size: 13.5px; color: var(--ink-3); }
+footer .wrap { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.powered { display: inline-flex; align-items: center; gap: 8px; }
+.powered svg { width: 20px; height: 20px; }
+.powered b { font-weight: 700; color: var(--ink); letter-spacing: -0.03em; }
+
+/* Panel de detalle del curso */
+.scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 40; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(560px, 100%); background: var(--bg); z-index: 50; overflow-y: auto; box-shadow: -10px 0 40px rgba(10,16,41,.18); display: flex; flex-direction: column; }
+.d-head { position: relative; padding: 24px 24px 22px; }
+.d-head.featured { background: var(--grad); color: #FAF9F6; }
+.d-head.featured .eyebrow, .d-head.featured .d-sub { color: #FAF9F6; }
+.d-head:not(.featured) { background: var(--surface); }
+.close { position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border-radius: 10px; border: none; background: color-mix(in srgb, var(--bg) 85%, transparent); color: var(--midnight); cursor: pointer; display: grid; place-items: center; }
+:root[data-theme="dark"] .close { color: var(--ink); }
+.close svg { width: 18px; height: 18px; }
+.d-head h2 { font-size: 26px; font-weight: 700; margin-top: 10px; padding-right: 44px; }
+.d-sub { margin-top: 10px; font-size: 15px; color: var(--ink-2); }
+.d-body { padding: 8px 24px 24px; display: grid; gap: 26px; }
+.d-body h3 { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 13.5px; padding: 6px 12px; border-radius: 999px; background: var(--soft); color: var(--soft-ink); font-weight: 500; }
+.checks { display: grid; gap: 10px; }
+.checks li { display: flex; gap: 10px; font-size: 15px; color: var(--ink-2); }
+.checks svg { width: 20px; height: 20px; color: var(--accent); flex: none; margin-top: 1px; }
+.mods { display: grid; gap: 8px; }
+.mod { border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.mod summary { list-style: none; cursor: pointer; padding: 14px 16px; display: flex; gap: 12px; align-items: center; }
+.mod summary::-webkit-details-marker { display: none; }
+.mod .mn { width: 28px; height: 28px; border-radius: 8px; background: var(--surface); display: grid; place-items: center; font-weight: 600; font-size: 13px; flex: none; }
+.mod .mt { flex: 1; font-weight: 600; font-size: 15px; }
+.mod .ml { font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+.mod .chev { width: 16px; height: 16px; color: var(--ink-3); transition: transform .15s ease; flex: none; }
+.mod[open] .chev { transform: rotate(180deg); }
+.mod .inner { padding: 0 16px 14px 56px; font-size: 14.5px; color: var(--ink-2); }
+.mod .inner em { display: block; margin-top: 6px; font-style: normal; font-size: 13.5px; color: var(--accent); font-weight: 500; }
+.offer { position: sticky; bottom: 0; margin-top: auto; padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0px)); background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; z-index: 60; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 12px; background: var(--ink); color: var(--bg); font-size: 14.5px; box-shadow: var(--shadow); transition: opacity .2s ease, transform .2s ease; pointer-events: none; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2563EB"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>
+    <symbol id="mono" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="url(#g)"/><path d="M9 24 L16 7.5 L23 24" fill="none" stroke="#FAF9F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 18.5 C13 16, 15 21, 17.5 18.5 S21.5 17, 22 18" fill="none" stroke="#FAF9F6" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="check" viewBox="0 0 20 20"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="chev" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="layers" viewBox="0 0 20 20"><path d="M10 3l7 4-7 4-7-4zM3 11l7 4 7-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="clock" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 6.5V10l2.5 1.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="case" viewBox="0 0 20 20"><rect x="3" y="6" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 6V4.5h5V6" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="live" viewBox="0 0 20 20"><circle cx="10" cy="10" r="2.5" fill="currentColor"/><path d="M5.5 5.5a6.4 6.4 0 000 9M14.5 5.5a6.4 6.4 0 010 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="art1" viewBox="0 0 360 128" preserveAspectRatio="xMidYMid slice"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 104 L60 70 L110 88 L170 40 L230 72 L290 30 L360 58" opacity=".7"/><path d="M0 118 L70 92 L130 104 L190 66 L250 90 L320 56 L360 70" opacity=".4"/><rect x="232" y="80" width="68" height="40" rx="4" opacity=".55"/><path d="M244 94h44M244 104h30" opacity=".55"/></g></symbol>
+    <symbol id="art2" viewBox="0 0 360 128" preserveAspectRatio="xMidYMid slice"><g fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="270" cy="64" r="34" opacity=".55"/><circle cx="270" cy="64" r="20" opacity=".7"/><path d="M270 30v-12M270 110v-12M236 64h-12M316 64h-12" opacity=".7"/><path d="M20 96h60l20-30h50l20 30h40" opacity=".45"/></g></symbol>
+    <symbol id="art3" viewBox="0 0 360 128" preserveAspectRatio="xMidYMid slice"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M200 112V58l40-24 40 24v54" opacity=".55"/><path d="M228 112V84h24v28" opacity=".55"/><circle cx="90" cy="70" r="12" opacity=".45"/><circle cx="130" cy="70" r="12" opacity=".45"/><path d="M70 110c4-18 36-18 40 0M110 110c4-18 36-18 40 0" opacity=".45"/></g></symbol>
+  </defs>
+</svg>
+
+<div class="sample" role="note"><div class="wrap"><b>Maqueta para discusión.</b> La Creadora, su trayectoria, los cursos y las cifras son datos ilustrativos inventados. Los precios aún no están definidos y no hay pagos en el MVP.</div></div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="acad" href="#top" aria-label="Academia Carolina Fuentes, inicio">
+      <span class="mark" aria-hidden="true">CF</span>
+      <span><b>Academia Carolina Fuentes</b><small>Abastecimiento y operaciones en minería</small></span>
+    </a>
+    <nav aria-label="Secciones">
+      <a href="#cursos">Cursos</a>
+      <a href="#como">Cómo se aprende</a>
+      <a href="#sobre">Sobre Carolina</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <div class="eyebrow">Aprende de quien lo hizo en faena</div>
+      <h1>Lo que 20 años de contratos y paradas de planta no te enseñan en un aula.</h1>
+      <p class="lead">Cursos cortos y prácticos construidos a partir de decisiones reales: negociaciones que salieron mal, paradas que se alargaron y lo que cambié después. Para quienes compran, contratan y planifican en minería.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#cursos">Ver cursos</a>
+        <a class="btn btn-ghost" href="#sobre">Conoce a Carolina</a>
+      </div>
+      <div class="facts">
+        <div><b class="num">2</b>cursos abiertos</div>
+        <div><b class="num">27</b>lecciones prácticas</div>
+        <div><b class="num">32</b>personas en el piloto</div>
+      </div>
+    </div>
+    <aside class="profile" aria-label="Perfil de la Creadora">
+      <div class="portrait" aria-hidden="true">CF</div>
+      <h2>Carolina Fuentes</h2>
+      <p class="role">Ex gerenta de abastecimiento y contratos · Ingeniera civil industrial</p>
+      <ul>
+        <li><svg aria-hidden="true"><use href="#check"/></svg>Más de 20 años en compañías mineras de cobre</li>
+        <li><svg aria-hidden="true"><use href="#check"/></svg>Lideró contratos de suministro críticos y más de 15 paradas mayores</li>
+        <li><svg aria-hidden="true"><use href="#check"/></svg>Mentora de equipos de abastecimiento y mantención</li>
+      </ul>
+      <p class="quote">"Casi todo lo que sé lo aprendí equivocándome con un contrato firmado o una parada en curso. Aquí comparto esos casos para que tú no pagues el mismo precio."</p>
+    </aside>
+  </div>
+
+  <section id="cursos" aria-labelledby="h-cursos">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="eyebrow">Catálogo</div>
+          <h2 id="h-cursos">Cursos de la academia</h2>
+          <p>Cada curso parte de casos reales de Carolina y termina con un caso integrador que revisa ella misma. Toca un curso para ver su programa.</p>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section id="como" aria-labelledby="h-como">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <div class="eyebrow">La experiencia</div>
+          <h2 id="h-como">Cómo se aprende aquí</h2>
+          <p>No son clases grabadas de una hora. Es el criterio de una experta, ordenado para que lo practiques en tu propio trabajo.</p>
+        </div>
+      </div>
+      <div class="how">
+        <div class="step"><div class="n">1</div><h3>Lecciones cortas</h3><p>Entre 8 y 15 minutos, cada una centrada en una decisión concreta que vas a enfrentar.</p></div>
+        <div class="step"><div class="n">2</div><h3>Casos de faena</h3><p>Situaciones reales, anonimizadas, donde decides qué harías antes de ver qué pasó.</p></div>
+        <div class="step"><div class="n">3</div><h3>Sesiones con Carolina</h3><p>Una sesión en vivo por módulo para traer tus dudas y casos de tu empresa.</p></div>
+        <div class="step"><div class="n">4</div><h3>Caso integrador</h3><p>Aplicas todo a un problema completo y recibes la retroalimentación de Carolina.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sobre" aria-labelledby="h-sobre">
+    <div class="wrap about">
+      <div>
+        <div class="eyebrow">Sobre la Creadora</div>
+        <h2 id="h-sobre" style="font-size:clamp(24px,3vw,32px);font-weight:700;margin-top:8px">Carolina Fuentes</h2>
+        <div class="text" style="margin-top:16px">
+          <p>Carolina pasó dos décadas entre bodegas, mesas de negociación y salas de control. Empezó como compradora técnica y terminó a cargo de los contratos de suministro de una operación completa.</p>
+          <p>Hoy acompaña a equipos que están donde ella estuvo: con poca información, mucha presión y un proveedor que sabe más que ellos.</p>
+        </div>
+      </div>
+      <ol class="timeline" aria-label="Trayectoria">
+        <li><time>2004 a 2010</time><b>Compradora técnica</b><span>Repuestos críticos y servicios de mantención en faena.</span></li>
+        <li><time>2010 a 2017</time><b>Jefa de contratos</b><span>Contratos de suministro de energía, insumos y servicios mayores.</span></li>
+        <li><time>2017 a 2024</time><b>Gerenta de abastecimiento</b><span>Responsable de compras, contratos y apoyo a paradas de planta.</span></li>
+        <li><time>Desde 2025</time><b>Asesora y Creadora en Avantia</b><span>Convierte su experiencia en cursos prácticos para equipos de la industria.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <h2>¿Tu equipo enfrenta estos problemas?</h2>
+        <p>Estamos abriendo cupos piloto para empresas y profesionales. Postula y te contactamos para conversar qué curso calza mejor.</p>
+      </div>
+      <button class="btn btn-primary" type="button" data-apply="general">Postular al piloto</button>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Academia Carolina Fuentes</span>
+    <span class="powered">Academia con tecnología <svg aria-hidden="true"><use href="#mono"/></svg><b>avantia</b></span>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="d-title"></aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  // ---------- Datos ilustrativos (inventados), coherentes con el panel del Creador ----------
+  const COURSES = [
+    { id: "c1", status: "open", art: "art1", featured: true,
+      title: "Negociar contratos de suministro en minería",
+      promise: "Lee un contrato como un mapa de riesgos y llega a la mesa sabiendo dónde ceder y dónde no.",
+      level: "Intermedio", hours: "6 a 7 horas", cohort: "Grupo piloto en curso · nuevo grupo en noviembre",
+      who: ["Compradores y analistas de contratos", "Jefes de abastecimiento", "Administradores de contrato"],
+      outcomes: ["Detectar las cláusulas que más cuestan cuando algo falla", "Preparar una negociación con alternativas reales", "Negociar cuando el proveedor tiene el poder", "Dar seguimiento al contrato después de firmar"],
+      modules: [
+        ["Leer un contrato como un riesgo", 3, "Cláusulas de reajuste, multas y fuerza mayor vistas desde lo que pasó cuando se activaron.", "Caso: el reajuste que nadie leyó"],
+        ["Preparar la negociación", 4, "Construir tu mejor alternativa, entender los costos del proveedor y definir límites antes de sentarte.", "Caso: renovación con un único proveedor"],
+        ["Cuando el proveedor tiene el poder", 3, "Qué hacer cuando no hay sustituto, el plazo apremia y la operación depende de ellos.", "Caso: repuesto crítico con 40 semanas de espera"],
+        ["Cerrar y dar seguimiento", 3, "Indicadores, reuniones de seguimiento y cómo usar el contrato vivo, no archivado.", "Caso: el proveedor que cumplía en papel"],
+        ["Caso integrador", 2, "Preparas y defiendes una negociación completa. Carolina revisa tu propuesta.", "Retroalimentación personal de Carolina"]
+      ] },
+    { id: "c2", status: "open", art: "art2",
+      title: "Planificar una parada de planta sin sorpresas",
+      promise: "Del alcance a la ruta crítica, con los contratistas alineados y el costo real a la vista.",
+      level: "Intermedio", hours: "5 a 6 horas", cohort: "Grupo piloto en curso · nuevo grupo en noviembre",
+      who: ["Planificadores de mantención", "Superintendentes y jefes de planta", "Coordinadores de paradas"],
+      outcomes: ["Estimar el costo real de una parada, no solo el presupuesto", "Congelar el alcance y proteger la ruta crítica", "Coordinar contratistas el día D", "Capturar lecciones que sí cambien la próxima parada"],
+      modules: [
+        ["El costo real de una parada", 3, "Producción perdida, horas extra y el costo de cada día de atraso.", "Caso: la parada de 6 días que duró 11"],
+        ["Alcance y ruta crítica", 4, "Cómo congelar el alcance, priorizar trabajos y defender la ruta crítica.", "Caso: el trabajo que entró a última hora"],
+        ["Contratistas el día D", 3, "Inducción, coordinación entre empresas y quién decide cuando algo sale mal.", "Caso: tres contratistas y una sola grúa"],
+        ["Lecciones después de la parada", 2, "Una revisión honesta que se convierte en cambios concretos para la próxima.", "Caso integrador con retroalimentación de Carolina"]
+      ] },
+    { id: "c3", status: "soon", art: "art3",
+      title: "Gestión de contratistas en faena",
+      promise: "Elegir bien antes de firmar, compartir la seguridad y corregir a tiempo.",
+      level: "Intermedio", hours: "Por confirmar", cohort: "En construcción · apertura estimada en 2027",
+      who: ["Administradores de contrato", "Jefes de área y de seguridad"],
+      outcomes: ["Evaluar contratistas más allá del precio", "Definir responsabilidades de seguridad compartidas", "Medir desempeño y corregir antes del problema"],
+      modules: [
+        ["Elegir bien antes de firmar", null, "Criterios de evaluación y señales de alerta en la licitación.", ""],
+        ["Seguridad compartida", null, "Quién responde por qué cuando trabajan varias empresas en la misma área.", ""],
+        ["Medir y corregir", null, "Indicadores simples y conversaciones difíciles a tiempo.", ""]
+      ] }
+  ];
+
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+  const lessons = (c) => c.modules.reduce((a, m) => a + (m[1] || 0), 0);
+  const priceHTML = (c) => c.status === "open"
+    ? `<div class="price"><b>Acceso piloto</b><small>Precio por definir</small></div>`
+    : `<div class="price"><b>Próximamente</b><small>Precio por definir</small></div>`;
+
+  // ---------- Catálogo ----------
+  $("#grid").innerHTML = COURSES.map((c) => `
+    <article class="course">
+      <div class="cover ${c.featured ? "featured" : ""}">
+        <svg class="art" aria-hidden="true"><use href="#${c.art}"/></svg>
+        <span class="tag ${c.status === "open" ? "open" : ""}">${c.status === "open" ? "Cupos piloto abiertos" : "En construcción"}</span>
+      </div>
+      <div class="body">
+        <h3>${esc(c.title)}</h3>
+        <p class="promise">${esc(c.promise)}</p>
+        <div class="meta">
+          <span><svg aria-hidden="true"><use href="#layers"/></svg>${c.modules.length} módulos${c.status === "open" ? " · " + lessons(c) + " lecciones" : ""}</span>
+          <span><svg aria-hidden="true"><use href="#clock"/></svg>${esc(c.hours)}</span>
+        </div>
+        <div class="foot">
+          ${priceHTML(c)}
+          <button class="btn ${c.status === "open" ? "btn-primary" : "btn-ghost"}" type="button" data-open="${c.id}">${c.status === "open" ? "Ver programa" : "Ver avance"}</button>
+        </div>
+      </div>
+    </article>`).join("");
+
+  // ---------- Detalle ----------
+  const drawer = $("#drawer"), scrim = $("#scrim");
+  let lastFocus = null;
+  function open(id) {
+    const c = COURSES.find((x) => x.id === id);
+    const isOpen = c.status === "open";
+    drawer.innerHTML = `
+      <div class="d-head ${c.featured ? "featured" : ""}">
+        <button class="close" type="button" aria-label="Cerrar" data-close><svg aria-hidden="true"><use href="#x"/></svg></button>
+        <div class="eyebrow">Curso de Carolina Fuentes</div>
+        <h2 id="d-title">${esc(c.title)}</h2>
+        <p class="d-sub">${esc(c.promise)}</p>
+      </div>
+      <div class="d-body">
+        <div class="meta" style="margin-top:16px">
+          <span><svg aria-hidden="true"><use href="#layers"/></svg>${c.modules.length} módulos${isOpen ? " · " + lessons(c) + " lecciones" : ""}</span>
+          <span><svg aria-hidden="true"><use href="#clock"/></svg>${esc(c.hours)}</span>
+          <span><svg aria-hidden="true"><use href="#case"/></svg>${esc(c.level)}</span>
+          ${isOpen ? `<span><svg aria-hidden="true"><use href="#live"/></svg>Sesión en vivo por módulo</span>` : ""}
+        </div>
+        <div><h3>Para quién es</h3><div class="chips">${c.who.map((w) => `<span class="chip">${esc(w)}</span>`).join("")}</div></div>
+        <div><h3>Lo que vas a poder hacer</h3><ul class="checks">${c.outcomes.map((o) => `<li><svg aria-hidden="true"><use href="#check"/></svg>${esc(o)}</li>`).join("")}</ul></div>
+        <div><h3>Programa</h3><div class="mods">${c.modules.map((m, i) => `
+          <details class="mod"${i === 0 ? " open" : ""}>
+            <summary><span class="mn num">${i + 1}</span><span class="mt">${esc(m[0])}</span><span class="ml num">${m[1] ? m[1] + " lecciones" : "En diseño"}</span><svg class="chev" aria-hidden="true"><use href="#chev"/></svg></summary>
+            <div class="inner">${esc(m[2])}${m[3] ? `<em>${esc(m[3])}</em>` : ""}</div>
+          </details>`).join("")}</div></div>
+        <div><h3>Próximo grupo</h3><p style="color:var(--ink-2)">${esc(c.cohort)}</p></div>
+      </div>
+      <div class="offer">
+        ${priceHTML(c)}
+        <button class="btn ${isOpen ? "btn-primary" : "btn-ghost"}" type="button" data-apply="${c.id}">${isOpen ? "Postular al piloto" : "Avísame cuando abra"}</button>
+      </div>`;
+    lastFocus = document.activeElement;
+    drawer.hidden = false; scrim.hidden = false;
+    document.body.style.overflow = "hidden";
+    drawer.scrollTop = 0;
+    drawer.querySelector("[data-close]").focus();
+  }
+  function close() {
+    drawer.hidden = true; scrim.hidden = true;
+    document.body.style.overflow = "";
+    if (lastFocus) lastFocus.focus();
+  }
+
+  let tId;
+  function toast(msg) {
+    const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(tId); tId = setTimeout(() => t.classList.remove("show"), 3600);
+  }
+
+  document.addEventListener("click", (e) => {
+    const o = e.target.closest("[data-open]"); if (o) return open(o.dataset.open);
+    if (e.target.closest("[data-close]") || e.target === scrim) return close();
+    const a = e.target.closest("[data-apply]");
+    if (a) toast(a.dataset.apply === "c3"
+      ? "En el MVP esto guardaría tu interés para avisarte cuando abra. Es solo una maqueta."
+      : "En el MVP esto abre la postulación al piloto, sin pago. Es solo una maqueta.");
+  });
+  document.addEventListener("keydown", (e) => {
+    if (drawer.hidden) return;
+    if (e.key === "Escape") return close();
+    if (e.key === "Tab") {
+      const f = drawer.querySelectorAll("button, summary, a[href]");
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+})();
+</script>
+</body>
+</html>
