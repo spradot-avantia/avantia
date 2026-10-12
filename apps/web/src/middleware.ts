@@ -1,10 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 const PANEL_HOST_SUFFIX = process.env.PANEL_HOST_SUFFIX ?? "app.avantia.app";
+const MARKETING_HOSTS = (process.env.MARKETING_HOSTS ?? "avantia.app,www.avantia.app")
+  .split(",")
+  .map((h) => h.trim())
+  .filter(Boolean);
 
 /**
  * Corre en el edge, antes de cualquier render. Decide entre las dos familias
  * de rutas del proyecto según el hostname de la request:
+ *  - avantia.app / www.avantia.app: sitio de marketing; "/" muestra la landing
+ *    (app/(marketing)/landing).
  *  - app.avantia.app (o localhost): panel interno -> app/(dashboard).
  *  - cualquier otro dominio: sitio público de una academia -> app/(public),
  *    reescrito hacia el segmento real [domain] para que el route group
@@ -16,6 +22,15 @@ const PANEL_HOST_SUFFIX = process.env.PANEL_HOST_SUFFIX ?? "app.avantia.app";
  */
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host")?.split(":")[0] ?? "";
+
+  if (MARKETING_HOSTS.includes(hostname)) {
+    if (request.nextUrl.pathname === "/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/landing";
+      return NextResponse.rewrite(url);
+    }
+    return NextResponse.next();
+  }
 
   const isPanelHost =
     hostname === "localhost" || hostname.endsWith(PANEL_HOST_SUFFIX);
