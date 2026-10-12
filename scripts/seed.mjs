@@ -74,12 +74,27 @@ const TENANTS = [
     subdomain: "juan",
     nombre: "Academia de Juan",
     color_primario: "#2563eb",
+    frase: "Música para principiantes",
+    area: "Música",
     cursos: [
       {
         slug: "guitarra-desde-cero",
         titulo: "Guitarra desde cero",
         descripcion: "Aprendé a tocar guitarra en 8 semanas, sin experiencia previa.",
         precio_centavos: 4999_00,
+        estado: "publicado",
+        modalidad: "a_su_ritmo",
+        acceso: "enlace",
+        objetivos: ["Tocar tus primeras 5 canciones", "Leer tablaturas básicas"],
+        modulos: [
+          {
+            titulo: "Primeros pasos",
+            lecciones: [
+              { titulo: "Cómo sostener la guitarra", tipo: "video", contenido_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+              { titulo: "Tus primeros acordes", tipo: "texto", contenido_texto: "Empieza con Mi menor y La menor." },
+            ],
+          },
+        ],
       },
     ],
   },
@@ -115,12 +130,51 @@ for (const { cursos, ...tenantData } of TENANTS) {
   console.log(`Tenant listo: ${tenant.nombre} (${tenant.subdomain})`);
 
   for (const curso of cursos) {
-    await supabaseRequest("cursos", {
+    const { objetivos = [], modulos = [], ...cursoData } = curso;
+    const [cursoRow] = await supabaseRequest("cursos", {
       method: "POST",
-      body: { ...curso, tenant_id: tenant.id },
+      body: { ...cursoData, tenant_id: tenant.id },
       onConflict: "tenant_id,slug",
     });
     console.log(`  Curso listo: ${curso.titulo}`);
+
+    // Objetivos, modulos y lecciones (migracion 0001). Idempotente: objetivos
+    // por (curso_id, orden); modulos/lecciones solo si el curso aun no tiene.
+    if (objetivos.length) {
+      await supabaseRequest("curso_objetivos", {
+        method: "POST",
+        body: objetivos.map((texto, i) => ({
+          tenant_id: tenant.id,
+          curso_id: cursoRow.id,
+          orden: i + 1,
+          texto,
+        })),
+        onConflict: "curso_id,orden",
+      });
+    }
+    const existentes = modulos.length
+      ? await supabaseRequest(`modulos?select=id&curso_id=eq.${cursoRow.id}&limit=1`)
+      : [];
+    if (modulos.length && existentes.length === 0) {
+      for (const [mi, { lecciones = [], ...modulo }] of modulos.entries()) {
+        const [mod] = await supabaseRequest("modulos", {
+          method: "POST",
+          body: { ...modulo, orden: mi, tenant_id: tenant.id, curso_id: cursoRow.id },
+        });
+        if (lecciones.length) {
+          await supabaseRequest("lecciones", {
+            method: "POST",
+            body: lecciones.map((l, li) => ({
+              ...l,
+              orden: li,
+              tenant_id: tenant.id,
+              curso_id: cursoRow.id,
+              modulo_id: mod.id,
+            })),
+          });
+        }
+      }
+    }
   }
 }
 
