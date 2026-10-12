@@ -1,0 +1,393 @@
+/*
+ * Design tokens de la marca Avantia ("programa fundador").
+ * Fuente: mockup de landing (Main.dc.html). Documentado en
+ * docs/design/Sistema_Diseno_Avantia.md.
+ *
+ * Los tokens viven en :root con prefijo --av-. Los componentes base
+ * (.av-btn, .av-badge, .av-input...) y el scope .av-scope son reutilizables
+ * por landing, dashboard y app del alumno. No usan los --color-* legados de
+ * globals.css, que siguen alimentando al dashboard hasta que se migre.
+ */
+
+:root {
+  /* ---- Color: neutros (tinta azul-marino y papel cálido) ---- */
+  --av-ink: #0a1029;
+  --av-ink-2: #232c55;
+  --av-muted: #5a648c; /* texto secundario, 5.6:1 sobre --av-bg */
+  --av-subtle: #8b93ad; /* placeholders, iconos inactivos (no usar para texto) */
+  --av-line: #e6e4dc;
+  --av-line-strong: #d5d8e2;
+  --av-line-dashed: #b9becf;
+  --av-bg: #faf9f6;
+  --av-bg-sunken: #f1efe9;
+  --av-surface: #ffffff;
+  --av-surface-2: #eff0f5;
+
+  /* ---- Color: azul de marca ---- */
+  --av-blue-50: #e4edfd;
+  --av-blue-200: #a9c2f9;
+  --av-blue-400: #4c7df0; /* anillo de foco */
+  --av-blue-600: #2563eb; /* primario */
+  --av-blue-700: #1d4ed8; /* hover / texto de enlace */
+
+  /* ---- Color: violeta de marca ---- */
+  --av-violet-50: #ede9fe;
+  --av-violet-200: #cdb9fc;
+  --av-violet-500: #8b5cf6;
+  --av-violet-700: #6d3ee0; /* texto "pendiente / por verificar" */
+
+  /* ---- Color: estado ---- */
+  --av-success-bg: #e2f4ee;
+  --av-success: #137a5a;
+
+  /* ---- Colores de academia (ejemplos de marca del Creador) ---- */
+  --av-brand-amber: #c2410c;
+  --av-brand-teal: #0f766e;
+  --av-brand-petrol: #0e7490;
+  --av-brand-plum: #9d174d;
+  --av-brand-graphite: #334155;
+
+  /* ---- Gradiente de marca ---- */
+  --av-gradient: linear-gradient(90deg, #2563eb 0%, #8b5cf6 100%);
+
+  /* ---- Tipografía ---- */
+  --av-font-sans: var(--font-inter), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --av-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --av-fs-xs: 12px;
+  --av-fs-sm: 14px;
+  --av-fs-base: 16px;
+  --av-fs-lg: 18px;
+  --av-fs-xl: 20px;
+  --av-fs-h3: 26px;
+  --av-fs-h2: clamp(28px, 6vw, 42px);
+  --av-fs-h1: clamp(42px, 10.5vw, 68px);
+  --av-lh-tight: 1.05;
+  --av-lh-heading: 1.12;
+  --av-lh-body: 1.65;
+  --av-ls-h1: -0.03em;
+  --av-ls-h2: -0.02em;
+  --av-ls-overline: 0.18em;
+  --av-fw-regular: 400;
+  --av-fw-medium: 500;
+  --av-fw-semibold: 600;
+
+  /* ---- Radios ---- */
+  --av-radius-sm: 8px;
+  --av-radius-md: 12px; /* botones, inputs */
+  --av-radius-lg: 20px; /* tarjetas */
+  --av-radius-xl: 32px; /* escenarios, sheet */
+  --av-radius-full: 999px;
+
+  /* ---- Sombras ---- */
+  --av-shadow-xs: 0 1px 2px rgba(10, 16, 41, 0.06);
+  --av-shadow-sm: 0 4px 16px rgba(10, 16, 41, 0.07);
+  --av-shadow-md: 0 16px 42px rgba(10, 16, 41, 0.1);
+  --av-shadow-lg: 0 32px 78px rgba(10, 16, 41, 0.14);
+  --av-shadow-primary: 0 10px 30px rgba(37, 99, 235, 0.22);
+  --av-ring: 0 0 0 3px rgba(76, 125, 240, 0.35);
+
+  /* ---- Espaciado (escala base 2 / 6 / 10 / 16 / 26 / 42 / 68 / 110) ---- */
+  --av-space-1: 2px;
+  --av-space-2: 6px;
+  --av-space-3: 10px;
+  --av-space-4: 16px;
+  --av-space-5: 26px;
+  --av-space-6: 42px;
+  --av-space-7: 68px;
+  --av-space-8: 110px;
+  --av-gutter: 20px;
+  --av-container: 1188px;
+  --av-target: 44px; /* tamaño mínimo de área táctil */
+
+  /* ---- Movimiento ---- */
+  --av-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --av-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (min-width: 900px) {
+  :root {
+    --av-gutter: 42px;
+  }
+}
+
+/* ===== Scope de marca: aplica base tipográfica y resets al subárbol ===== */
+
+.av-scope {
+  background: var(--av-bg);
+  color: var(--av-ink);
+  font-family: var(--av-font-sans);
+  font-size: var(--av-fs-base);
+  line-height: var(--av-lh-body);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv05" 1, "ss03" 1;
+}
+
+.av-scope h1,
+.av-scope h2,
+.av-scope h3,
+.av-scope h4,
+.av-scope p,
+.av-scope ul,
+.av-scope ol {
+  margin: 0;
+}
+
+.av-scope ul,
+.av-scope ol {
+  padding: 0;
+  list-style: none;
+}
+
+.av-scope a {
+  color: var(--av-blue-700);
+  text-decoration: none;
+}
+
+.av-scope a:hover {
+  color: var(--av-violet-500);
+  text-decoration: none;
+}
+
+.av-scope button {
+  font: inherit;
+  color: inherit;
+}
+
+.av-scope :focus-visible {
+  outline: 2px solid var(--av-blue-400);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.av-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ===== Texto ===== */
+
+.av-overline {
+  font-size: var(--av-fs-xs);
+  font-weight: var(--av-fw-medium);
+  letter-spacing: var(--av-ls-overline);
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--av-blue-700);
+}
+
+.av-h2 {
+  font-size: var(--av-fs-h2);
+  font-weight: var(--av-fw-semibold);
+  letter-spacing: var(--av-ls-h2);
+  line-height: var(--av-lh-heading);
+  text-wrap: balance;
+}
+
+.av-lede {
+  font-size: var(--av-fs-lg);
+  color: var(--av-muted);
+  max-width: 62ch;
+}
+
+.av-legal {
+  font-size: var(--av-fs-sm);
+  color: var(--av-muted);
+}
+
+/* Marca de contenido pendiente o por verificar */
+.av-todo {
+  color: var(--av-violet-700);
+  border-bottom: 1.5px dashed var(--av-violet-500);
+  font-weight: var(--av-fw-medium);
+}
+
+/* ===== Botones ===== */
+
+.av-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--av-space-3);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: var(--av-fw-medium);
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+  border-radius: var(--av-radius-md);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.18s var(--av-ease), box-shadow 0.24s var(--av-ease-out), transform 0.12s;
+}
+
+.av-btn:active {
+  transform: scale(0.985);
+}
+
+.av-btn--primary {
+  background: var(--av-blue-600);
+  color: #fff;
+  box-shadow: var(--av-shadow-xs);
+}
+
+.av-scope .av-btn--primary,
+.av-scope .av-btn--primary:hover {
+  color: #fff;
+}
+
+.av-btn--primary:hover {
+  background: var(--av-blue-700);
+  box-shadow: var(--av-shadow-primary);
+}
+
+.av-btn--secondary {
+  background: transparent;
+  color: var(--av-blue-700);
+  border-color: var(--av-blue-200);
+}
+
+.av-scope .av-btn--secondary:hover {
+  background: var(--av-blue-50);
+  border-color: var(--av-blue-600);
+  color: var(--av-blue-700);
+}
+
+.av-btn--lg {
+  font-size: var(--av-fs-lg);
+  padding: 16px 26px;
+  min-height: 56px;
+}
+
+.av-btn--sm {
+  font-size: var(--av-fs-sm);
+  padding: 8px 16px;
+  min-height: var(--av-target);
+  border-radius: var(--av-radius-sm);
+}
+
+.av-btn[disabled],
+.av-btn[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.av-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--av-space-2);
+  color: var(--av-blue-700);
+  font-weight: var(--av-fw-medium);
+  border-bottom: 1px solid transparent;
+  align-self: flex-start;
+  min-height: var(--av-target);
+}
+
+.av-scope .av-link:hover {
+  color: var(--av-blue-700);
+  border-bottom-color: currentColor;
+}
+
+/* ===== Badges ===== */
+
+.av-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--av-space-2);
+  padding: 4px 10px;
+  font-size: var(--av-fs-xs);
+  font-weight: var(--av-fw-semibold);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  border-radius: var(--av-radius-full);
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
+.av-badge i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  display: block;
+}
+
+.av-badge--ok {
+  background: var(--av-success-bg);
+  color: var(--av-success);
+}
+
+.av-badge--neutral {
+  background: var(--av-surface-2);
+  color: var(--av-ink-2);
+}
+
+.av-badge--explore {
+  background: var(--av-surface-2);
+  color: var(--av-ink-2);
+}
+
+.av-badge--explore i {
+  background: transparent;
+  border: 1.5px solid currentColor;
+}
+
+.av-badge--verify {
+  background: var(--av-violet-50);
+  color: var(--av-violet-700);
+  border: 1px dashed var(--av-violet-500);
+}
+
+/* ===== Campos ===== */
+
+.av-input {
+  font: inherit;
+  font-size: var(--av-fs-base);
+  color: var(--av-ink);
+  background: var(--av-surface);
+  border: 1px solid var(--av-line-strong);
+  border-radius: var(--av-radius-md);
+  padding: 14px 16px;
+  min-height: 56px;
+  width: 100%;
+  max-width: none;
+}
+
+.av-input::placeholder {
+  color: var(--av-subtle);
+}
+
+.av-input:focus,
+.av-scope .av-input:focus-visible {
+  outline: none;
+  border-color: var(--av-blue-600);
+  box-shadow: var(--av-ring);
+}
+
+.av-input[aria-invalid="true"] {
+  border-color: var(--av-violet-700);
+}
+
+/* ===== Superficies ===== */
+
+.av-card {
+  background: var(--av-surface);
+  border: 1px solid var(--av-line);
+  border-radius: var(--av-radius-lg);
+  box-shadow: var(--av-shadow-sm);
+}
+
+.av-card--dashed {
+  border: 1.5px dashed var(--av-line-dashed);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .av-btn,
+  .av-card {
+    transition-duration: 0s !important;
+  }
+}

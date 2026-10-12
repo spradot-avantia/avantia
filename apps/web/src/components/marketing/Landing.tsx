@@ -1,518 +1,288 @@
-// Landing pública de Avantia (Server Component).
-// Solo los formularios, el footer y la barra móvil son Client Components.
+// Landing pública de Avantia (Server Component). Diseño: mockup "programa fundador".
+// Client Components solo donde hay estado: BrandStage, DemoTabs, CTAs (Ctas) y el sheet.
 
-import type { CSSProperties, ReactNode } from "react";
-import { Inter } from "next/font/google";
-import { Icon, IconSprite, type IconId } from "./icons";
+import Image from "next/image";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { Icon, type IconName } from "./icons";
+import { BrandStage } from "./BrandStage";
+import { DemoTabs } from "./DemoTabs";
+import { ApplyButton, EmailCapture, StickyBar } from "./Ctas";
 import { SignupProvider } from "./SignupContext";
-import { HeroForm } from "./HeroForm";
-import { ApplyForm } from "./ApplyForm";
-import { Footer } from "./Footer";
-import { MobileBar } from "./MobileBar";
+import { FAQS } from "./content";
 import "./landing.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--av-font",
-  display: "swap",
-});
-
-// ---------- Contenido ----------
-
-const INDUSTRIES = ["Minería", "Energía", "Construcción", "Logística", "Retail", "Finanzas", "Salud"];
-
-const MODULES = [
-  { n: 1, title: "Leer un contrato como un riesgo", sub: "Caso: la cláusula de reajuste", lessons: 3 },
-  { n: 2, title: "Preparar la negociación", sub: "Tu método: mapa de alternativas", lessons: 4 },
-  { n: 3, title: "Cuando el proveedor tiene el poder", sub: "Caso: proveedor único", lessons: 3 },
-];
-
-const STEPS = [
-  ["Cuenta lo que sabes", "Conversa con la IA de Avantia o sube tus presentaciones, notas y videos."],
-  ["Avantia lo ordena", "Tu experiencia se convierte en módulos, casos interactivos y evaluaciones."],
-  ["Revisas y publicas", "Ajustas lo que quieras con tu voz. Nada se publica sin tu aprobación."],
-  ["Enseñas y creces", "Llegas a profesionales y empresas, respondes en la comunidad y ves qué funciona."],
-];
-
-const FEATURES: { icon: IconId; title: string; text: string; lead?: boolean }[] = [
-  {
-    icon: "i-mic",
-    title: "Estudio con IA",
-    text: "Una entrevista guiada rescata tus casos, decisiones y métodos, y propone la estructura del curso. Tú editas, la IA no habla por ti.",
-    lead: true,
-  },
-  { icon: "i-case", title: "Casos interactivos", text: "Tus estudiantes deciden antes de ver lo que hiciste tú." },
-  { icon: "i-live", title: "Sesiones en vivo", text: "Suma mentorías y clases en grupo a tu curso." },
-  { icon: "i-people", title: "Comunidad", text: "Un espacio para que tus estudiantes pregunten, compartan y se conozcan." },
-  { icon: "i-chart", title: "Analítica de aprendizaje", text: "Ve dónde avanzan, dónde se traban y qué lecciones mejorar." },
-  { icon: "i-cert", title: "Certificados", text: "Tus estudiantes reciben un certificado con tu nombre y el de Avantia." },
-];
-
-const OPTIONS = [
-  { key: "A", text: "Aceptar el alza para no arriesgar la operación" },
-  { key: "B", text: "Revisar qué gatilla exactamente la cláusula", selected: true },
-  { key: "C", text: "Buscar de inmediato otro proveedor" },
-];
-
-const PROGRESS = [
-  ["1. Leer un contrato como un riesgo", 92],
-  ["2. Preparar la negociación", 80],
-  ["3. Cuando el proveedor tiene el poder", 64],
-] as const;
-
-const AUDIENCES = [
-  {
-    tag: "Creadores",
-    title: "Enseña lo que aprendiste en terreno",
-    items: ["Crea tu curso con ayuda de la IA", "Llega a profesionales y empresas", "Haz crecer tu marca como experto"],
-    ctas: [{ label: "Empieza a crear", href: "#crear", primary: true }],
-    here: true,
-  },
-  {
-    tag: "Profesionales",
-    title: "Aprende de quienes ya lo hicieron",
-    items: ["Cursos basados en casos reales", "Preguntas directas a expertos", "Certificados para tu carrera"],
-    ctas: [{ label: "Explorar cursos", href: "#top", primary: false }],
-  },
-  {
-    tag: "Empresas",
-    title: "Forma a tus equipos con expertos de tu industria",
-    items: ["Programas para equipos completos", "Seguimiento del avance por persona", "Cursos a medida con Creadores"],
-    ctas: [
-      { label: "Solicitar demo", href: "#crear", primary: true },
-      { label: "Descargar guía", href: "#top", primary: false },
-    ],
-  },
-];
-
-const TRUST = [
-  ["Propiedad del contenido", "Tus casos y métodos te pertenecen. No los usamos sin tu aprobación."],
-  ["Tú tienes la última palabra", "La IA propone; nada se publica sin tu revisión."],
-  ["Datos cuidados", "No vendemos tus datos ni los de tus estudiantes."],
-  ["Accesible para todos", "Diseñado según las pautas WCAG 2.1 AA."],
-];
-
-const FAQ = [
-  ["¿Necesito experiencia enseñando?", "No. Necesitas experiencia real en tu industria. Avantia te ayuda a convertirla en un curso."],
-  ["¿La IA va a escribir el curso por mí?", "La IA ordena lo que tú cuentas y propone una estructura. El contenido, los casos y la voz son tuyos, y tú apruebas todo antes de publicar."],
-  ["¿Cuánto tiempo toma crear un curso?", "Mucho menos que hacerlo solo. La parte más larga es la conversación inicial; Avantia se encarga de darle forma."],
-  ["¿Puedo ofrecer mi curso a empresas?", "Sí. Tu curso puede llegar a profesionales individuales y también a equipos de empresas de tu industria."],
-  ["¿De quién es el contenido?", "Tuyo. Avantia no usa tus casos ni tus métodos sin tu autorización."],
-];
-
-// ---------- Piezas reutilizables ----------
-
-function SectionHead({ eyebrow, title, id, lead }: { eyebrow: string; title: string; id: string; lead?: string }) {
+function Logo({ mark, word }: { mark: number; word: number }) {
   return (
-    <div className="sec-head">
-      <p className="eyebrow">{eyebrow}</p>
-      <h2 id={id}>{title}</h2>
-      {lead && <p className="lead">{lead}</p>}
-    </div>
+    <>
+      <Image src="/brand/avantia-mark.png" alt="" width={581} height={364} style={{ height: mark, width: "auto" }} priority />
+      <Image src="/brand/avantia-wordmark.png" alt="avantia" width={739} height={159} style={{ height: word, width: "auto" }} priority />
+    </>
   );
 }
 
-function MockWindow({ label, title, children }: { label: string; title: string; children: ReactNode }) {
+function Trust({ size }: { size: number }) {
   return (
-    <div className="mock" role="img" aria-label={label}>
-      <div className="mock-bar">
-        <i />
-        <i />
-        <i />
-        <b>{title}</b>
-      </div>
-      <div className="mock-body">{children}</div>
-    </div>
-  );
-}
-
-function Points({ items }: { items: [string, string][] }) {
-  return (
-    <div className="learner-points">
-      {items.map(([strong, text]) => (
-        <div key={strong}>
-          <strong>{strong}</strong>
-          <span>{text}</span>
-        </div>
+    <ul className="lp-trust" aria-label="Condiciones">
+      {["30 días gratis", "Sin tarjeta", "5 cupos"].map((t) => (
+        <li key={t}><Icon name="check" size={size} />{t}</li>
       ))}
-    </div>
+    </ul>
   );
 }
 
-const inkStyle: CSSProperties = { color: "var(--ink)" };
+function Todo({ children }: { children: ReactNode }) {
+  return <span className="av-todo">{children}</span>;
+}
 
-// ---------- Página ----------
+function BulletList({ items, icon, color }: { items: ReactNode[]; icon: IconName; color: string }) {
+  return (
+    <ul>
+      {items.map((t, i) => (
+        <li key={i}><Icon name={icon} color={color} /><span>{t}</span></li>
+      ))}
+    </ul>
+  );
+}
+
+const SCATTER: { icon: IconName; style: React.CSSProperties }[] = [
+  { icon: "folder", style: { left: "2%", top: 4, transform: "rotate(-8deg)" } },
+  { icon: "chat", style: { left: "26%", top: 50, transform: "rotate(6deg)" } },
+  { icon: "bank", style: { left: "50%", top: 0, transform: "rotate(-4deg)" } },
+  { icon: "table", style: { left: "72%", top: 44, transform: "rotate(9deg)" } },
+];
+
+const TESTIMONIALS = [1, 2, 3];
 
 export default function Landing() {
   return (
-    <div className={`av-landing ${inter.variable}`}>
-      <IconSprite />
-      <a className="skip" href="#main">Ir al contenido</a>
-
-      <header className="nav">
-        <div className="wrap">
-          <a className="brand" href="#top" aria-label="avantia, inicio">
-            <Icon id="mono" />
-            avantia
-          </a>
-          <nav className="nav-links" aria-label="Principal">
-            <a href="#producto">Plataforma</a>
-            <a href="#para-quien">Para empresas</a>
-            <a href="#para-quien">Aprender</a>
-            <a href="#preguntas">Preguntas</a>
-            <a className="btn btn-primary btn-sm" href="#crear">Empieza a crear</a>
-          </nav>
+    <SignupProvider>
+      <div className="av-scope lp">
+        <div className="lp-draft" role="note">
+          <b>Borrador.</b> Los textos con línea punteada están pendientes o por verificar. Las pantallas son vistas de ejemplo, no capturas reales.
         </div>
-      </header>
 
-      <SignupProvider>
-        <main id="main">
-          {/* 1. Hero */}
-          <section className="hero" id="top" aria-labelledby="hero-title">
-            <div className="wrap">
-              <div>
-                <p className="eyebrow">Avantia para Creadores</p>
-                <h1 id="hero-title">
-                  <span className="soft">La información está al alcance de todos.</span> Tu experiencia,{" "}
-                  <span className="yet">aún no.</span>
-                </h1>
-                <p className="lead">
-                  Avantia convierte lo que aprendiste en años de trabajo en cursos prácticos. Conversas con nuestra IA,
-                  ella ordena tu experiencia en lecciones y casos, y tú enseñas a profesionales y equipos de tu
-                  industria.
-                </p>
-                <HeroForm />
-                <div className="reassure">
-                  <span>
-                    <Icon id="check" />
-                    No necesitas saber grabar ni diseñar clases
-                  </span>
-                  <span>
-                    <Icon id="check" />
-                    Tu contenido es tuyo
-                  </span>
-                </div>
-                <a className="secondary-link" href="#producto">Ver la plataforma ↓</a>
+        <header className="lp-top">
+          <div className="lp-wrap lp-top__in">
+            <Link className="lp-logo" href="#top" aria-label="avantia, inicio"><Logo mark={36} word={18} /></Link>
+            <nav className="lp-top__nav" aria-label="Cuenta">
+              <Link className="lp-top__login" href="/registro#ingresar">Ingresar</Link>
+              <ApplyButton size="sm">Postular</ApplyButton>
+            </nav>
+          </div>
+        </header>
+
+        <main id="top">
+          {/* Hero + CTA */}
+          <section className="lp-hero" aria-labelledby="hero-title">
+            <div className="lp-wrap lp-hero__grid">
+              <div className="lp-hero__copy">
+                <span className="av-overline">Para expertos que ya enseñan online</span>
+                <h1 id="hero-title">Tu academia online, <span style={{ color: "var(--av-blue-600)" }}>con tu marca</span></h1>
+                <p className="lp-sub">Sube tus cursos, recibe los pagos de tus alumnos y entrégales una experiencia con tu marca, a tu manera.</p>
+                <EmailCapture id="email-hero" />
+                <Trust size={20} />
+                <a className="av-link" href="#agenda">¿Prefieres conversar antes? Agenda 20 minutos <Icon name="arrow" size={16} /></a>
               </div>
-
-              <figure style={{ margin: 0 }}>
-                <MockWindow
-                  title="Estudio del Creador"
-                  label="Estudio del Creador: la IA de Avantia detecta decisiones clave en una entrevista y propone un curso de módulos basados en casos."
-                >
-                  <div className="mock-title">
-                    <div>
-                      <small>Tu curso</small>
-                      <strong>Negociar contratos de suministro en minería</strong>
-                    </div>
-                    <span className="ai-badge">IA de Avantia</span>
-                  </div>
-                  <div className="insight">
-                    <strong style={inkStyle}>De tu entrevista de 45 minutos</strong>
-                    Encontramos 5 decisiones clave, 3 casos reales y 1 método propio. Te proponemos esta estructura:
-                  </div>
-                  <ol className="modules">
-                    {MODULES.map((m) => (
-                      <li key={m.n}>
-                        <span className="n">{m.n}</span>
-                        <span className="t">
-                          {m.title}
-                          <span>{m.sub}</span>
-                        </span>
-                        <span className="k">{m.lessons} lecciones</span>
-                      </li>
-                    ))}
-                  </ol>
-                  <div className="mock-foot">
-                    <span>Listo para tu revisión</span>
-                    <button className="btn btn-primary btn-sm" type="button" tabIndex={-1} aria-hidden="true">
-                      Revisar y publicar
-                    </button>
-                  </div>
-                </MockWindow>
-                <figcaption className="mock-note">Ejemplo ilustrativo del Estudio del Creador.</figcaption>
-              </figure>
+              <BrandStage />
             </div>
           </section>
 
-          <div className="industries" aria-label="Industrias">
-            <div className="wrap">
-              <p>Hecho para expertos de</p>
-              <ul>
-                {INDUSTRIES.map((i) => (
-                  <li key={i}>{i}</li>
+          {/* ¿Qué hace? */}
+          <section className="lp-sec" id="que-hace" style={{ background: "var(--av-surface)" }}>
+            <div className="lp-wrap">
+              <div className="lp-head">
+                <span className="av-overline">Qué hace Avantia</span>
+                <h2 className="av-h2">Deja de armar tu academia con piezas sueltas</h2>
+              </div>
+              <div className="lp-compare">
+                <div className="lp-cmp lp-cmp--before">
+                  <span className="av-overline" style={{ color: "var(--av-muted)" }}>Hoy</span>
+                  <div className="lp-scatter" aria-hidden="true">
+                    {SCATTER.map((s) => <span key={s.icon} style={s.style}><Icon name={s.icon} size={30} /></span>)}
+                  </div>
+                  <BulletList
+                    icon="x"
+                    color="var(--av-subtle)"
+                    items={["Materiales repartidos en carpetas compartidas", "Cobros por transferencia y seguimiento a mano", "Una experiencia con el logo de otras plataformas"]}
+                  />
+                </div>
+                <div className="lp-arrow" aria-hidden="true"><Icon name="arrow" size={26} /></div>
+                <div className="lp-cmp lp-cmp--after">
+                  <span className="av-overline">Con Avantia</span>
+                  <div className="lp-unified" aria-hidden="true">
+                    <div className="lp-u-head">
+                      <span className="lp-u-star"><Icon name="star" /></span>
+                      <div><b>Tu academia</b><small>www.tudominio.cl</small></div>
+                    </div>
+                    <div className="lp-ico">
+                      {(["folder", "card", "users", "bot", "video"] as IconName[]).map((n) => <span key={n}><Icon name={n} /></span>)}
+                    </div>
+                  </div>
+                  <BulletList
+                    icon="check"
+                    color="var(--av-blue-600)"
+                    items={["Tus contenidos organizados en tu propia academia", "Tus alumnos se inscriben y pagan ahí mismo", "Tu logo, tus colores y tu dominio en cada paso"]}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ¿Cómo funciona? */}
+          <section className="lp-sec" id="como-funciona">
+            <div className="lp-wrap">
+              <div className="lp-head">
+                <span className="av-overline">Cómo funciona</span>
+                <h2 className="av-h2">Así se ve tu academia</h2>
+              </div>
+              <DemoTabs />
+            </div>
+          </section>
+
+          {/* Programa fundador */}
+          <section className="lp-sec lp-founder" id="fundador">
+            <div className="lp-wrap">
+              <div className="lp-head">
+                <span className="av-overline">Programa fundador</span>
+                <h2 className="av-h2">5 cupos para el primer grupo de fundadores</h2>
+                <p className="av-lede">Buscamos a 5 expertos que ya enseñan online para construir Avantia junto a ellos.</p>
+              </div>
+              <div className="lp-fgrid">
+                <div className="lp-fbox">
+                  <h3>Lo que recibes</h3>
+                  <BulletList icon="check" color="var(--av-blue-600)" items={[
+                    "30 días gratis, sin tarjeta de crédito.",
+                    "Acompañamiento directo de nuestro equipo para configurar tu academia.",
+                    <>Precio preferente durante <Todo>[período pendiente]</Todo> si decides continuar con un plan.</>,
+                  ]} />
+                </div>
+                <div className="lp-fbox">
+                  <h3>Lo que te pedimos</h3>
+                  <BulletList icon="minus" color="var(--av-blue-600)" items={[
+                    "Usar Avantia con tus contenidos reales.",
+                    "Invitar a tus alumnos, si puedes.",
+                    "Contarnos tu experiencia en dos conversaciones breves.",
+                  ]} />
+                </div>
+                <div className="lp-fbox">
+                  <h3>Es para ti si</h3>
+                  <BulletList icon="minus" color="var(--av-blue-600)" items={[
+                    "Ya enseñas online y tienes alumnos.",
+                    "Tienes una marca personal o quieres construirla.",
+                  ]} />
+                </div>
+              </div>
+              <div className="lp-ffoot">
+                <p>Si el grupo ya está completo, quedas en la lista de espera para el siguiente. Inicio estimado: <Todo>[fecha pendiente]</Todo>.</p>
+                <div className="lp-fcta"><ApplyButton>Postula al programa fundador</ApplyButton></div>
+              </div>
+            </div>
+            <div className="lp-onda" aria-hidden="true">
+              <svg viewBox="0 0 1440 150" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="ondaA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#1D4ED8" /><stop offset=".7" stopColor="#2563EB" /><stop offset="1" stopColor="#8B5CF6" /></linearGradient>
+                  <linearGradient id="ondaB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#2563EB" /><stop offset=".55" stopColor="#4C7DF0" /><stop offset=".85" stopColor="#A9C2F9" /><stop offset="1" stopColor="#CDB9FC" /></linearGradient>
+                  <linearGradient id="ondaC" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#E4EDFD" /><stop offset=".5" stopColor="#FFFFFF" /><stop offset="1" stopColor="#E4EDFD" /></linearGradient>
+                </defs>
+                <path d="M0 78 C 220 18, 470 8, 720 48 S 1190 104, 1440 34 L 1440 150 L 0 150 Z" fill="url(#ondaA)" opacity=".34" />
+                <path d="M0 104 C 260 54, 540 58, 800 92 S 1240 122, 1440 70 L 1440 150 L 0 150 Z" fill="url(#ondaB)" opacity=".48" />
+                <path d="M0 128 C 280 100, 560 98, 820 118 S 1260 140, 1440 108 L 1440 150 L 0 150 Z" fill="url(#ondaC)" opacity=".85" />
+              </svg>
+            </div>
+          </section>
+
+          {/* Equipo */}
+          <section className="lp-sec" id="equipo" style={{ background: "var(--av-surface)" }}>
+            <div className="lp-wrap">
+              <div className="lp-head">
+                <span className="av-overline">Quiénes somos</span>
+                <h2 className="av-h2">Estamos empezando, y lo decimos con claridad</h2>
+                <p className="av-lede">Trabajamos con grupos pequeños y acompañamos a cada experto de forma directa. Lo que aprendamos con ustedes define lo que construimos después.</p>
+              </div>
+              <ul className="lp-team">
+                {[1, 2, 3].map((n) => (
+                  <li className="lp-member" key={n}>
+                    <span className="lp-av" style={{ width: 68, height: 68, fontSize: 11 }}>Foto<br />pendiente</span>
+                    <div><Todo>[Nombre]</Todo><Todo>[Rol]</Todo><Todo>[LinkedIn]</Todo></div>
+                  </li>
                 ))}
               </ul>
             </div>
-          </div>
-
-          {/* 2. Problema */}
-          <section aria-labelledby="gap-title">
-            <div className="wrap">
-              <SectionHead
-                eyebrow="Por qué Avantia"
-                title="Lo que sabes no aparece en un buscador"
-                id="gap-title"
-                lead="Internet está lleno de teoría. Lo que falta es el criterio de quien ya estuvo ahí. Hoy ese conocimiento se transmite de a una persona a la vez. Avantia lo lleva a cientos."
-              />
-              <div className="compare">
-                <div className="col web">
-                  <span className="col-tag">Lo que cualquiera encuentra</span>
-                  <h3>Información</h3>
-                  <ul>
-                    {[
-                      "Definiciones, marcos y tutoriales",
-                      "Casos genéricos que no se parecen a tu industria",
-                      "Respuestas correctas, sin contexto",
-                    ].map((t) => (
-                      <li key={t}>
-                        <Icon id="dot" />
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="col yours">
-                  <span className="col-tag">Lo que solo tú tienes</span>
-                  <h3>Experiencia</h3>
-                  <ul>
-                    {[
-                      "Decisiones que tomaste con poca información y mucha presión",
-                      "Errores que costaron caro y lo que cambiaste después",
-                      "Tus propios métodos, probados en terreno",
-                    ].map((t) => (
-                      <li key={t}>
-                        <Icon id="check" />
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
           </section>
 
-          {/* 3. Cómo funciona */}
-          <section className="gap" id="como" aria-labelledby="como-title">
-            <div className="wrap">
-              <SectionHead
-                eyebrow="Cómo funciona"
-                title="De una conversación a un curso publicado"
-                id="como-title"
-                lead="Tú pones lo que sabes. Avantia hace el trabajo de darle forma."
-              />
-              <ol className="steps">
-                {STEPS.map(([title, text], i) => (
-                  <li key={title}>
-                    <span className="num">Paso {i + 1}</span>
-                    <h3>{title}</h3>
-                    <p>{text}</p>
+          {/* Testimonios (placeholders: no hay testimonios reales todavía) */}
+          <section className="lp-sec" id="testimonios" aria-labelledby="testimonios-title">
+            <div className="lp-wrap">
+              <div className="lp-head">
+                <span className="av-overline">Testimonios</span>
+                <h2 className="av-h2" id="testimonios-title">Lo que dicen los primeros fundadores</h2>
+                <p className="av-lede"><Todo>[Sección pendiente]</Todo> Se completa con testimonios reales y autorizados del primer grupo; no se publican citas inventadas.</p>
+              </div>
+              <ul className="lp-team">
+                {TESTIMONIALS.map((n) => (
+                  <li key={n} className="lp-quote">
+                    <span className="av-badge av-badge--verify">Testimonio pendiente</span>
+                    <blockquote><Todo>[Cita del fundador {n}: qué problema tenía y qué cambió con Avantia]</Todo></blockquote>
+                    <div className="lp-quote__by">
+                      <span className="lp-av" style={{ width: 44, height: 44, fontSize: 9 }}>Foto<br />pend.</span>
+                      <div><Todo>[Nombre]</Todo><Todo>[Rol · Academia]</Todo></div>
+                    </div>
                   </li>
                 ))}
-              </ol>
+              </ul>
             </div>
           </section>
 
-          {/* 4. Plataforma */}
-          <section id="producto" aria-labelledby="prod-title">
-            <div className="wrap">
-              <SectionHead eyebrow="La plataforma" title="Todo lo que necesitas para enseñar lo que sabes" id="prod-title" />
-              <div className="features">
-                {FEATURES.map((f) => (
-                  <div key={f.title} className={`feature${f.lead ? " lead-f" : ""}`}>
-                    <span className="ic">
-                      <Icon id={f.icon} />
-                    </span>
-                    <h3>{f.title}</h3>
-                    <p>{f.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* 5. Vista del estudiante */}
-          <section className="learner gap" aria-labelledby="learner-title">
-            <div className="wrap">
-              <div>
-                <p className="eyebrow">Lo que viven tus estudiantes</p>
-                <h2 id="learner-title">Aprenden de tus casos, no de un manual</h2>
-                <Points
-                  items={[
-                    ["Situaciones reales", "Cada lección parte de algo que tú viviste."],
-                    ["Deciden antes de ver la respuesta", "Practican el criterio, no solo memorizan."],
-                    ["Tu mirada al final", "Ven qué hiciste tú y por qué."],
-                  ]}
-                />
-              </div>
-              <figure style={{ margin: 0 }}>
-                <MockWindow
-                  title="Módulo 1 · Lección 2"
-                  label="Vista del estudiante: un caso práctico con tres opciones y el comentario del experto."
-                >
-                  <div className="case">
-                    <h4>Caso: el reajuste inesperado</h4>
-                    <p>
-                      Tu proveedor de repuestos críticos invoca una cláusula y sube el precio un 18% a mitad de
-                      contrato. La planta no puede parar. ¿Qué haces primero?
-                    </p>
-                  </div>
-                  <div className="options">
-                    {OPTIONS.map((o) => (
-                      <div key={o.key} className={`opt${o.selected ? " sel" : ""}`}>
-                        <b>{o.key}</b>
-                        {o.text}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="expert-note">
-                    <span className="avatar" aria-hidden="true">CR</span>
-                    <span>
-                      <strong>Lo que hice yo:</strong> pedí el cálculo del índice de reajuste. Estaba mal aplicado y
-                      el alza real era la mitad.
-                    </span>
-                  </div>
-                </MockWindow>
-                <figcaption className="mock-note">Ejemplo ilustrativo de una lección.</figcaption>
-              </figure>
-            </div>
-          </section>
-
-          {/* Analítica */}
-          <section className="learner" aria-labelledby="data-title">
-            <div className="wrap" style={{ gridTemplateColumns: "1.1fr .9fr" }}>
-              <figure style={{ margin: 0 }}>
-                <MockWindow
-                  title="Panel del Creador"
-                  label="Panel del Creador con estudiantes activos, tasa de finalización, preguntas en la comunidad y avance por módulo."
-                >
-                  <div className="stats">
-                    <div className="stat">
-                      <small>Estudiantes activos</small>
-                      <strong>312</strong>
-                      <em>+48 este mes</em>
-                    </div>
-                    <div className="stat">
-                      <small>Terminan el curso</small>
-                      <strong>71%</strong>
-                      <em>+6 pts</em>
-                    </div>
-                    <div className="stat">
-                      <small>Preguntas abiertas</small>
-                      <strong>9</strong>
-                      <small>en la comunidad</small>
-                    </div>
-                  </div>
-                  <div className="bars">
-                    {PROGRESS.map(([label, pct]) => (
-                      <div key={label} className="bar-row">
-                        <span>{label}</span>
-                        <div className="meter">
-                          <span style={{ "--w": `${pct}%` } as CSSProperties} />
-                        </div>
-                        <b>{pct}%</b>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="insight">
-                    <strong style={inkStyle}>Sugerencia</strong>
-                    Muchos estudiantes repiten la lección 3.2. Un ejemplo adicional podría ayudar.
-                  </div>
-                </MockWindow>
-                <figcaption className="mock-note">Ejemplo ilustrativo con datos de muestra.</figcaption>
-              </figure>
-              <div>
-                <p className="eyebrow">Mejora con datos</p>
-                <h2 id="data-title">Sabes qué funciona y qué no</h2>
-                <Points
-                  items={[
-                    ["Avance por módulo", "Ve en qué parte del curso se quedan tus estudiantes."],
-                    ["Sugerencias para mejorar", "Avantia te avisa qué lección conviene reforzar."],
-                    ["La comunidad en un vistazo", "Responde las preguntas que importan sin perderte ninguna."],
-                  ]}
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* 6. Audiencias */}
-          <section className="gap" id="para-quien" aria-labelledby="aud-title">
-            <div className="wrap">
-              <SectionHead eyebrow="Para quién es Avantia" title="Un lugar donde la experiencia se comparte" id="aud-title" />
-              <div className="audiences">
-                {AUDIENCES.map((a) => (
-                  <div key={a.tag} className={`aud${a.here ? " here" : ""}`}>
-                    <span className="col-tag" style={a.here ? { color: "var(--accent)" } : undefined}>
-                      {a.tag}
-                    </span>
-                    <h3>{a.title}</h3>
-                    <ul>
-                      {a.items.map((i) => (
-                        <li key={i}>{i}</li>
-                      ))}
-                    </ul>
-                    <div className="ctas">
-                      {a.ctas.map((c) => (
-                        <a key={c.label} className={`btn btn-sm ${c.primary ? "btn-primary" : "btn-ghost"}`} href={c.href}>
-                          {c.label}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* 7. Confianza */}
-          <section aria-labelledby="trust-title">
-            <div className="wrap">
-              <SectionHead eyebrow="Tu conocimiento, protegido" title="Lo que es tuyo, sigue siendo tuyo" id="trust-title" />
-              <div className="trust-grid">
-                {TRUST.map(([title, text]) => (
-                  <div key={title} className="trust-item">
-                    <Icon id="check" />
-                    <h3>{title}</h3>
-                    <p>{text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* 8. Preguntas */}
-          <section className="gap" id="preguntas" aria-labelledby="faq-title">
-            <div className="wrap">
-              <SectionHead eyebrow="Preguntas frecuentes" title="Lo que suelen preguntarnos" id="faq-title" />
-              <div className="faq">
-                {FAQ.map(([q, a]) => (
-                  <details key={q}>
-                    <summary>{q}</summary>
-                    <p>{a}</p>
+          {/* FAQ */}
+          <section className="lp-sec" id="faq" style={{ background: "var(--av-surface)" }}>
+            <div className="lp-wrap lp-faq-grid">
+              <div className="lp-faq-title"><h2 className="av-h2">Preguntas frecuentes</h2></div>
+              <div className="lp-faq">
+                {FAQS.map((f) => (
+                  <details key={f.q}>
+                    <summary>
+                      {f.q}
+                      <Icon name="plus" size={20} />
+                      <Icon name="minus" size={20} />
+                    </summary>
+                    <p className={`lp-ans${f.pend ? " is-pend" : ""}`}>{f.a}</p>
                   </details>
                 ))}
               </div>
             </div>
           </section>
 
-          {/* 9. CTA final */}
-          <section className="final" id="crear" aria-labelledby="final-title">
-            <div className="wrap">
-              <div className="panel">
-                <div>
-                  <h2 id="final-title">Tu experiencia merece llegar más lejos</h2>
-                  <p className="lead">Crea tu cuenta de Creador y empieza tu primer curso hoy.</p>
-                </div>
-                <ApplyForm />
-              </div>
+          {/* Cierre: CTA + Signup/Signin con Google */}
+          <section className="lp-sec lp-final" id="final" aria-labelledby="final-title">
+            <div className="lp-wrap">
+              <h2 id="final-title">Tu conocimiento ya tiene alumnos, dale una academia con tu nombre</h2>
+              <EmailCapture id="email-final" />
+              <Trust size={22} />
+              <p className="av-legal">
+                ¿Ya tienes cuenta? <Link href="/registro#ingresar">Ingresa con Google</Link>
+              </p>
             </div>
           </section>
         </main>
-      </SignupProvider>
 
-      <Footer />
-      <MobileBar />
-    </div>
+        <footer className="lp-foot">
+          <div className="lp-wrap">
+            <span style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 11 }}><Logo mark={32} word={16} /></span>
+              <span>© Avantia</span>
+            </span>
+            <nav aria-label="Legal">
+              <a id="terminos" href="#terminos">Términos y condiciones <Todo>(pendiente)</Todo></a>
+              <a id="privacidad" href="#privacidad">Política de privacidad <Todo>(pendiente)</Todo></a>
+              <span id="agenda">Agenda 20 minutos: <Todo>[enlace pendiente]</Todo></span>
+              <span>Contacto: <Todo>[correo pendiente]</Todo></span>
+            </nav>
+          </div>
+        </footer>
+
+        <StickyBar />
+      </div>
+    </SignupProvider>
   );
 }

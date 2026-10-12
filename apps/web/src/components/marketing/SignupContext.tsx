@@ -1,21 +1,38 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode, type RefObject } from "react";
+import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
+import { ApplySheet } from "./ApplySheet";
 
-// El formulario del hero y el del final comparten el correo:
-// el del hero lo precarga en el formulario final y le pasa el foco al nombre.
+// Estado compartido de la landing: el correo capturado en el hero / sección final
+// precarga el formulario de postulación (sheet), que se abre desde cualquier CTA.
 
 type SignupState = {
   email: string;
   setEmail: (v: string) => void;
+  fromEmail: boolean;
+  openSheet: (fromEmail?: boolean) => void;
+  closeSheet: () => void;
 };
-
 
 const SignupContext = createContext<SignupState | null>(null);
 
 export function SignupProvider({ children }: { children: ReactNode }) {
   const [email, setEmail] = useState("");
-  return <SignupContext.Provider value={{ email, setEmail }}>{children}</SignupContext.Provider>;
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [fromEmail, setFromEmail] = useState(false);
+
+  const openSheet = useCallback((fromEmail = false) => {
+    setFromEmail(fromEmail);
+    setSheetOpen(true);
+  }, []);
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
+
+  return (
+    <SignupContext.Provider value={{ email, setEmail, fromEmail, openSheet, closeSheet }}>
+      {children}
+      {sheetOpen && <ApplySheet />}
+    </SignupContext.Provider>
+  );
 }
 
 export function useSignup() {
@@ -25,6 +42,3 @@ export function useSignup() {
 }
 
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export const scrollBehavior = (): ScrollBehavior =>
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
