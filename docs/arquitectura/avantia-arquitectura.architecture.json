@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Avantia — Arquitectura",
+    "output": "avantia-arquitectura.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "users", "type": "external", "label": "Visitantes y dueños", "sublabel": "Alumnos / academias", "pos": [40, 270], "size": [140, 64] },
+    { "id": "mw", "type": "cloud", "label": "middleware.ts", "sublabel": "Edge · hostname → ruta", "pos": [250, 270], "size": [150, 64], "tag": "sin consulta a BD" },
+    { "id": "pub", "type": "frontend", "label": "Sitio público", "sublabel": "(public)/[domain]", "pos": [490, 150], "size": [140, 64] },
+    { "id": "panel", "type": "frontend", "label": "Panel interno", "sublabel": "(dashboard)", "pos": [490, 390], "size": [140, 64] },
+    { "id": "resolve", "type": "backend", "label": "tenant/resolve.ts", "sublabel": "hostname → tenant · caché 60s", "pos": [730, 150], "size": [160, 64] },
+    { "id": "api", "type": "backend", "label": "API Route Handlers", "sublabel": "/api/* · Node.js", "pos": [730, 390], "size": [160, 64] },
+    { "id": "db", "type": "database", "label": "Supabase Postgres", "sublabel": "tenant_id + RLS", "pos": [980, 270], "size": [150, 64], "tag": "RLS" },
+    { "id": "video", "type": "external", "label": "Bunny Stream / Mux", "sublabel": "Video", "pos": [490, 20], "size": [140, 64] },
+    { "id": "pay", "type": "external", "label": "Stripe / Mercado Pago", "sublabel": "Connect · split", "pos": [980, 470], "size": [150, 64] },
+    { "id": "llm", "type": "external", "label": "Anthropic / OpenAI", "sublabel": "Generar curso", "pos": [730, 560], "size": [160, 64] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Vercel (edge + serverless)", "wraps": ["mw", "pub", "panel", "resolve", "api"] }
+  ],
+  "connections": [
+    { "id": "users-to-mw", "from": "users", "to": "mw", "label": "HTTPS", "variant": "emphasis" },
+    { "id": "mw-to-pub", "from": "mw", "to": "pub", "label": "rewrite" },
+    { "id": "mw-to-panel", "from": "mw", "to": "panel", "label": "app.avantia.app" },
+    { "id": "pub-to-resolve", "from": "pub", "to": "resolve", "label": "tenant" },
+    { "id": "resolve-to-db", "from": "resolve", "to": "db", "label": "service role", "variant": "security" },
+    { "id": "pub-to-video", "from": "pub", "to": "video", "label": "reproduce", "variant": "dashed" },
+    { "id": "panel-to-api", "from": "panel", "to": "api", "label": "fetch" },
+    { "id": "api-to-db", "from": "api", "to": "db", "label": "SQL + RLS" },
+    { "id": "api-to-pay", "from": "api", "to": "pay", "label": "checkout / webhooks", "fromSide": "right", "toSide": "top" },
+    { "id": "api-to-llm", "from": "api", "to": "llm", "label": "prompt", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelAt": [810, 507] }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Entrada", "items": ["El middleware decide panel vs. sitio público por hostname", "Reescribe hacia el segmento real [domain]"] },
+    { "dot": "emerald", "title": "Aplicación", "items": ["Un solo proyecto Next.js: panel, sitio público y API", "El layout público resuelve el tenant en SSR"] },
+    { "dot": "rose", "title": "Aislamiento", "items": ["RLS por tenant_id como última defensa", "admin.ts (service role) solo en servidor"] }
+  ]
+}

@@ -1,0 +1,711 @@
+<title>Avantia Plataforma</title>
+<meta name="description" content="Avantia ayuda a expertos de la industria a convertir su experiencia en cursos prácticos. Crea, publica y enseña desde un solo lugar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --midnight: #0A1029;
+    --azure: #2563EB;
+    --violet: #8B5CF6;
+    --lilac: #EDE9FE;
+    --sand: #FAF9F6;
+    --grad: linear-gradient(135deg, #2563EB, #8B5CF6);
+
+    --bg: var(--sand);
+    --surface: #F2F0F7;
+    --card: var(--sand);
+    --ink: var(--midnight);
+    --ink-2: #3B4163;
+    --ink-3: #5A5F7A;
+    --line: #DEDCE8;
+    --accent: var(--azure);
+    --accent-ink: var(--sand);
+    --soft: var(--lilac);
+    --soft-ink: #3B2A8C;
+    --shadow: 0 1px 2px rgba(10,16,41,.06), 0 8px 24px rgba(10,16,41,.06);
+    --ok: #15803D;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: var(--midnight);
+      --surface: #111838;
+      --card: #141C40;
+      --ink: var(--sand);
+      --ink-2: #C9CCE0;
+      --ink-3: #A3A8C6;
+      --line: #252E58;
+      --accent: #5B8DF5;
+      --accent-ink: var(--midnight);
+      --soft: #1C1F4A;
+      --soft-ink: #D9D1FD;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+      --ok: #4ADE80;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: var(--midnight);
+    --surface: #111838;
+    --card: #141C40;
+    --ink: var(--sand);
+    --ink-2: #C9CCE0;
+    --ink-3: #A3A8C6;
+    --line: #252E58;
+    --accent: #5B8DF5;
+    --accent-ink: var(--midnight);
+    --soft: #1C1F4A;
+    --soft-ink: #D9D1FD;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    --ok: #4ADE80;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 17px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  body.dyslexia { letter-spacing: .02em; word-spacing: .12em; line-height: 1.7; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  .skip { position: absolute; left: 16px; top: -60px; background: var(--accent); color: var(--accent-ink); padding: 8px 16px; border-radius: 8px; z-index: 50; }
+  .skip:focus { top: 12px; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; }
+  h1, h2, h3 { line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; margin: 0; }
+  h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; }
+  h3 { font-size: 20px; font-weight: 600; }
+  p { margin: 0; }
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .lead { font-size: 19px; color: var(--ink-2); max-width: 60ch; }
+  section { padding-block: 88px; }
+  .sec-head { display: grid; gap: 16px; margin-bottom: 48px; max-width: 720px; }
+
+  /* Nav */
+  .nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-weight: 700; font-size: 22px; letter-spacing: -0.03em; }
+  .brand svg { width: 32px; height: 32px; flex: none; }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a:not(.btn) { color: var(--ink-2); text-decoration: none; font-size: 15px; font-weight: 500; }
+  .nav-links a:not(.btn):hover { color: var(--ink); }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 10px; font: inherit; font-weight: 600; font-size: 16px; text-decoration: none; cursor: pointer; border: 1px solid transparent; transition: transform .15s ease, background .15s ease; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .btn-ghost:hover { background: var(--soft); }
+  .btn-sm { min-height: 40px; padding: 0 16px; font-size: 15px; }
+
+  /* Hero */
+  .hero { padding-block: 72px 88px; }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
+  .hero h1 { font-size: clamp(38px, 6vw, 64px); font-weight: 700; letter-spacing: -0.035em; margin-block: 18px 22px; }
+  .hero h1 .soft { color: var(--ink-3); font-weight: 600; display: block; }
+  .hero h1 .yet { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .capture { display: flex; gap: 8px; margin-top: 32px; max-width: 520px; }
+  .capture input { flex: 1; min-width: 0; min-height: 52px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: 16px; }
+  .capture input:focus { outline: 3px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+  .capture .btn { min-height: 52px; }
+  .reassure { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 16px; font-size: 14px; color: var(--ink-3); }
+  .reassure span { display: inline-flex; align-items: center; gap: 6px; }
+  .reassure svg { width: 16px; height: 16px; color: var(--ok); flex: none; }
+  .secondary-link { display: inline-block; margin-top: 20px; font-weight: 600; font-size: 15px; }
+  .form-msg { margin-top: 12px; font-size: 15px; font-weight: 500; color: var(--ink-2); }
+  .form-msg.ok { color: var(--ok); }
+
+  /* Product mock */
+  .mock { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; max-width: 100%; }
+  .mock-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+  .mock-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); display: inline-block; }
+  .mock-bar b { margin-left: 8px; font-weight: 500; }
+  .mock-body { padding: 20px; display: grid; gap: 16px; }
+  .mock-title { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+  .mock-title small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+  .mock-title strong { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .chip { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: var(--soft); color: var(--soft-ink); font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .src { display: grid; gap: 8px; padding: 14px; border-radius: 12px; background: var(--surface); }
+  .src-label { font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; }
+  .src q { font-size: 14px; color: var(--ink-2); font-style: italic; }
+  .modules { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  .modules li { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; }
+  .modules .n { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--soft); color: var(--soft-ink); font-weight: 700; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .modules .t { font-weight: 500; }
+  .modules .t span { display: block; color: var(--ink-3); font-size: 12px; font-weight: 400; }
+  .modules .k { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+  .mock-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--ink-3); flex-wrap: wrap; }
+  .meter { flex: 1; min-width: 120px; height: 6px; border-radius: 999px; background: var(--surface); overflow: hidden; }
+  .meter span { display: block; height: 100%; width: 72%; background: var(--accent); border-radius: inherit; }
+  .mock-note { font-size: 12px; color: var(--ink-3); margin-top: 10px; text-align: center; }
+
+  /* Gap / problem */
+  .gap { background: var(--surface); }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .col { padding: 28px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); display: grid; gap: 16px; align-content: start; }
+  .col.yours { border-color: var(--accent); }
+  .col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .col li { display: grid; grid-template-columns: 20px 1fr; gap: 10px; color: var(--ink-2); }
+  .col li svg { width: 20px; height: 20px; margin-top: 2px; }
+  .col.web li svg { color: var(--ink-3); }
+  .col.yours li svg { color: var(--accent); }
+  .col-tag { font-size: 13px; font-weight: 600; color: var(--ink-3); }
+  .col.yours .col-tag { color: var(--accent); }
+
+  /* Steps */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .steps li { display: grid; gap: 10px; align-content: start; padding-top: 20px; border-top: 2px solid var(--line); }
+  .steps li:first-child { border-top-color: var(--accent); }
+  .steps .num { font-size: 14px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .steps p { color: var(--ink-2); font-size: 16px; }
+
+  /* Learner view */
+  .learner .wrap { display: grid; grid-template-columns: .9fr 1.1fr; gap: 56px; align-items: center; }
+  .learner-points { display: grid; gap: 20px; margin-top: 28px; }
+  .learner-points div { display: grid; gap: 4px; }
+  .learner-points strong { font-weight: 600; }
+  .learner-points span { color: var(--ink-2); }
+  .case { padding: 16px; border-radius: 12px; background: var(--surface); display: grid; gap: 10px; }
+  .case h4 { margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  .case p { font-size: 14px; color: var(--ink-2); }
+  .options { display: grid; gap: 8px; }
+  .opt { display: flex; gap: 10px; align-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; background: var(--card); }
+  .opt b { font-weight: 700; color: var(--ink-3); }
+  .opt.sel { border-color: var(--accent); background: var(--soft); color: var(--soft-ink); }
+  .opt.sel b { color: inherit; }
+  .expert-note { display: grid; grid-template-columns: 36px 1fr; gap: 12px; padding: 14px; border-radius: 12px; border: 1px dashed var(--line); font-size: 14px; color: var(--ink-2); }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--soft); color: var(--soft-ink); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+
+  /* Benefits */
+  .founders { background: var(--surface); }
+  .benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .benefit { padding: 28px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); display: grid; gap: 10px; align-content: start; }
+  .benefit svg { width: 28px; height: 28px; color: var(--accent); }
+  .benefit p { color: var(--ink-2); font-size: 16px; }
+  .ask { margin-top: 20px; padding: 24px 28px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); display: grid; grid-template-columns: auto 1fr; gap: 8px 32px; align-items: baseline; }
+  .ask h3 { font-size: 17px; }
+  .ask p { color: var(--ink-2); font-size: 16px; }
+
+  /* Trust */
+  .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .trust-item { display: grid; gap: 8px; align-content: start; }
+  .trust-item svg { width: 24px; height: 24px; color: var(--accent); }
+  .trust-item h3 { font-size: 17px; }
+  .trust-item p { color: var(--ink-2); font-size: 15px; }
+
+  /* FAQ */
+  .faq { display: grid; gap: 12px; max-width: 820px; }
+  .faq details { border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+  .faq summary { cursor: pointer; list-style: none; padding: 18px 20px; font-weight: 600; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; font-size: 22px; font-weight: 400; color: var(--accent); line-height: 1; }
+  .faq details[open] summary::after { content: "−"; }
+  .faq details p { padding: 0 20px 18px; color: var(--ink-2); max-width: 68ch; }
+
+  /* Final CTA */
+  .final .panel { background: var(--midnight); color: var(--sand); border-radius: 24px; padding: 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; position: relative; overflow: hidden; }
+  :root[data-theme="dark"] .final .panel { background: #141C40; border: 1px solid var(--line); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .final .panel { background: #141C40; border: 1px solid var(--line); } }
+  .final .panel::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--grad); }
+  .final h2 { color: var(--sand); }
+  .final .lead { color: #C9CCE0; margin-top: 16px; }
+  .final form { display: grid; gap: 14px; }
+  .field { display: grid; gap: 6px; }
+  .field label { font-size: 14px; font-weight: 500; color: #C9CCE0; }
+  .field input, .field select { min-height: 50px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3766; background: #111838; color: var(--sand); font: inherit; font-size: 16px; color-scheme: dark; }
+  .field input:focus, .field select:focus { outline: 3px solid #5B8DF5; outline-offset: 1px; }
+  .final .btn-primary { background: #5B8DF5; color: var(--midnight); min-height: 52px; }
+  .final .form-msg { color: #C9CCE0; }
+  .final .form-msg.ok { color: #4ADE80; }
+  .final .alt { font-size: 14px; color: #A3A8C6; }
+  .final .alt a { color: #8FB1F8; }
+
+  /* Learners waitlist */
+  .aprendes { padding-block: 56px; }
+  .aprendes .box { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding: 28px; border-radius: 20px; background: var(--soft); color: var(--soft-ink); }
+  .aprendes h3 { color: var(--soft-ink); }
+  .aprendes p { color: var(--soft-ink); font-size: 16px; margin-top: 6px; max-width: 56ch; }
+  .aprendes .btn-ghost { border-color: currentColor; color: var(--soft-ink); }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--line); padding-block: 40px 56px; }
+  footer .wrap { display: grid; gap: 24px; }
+  .foot-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  .tagline { color: var(--ink-3); font-weight: 500; }
+  .foot-links { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 14px; }
+  .foot-links button { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); cursor: pointer; text-decoration: underline; }
+  .a11y-panel { padding: 20px; border-radius: 12px; background: var(--surface); font-size: 15px; color: var(--ink-2); display: grid; gap: 10px; max-width: 760px; }
+  .a11y-panel h3 { font-size: 16px; color: var(--ink); }
+  .toggle { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; color: var(--ink); cursor: pointer; }
+  .toggle input { width: 18px; height: 18px; accent-color: var(--azure); }
+  .fine { font-size: 13px; color: var(--ink-3); }
+
+  /* Mobile sticky CTA */
+  .mbar { display: none; }
+
+  @media (max-width: 960px) {
+    .hero .wrap, .learner .wrap, .final .panel { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .trust-grid { grid-template-columns: repeat(2, 1fr); }
+    .benefits { grid-template-columns: 1fr; }
+    .final .panel { padding: 36px 28px; }
+  }
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .wrap { padding-inline: 16px; }
+    section { padding-block: 64px; }
+    .hero { padding-block: 40px 56px; }
+    .nav-links a:not(.btn) { display: none; }
+    .capture { flex-direction: column; }
+    .compare, .steps, .trust-grid { grid-template-columns: 1fr; }
+    .ask { grid-template-columns: 1fr; }
+    .lead { font-size: 17px; }
+    .mbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); transform: translateY(110%); transition: transform .25s ease; }
+    .mbar.show { transform: none; }
+    .mbar .btn { width: 100%; }
+    footer { padding-bottom: 110px; }
+  }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2563EB"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>
+    <symbol id="mono" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="url(#g)"/><path d="M9 24 L16 7.5 L23 24" fill="none" stroke="#FAF9F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 18.5 C13 16, 15 21, 17.5 18.5 S21.5 17, 22 18" fill="none" stroke="#FAF9F6" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="check" viewBox="0 0 20 20"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="dot" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3" fill="currentColor"/></symbol>
+    <symbol id="star" viewBox="0 0 20 20"><path d="M10 3.5l1.9 4.3 4.6.4-3.5 3 1.1 4.6L10 13.4l-4.1 2.4 1.1-4.6-3.5-3 4.6-.4z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<style>
+  .industries { padding-block: 28px; border-block: 1px solid var(--line); }
+  .industries .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+  .industries p { font-size: 14px; color: var(--ink-3); font-weight: 500; }
+  .industries ul { display: flex; flex-wrap: wrap; gap: 8px 24px; list-style: none; margin: 0; padding: 0; font-weight: 600; color: var(--ink-2); font-size: 15px; }
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .feature { padding: 28px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); display: grid; gap: 10px; align-content: start; }
+  .feature .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--soft); color: var(--soft-ink); display: grid; place-items: center; }
+  .feature .ic svg { width: 22px; height: 22px; }
+  .feature p { color: var(--ink-2); font-size: 16px; }
+  .feature.lead-f { background: var(--surface); }
+  .ai-badge { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--soft-ink); background: var(--soft); border-radius: 999px; padding: 4px 10px; }
+  .ai-badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--grad); }
+  .insight { display: grid; gap: 6px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .stat { padding: 14px; border-radius: 12px; background: var(--surface); display: grid; gap: 2px; }
+  .stat small { font-size: 12px; color: var(--ink-3); }
+  .stat strong { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .stat em { font-style: normal; font-size: 12px; color: var(--ok); font-weight: 600; }
+  .bars { display: grid; gap: 8px; }
+  .bar-row { display: grid; grid-template-columns: 1fr 120px 40px; gap: 10px; align-items: center; font-size: 13px; color: var(--ink-2); }
+  .bar-row .meter span { width: var(--w); }
+  .bar-row b { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .audiences { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .aud { padding: 28px; border-radius: 20px; border: 1px solid var(--line); background: var(--card); display: grid; gap: 12px; align-content: start; grid-template-rows: auto auto 1fr auto; }
+  .aud.here { border-color: var(--accent); }
+  .aud ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 15px; display: grid; gap: 6px; }
+  .aud .ctas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .foot-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; font-size: 14px; }
+  .foot-cols h4 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); }
+  .foot-cols ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .foot-cols a { color: var(--ink-2); text-decoration: none; }
+  .foot-cols a:hover { color: var(--accent); }
+  @media (max-width: 960px) {
+    .features, .audiences { grid-template-columns: 1fr 1fr; }
+    .foot-cols { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .features, .audiences, .stats { grid-template-columns: 1fr; }
+    .feature.lead-f { grid-column: auto; }
+    .bar-row { grid-template-columns: 1fr 80px 36px; }
+  }
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-case" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 9h8M8 12h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-live" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 10l5-3v10l-5-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.8c1.8.7 3 2.5 3.5 5.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-cert" viewBox="0 0 24 24"><circle cx="12" cy="9" r="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 13.5L7.5 21l4.5-2.5 4.5 2.5L15 13.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Ir al contenido</a>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="avantia, inicio"><svg aria-hidden="true"><use href="#mono"/></svg>avantia</a>
+    <nav class="nav-links" aria-label="Principal">
+      <a href="#producto">Plataforma</a>
+      <a href="#para-quien">Para empresas</a>
+      <a href="#para-quien">Aprender</a>
+      <a href="#preguntas">Preguntas</a>
+      <a class="btn btn-primary btn-sm" href="#crear">Empieza a crear</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <!-- 1. Hero -->
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Avantia para Creadores</p>
+        <h1 id="hero-title"><span class="soft">La información está al alcance de todos.</span> Tu experiencia, <span class="yet">aún no.</span></h1>
+        <p class="lead">Avantia convierte lo que aprendiste en años de trabajo en cursos prácticos. Conversas con nuestra IA, ella ordena tu experiencia en lecciones y casos, y tú enseñas a profesionales y equipos de tu industria.</p>
+        <form class="capture" id="hero-form" novalidate>
+          <label for="hero-email" style="position:absolute;left:-9999px">Tu correo</label>
+          <input id="hero-email" name="email" type="email" autocomplete="email" placeholder="tu@correo.com" required>
+          <button class="btn btn-primary" type="submit">Empieza a crear</button>
+        </form>
+        <p class="form-msg" id="hero-msg" role="status" aria-live="polite"></p>
+        <div class="reassure">
+          <span><svg aria-hidden="true"><use href="#check"/></svg>No necesitas saber grabar ni diseñar clases</span>
+          <span><svg aria-hidden="true"><use href="#check"/></svg>Tu contenido es tuyo</span>
+        </div>
+        <a class="secondary-link" href="#producto">Ver la plataforma ↓</a>
+      </div>
+
+      <figure style="margin:0">
+        <div class="mock" role="img" aria-label="Estudio del Creador: la IA de Avantia detecta decisiones clave en una entrevista y propone un curso de módulos basados en casos.">
+          <div class="mock-bar"><i></i><i></i><i></i><b>Estudio del Creador</b></div>
+          <div class="mock-body">
+            <div class="mock-title">
+              <div><small>Tu curso</small><strong>Negociar contratos de suministro en minería</strong></div>
+              <span class="ai-badge">IA de Avantia</span>
+            </div>
+            <div class="insight">
+              <strong style="color:var(--ink)">De tu entrevista de 45 minutos</strong>
+              Encontramos 5 decisiones clave, 3 casos reales y 1 método propio. Te proponemos esta estructura:
+            </div>
+            <ol class="modules">
+              <li><span class="n">1</span><span class="t">Leer un contrato como un riesgo<span>Caso: la cláusula de reajuste</span></span><span class="k">3 lecciones</span></li>
+              <li><span class="n">2</span><span class="t">Preparar la negociación<span>Tu método: mapa de alternativas</span></span><span class="k">4 lecciones</span></li>
+              <li><span class="n">3</span><span class="t">Cuando el proveedor tiene el poder<span>Caso: proveedor único</span></span><span class="k">3 lecciones</span></li>
+            </ol>
+            <div class="mock-foot"><span>Listo para tu revisión</span><button class="btn btn-primary btn-sm" type="button" tabindex="-1" aria-hidden="true">Revisar y publicar</button></div>
+          </div>
+        </div>
+        <figcaption class="mock-note">Ejemplo ilustrativo del Estudio del Creador.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="industries" aria-label="Industrias">
+    <div class="wrap">
+      <p>Hecho para expertos de</p>
+      <ul>
+        <li>Minería</li><li>Energía</li><li>Construcción</li><li>Logística</li><li>Retail</li><li>Finanzas</li><li>Salud</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 2. Problema -->
+  <section aria-labelledby="gap-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Por qué Avantia</p>
+        <h2 id="gap-title">Lo que sabes no aparece en un buscador</h2>
+        <p class="lead">Internet está lleno de teoría. Lo que falta es el criterio de quien ya estuvo ahí. Hoy ese conocimiento se transmite de a una persona a la vez. Avantia lo lleva a cientos.</p>
+      </div>
+      <div class="compare">
+        <div class="col web">
+          <span class="col-tag">Lo que cualquiera encuentra</span>
+          <h3>Información</h3>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#dot"/></svg>Definiciones, marcos y tutoriales</li>
+            <li><svg aria-hidden="true"><use href="#dot"/></svg>Casos genéricos que no se parecen a tu industria</li>
+            <li><svg aria-hidden="true"><use href="#dot"/></svg>Respuestas correctas, sin contexto</li>
+          </ul>
+        </div>
+        <div class="col yours">
+          <span class="col-tag">Lo que solo tú tienes</span>
+          <h3>Experiencia</h3>
+          <ul>
+            <li><svg aria-hidden="true"><use href="#check"/></svg>Decisiones que tomaste con poca información y mucha presión</li>
+            <li><svg aria-hidden="true"><use href="#check"/></svg>Errores que costaron caro y lo que cambiaste después</li>
+            <li><svg aria-hidden="true"><use href="#check"/></svg>Tus propios métodos, probados en terreno</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Cómo funciona -->
+  <section class="gap" id="como" aria-labelledby="como-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Cómo funciona</p>
+        <h2 id="como-title">De una conversación a un curso publicado</h2>
+        <p class="lead">Tú pones lo que sabes. Avantia hace el trabajo de darle forma.</p>
+      </div>
+      <ol class="steps">
+        <li><span class="num">Paso 1</span><h3>Cuenta lo que sabes</h3><p>Conversa con la IA de Avantia o sube tus presentaciones, notas y videos.</p></li>
+        <li><span class="num">Paso 2</span><h3>Avantia lo ordena</h3><p>Tu experiencia se convierte en módulos, casos interactivos y evaluaciones.</p></li>
+        <li><span class="num">Paso 3</span><h3>Revisas y publicas</h3><p>Ajustas lo que quieras con tu voz. Nada se publica sin tu aprobación.</p></li>
+        <li><span class="num">Paso 4</span><h3>Enseñas y creces</h3><p>Llegas a profesionales y empresas, respondes en la comunidad y ves qué funciona.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4. Plataforma -->
+  <section id="producto" aria-labelledby="prod-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">La plataforma</p>
+        <h2 id="prod-title">Todo lo que necesitas para enseñar lo que sabes</h2>
+      </div>
+      <div class="features">
+        <div class="feature lead-f"><span class="ic"><svg aria-hidden="true"><use href="#i-mic"/></svg></span><h3>Estudio con IA</h3><p>Una entrevista guiada rescata tus casos, decisiones y métodos, y propone la estructura del curso. Tú editas, la IA no habla por ti.</p></div>
+        <div class="feature"><span class="ic"><svg aria-hidden="true"><use href="#i-case"/></svg></span><h3>Casos interactivos</h3><p>Tus estudiantes deciden antes de ver lo que hiciste tú.</p></div>
+        <div class="feature"><span class="ic"><svg aria-hidden="true"><use href="#i-live"/></svg></span><h3>Sesiones en vivo</h3><p>Suma mentorías y clases en grupo a tu curso.</p></div>
+        <div class="feature"><span class="ic"><svg aria-hidden="true"><use href="#i-people"/></svg></span><h3>Comunidad</h3><p>Un espacio para que tus estudiantes pregunten, compartan y se conozcan.</p></div>
+        <div class="feature"><span class="ic"><svg aria-hidden="true"><use href="#i-chart"/></svg></span><h3>Analítica de aprendizaje</h3><p>Ve dónde avanzan, dónde se traban y qué lecciones mejorar.</p></div>
+        <div class="feature"><span class="ic"><svg aria-hidden="true"><use href="#i-cert"/></svg></span><h3>Certificados</h3><p>Tus estudiantes reciben un certificado con tu nombre y el de Avantia.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Vista del estudiante + analítica -->
+  <section class="learner gap" aria-labelledby="learner-title">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Lo que viven tus estudiantes</p>
+        <h2 id="learner-title">Aprenden de tus casos, no de un manual</h2>
+        <div class="learner-points">
+          <div><strong>Situaciones reales</strong><span>Cada lección parte de algo que tú viviste.</span></div>
+          <div><strong>Deciden antes de ver la respuesta</strong><span>Practican el criterio, no solo memorizan.</span></div>
+          <div><strong>Tu mirada al final</strong><span>Ven qué hiciste tú y por qué.</span></div>
+        </div>
+      </div>
+      <figure style="margin:0">
+        <div class="mock" role="img" aria-label="Vista del estudiante: un caso práctico con tres opciones y el comentario del experto.">
+          <div class="mock-bar"><i></i><i></i><i></i><b>Módulo 1 · Lección 2</b></div>
+          <div class="mock-body">
+            <div class="case">
+              <h4>Caso: el reajuste inesperado</h4>
+              <p>Tu proveedor de repuestos críticos invoca una cláusula y sube el precio un 18% a mitad de contrato. La planta no puede parar. ¿Qué haces primero?</p>
+            </div>
+            <div class="options">
+              <div class="opt"><b>A</b>Aceptar el alza para no arriesgar la operación</div>
+              <div class="opt sel"><b>B</b>Revisar qué gatilla exactamente la cláusula</div>
+              <div class="opt"><b>C</b>Buscar de inmediato otro proveedor</div>
+            </div>
+            <div class="expert-note"><span class="avatar" aria-hidden="true">CR</span><span><strong>Lo que hice yo:</strong> pedí el cálculo del índice de reajuste. Estaba mal aplicado y el alza real era la mitad.</span></div>
+          </div>
+        </div>
+        <figcaption class="mock-note">Ejemplo ilustrativo de una lección.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="learner" aria-labelledby="data-title">
+    <div class="wrap" style="grid-template-columns: 1.1fr .9fr">
+      <figure style="margin:0">
+        <div class="mock" role="img" aria-label="Panel del Creador con estudiantes activos, tasa de finalización, preguntas en la comunidad y avance por módulo.">
+          <div class="mock-bar"><i></i><i></i><i></i><b>Panel del Creador</b></div>
+          <div class="mock-body">
+            <div class="stats">
+              <div class="stat"><small>Estudiantes activos</small><strong>312</strong><em>+48 este mes</em></div>
+              <div class="stat"><small>Terminan el curso</small><strong>71%</strong><em>+6 pts</em></div>
+              <div class="stat"><small>Preguntas abiertas</small><strong>9</strong><small>en la comunidad</small></div>
+            </div>
+            <div class="bars">
+              <div class="bar-row"><span>1. Leer un contrato como un riesgo</span><div class="meter"><span style="--w:92%"></span></div><b>92%</b></div>
+              <div class="bar-row"><span>2. Preparar la negociación</span><div class="meter"><span style="--w:80%"></span></div><b>80%</b></div>
+              <div class="bar-row"><span>3. Cuando el proveedor tiene el poder</span><div class="meter"><span style="--w:64%"></span></div><b>64%</b></div>
+            </div>
+            <div class="insight"><strong style="color:var(--ink)">Sugerencia</strong>Muchos estudiantes repiten la lección 3.2. Un ejemplo adicional podría ayudar.</div>
+          </div>
+        </div>
+        <figcaption class="mock-note">Ejemplo ilustrativo con datos de muestra.</figcaption>
+      </figure>
+      <div>
+        <p class="eyebrow">Mejora con datos</p>
+        <h2 id="data-title">Sabes qué funciona y qué no</h2>
+        <div class="learner-points">
+          <div><strong>Avance por módulo</strong><span>Ve en qué parte del curso se quedan tus estudiantes.</span></div>
+          <div><strong>Sugerencias para mejorar</strong><span>Avantia te avisa qué lección conviene reforzar.</span></div>
+          <div><strong>La comunidad en un vistazo</strong><span>Responde las preguntas que importan sin perderte ninguna.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Audiencias (embudos separados) -->
+  <section class="gap" id="para-quien" aria-labelledby="aud-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Para quién es Avantia</p>
+        <h2 id="aud-title">Un lugar donde la experiencia se comparte</h2>
+      </div>
+      <div class="audiences">
+        <div class="aud here">
+          <span class="col-tag" style="color:var(--accent)">Creadores</span>
+          <h3>Enseña lo que aprendiste en terreno</h3>
+          <ul><li>Crea tu curso con ayuda de la IA</li><li>Llega a profesionales y empresas</li><li>Haz crecer tu marca como experto</li></ul>
+          <div class="ctas"><a class="btn btn-primary btn-sm" href="#crear">Empieza a crear</a></div>
+        </div>
+        <div class="aud">
+          <span class="col-tag">Profesionales</span>
+          <h3>Aprende de quienes ya lo hicieron</h3>
+          <ul><li>Cursos basados en casos reales</li><li>Preguntas directas a expertos</li><li>Certificados para tu carrera</li></ul>
+          <div class="ctas"><a class="btn btn-ghost btn-sm" href="#top">Explorar cursos</a></div>
+        </div>
+        <div class="aud">
+          <span class="col-tag">Empresas</span>
+          <h3>Forma a tus equipos con expertos de tu industria</h3>
+          <ul><li>Programas para equipos completos</li><li>Seguimiento del avance por persona</li><li>Cursos a medida con Creadores</li></ul>
+          <div class="ctas"><a class="btn btn-primary btn-sm" href="#crear">Solicitar demo</a><a class="btn btn-ghost btn-sm" href="#top">Descargar guía</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Confianza -->
+  <section aria-labelledby="trust-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Tu conocimiento, protegido</p>
+        <h2 id="trust-title">Lo que es tuyo, sigue siendo tuyo</h2>
+      </div>
+      <div class="trust-grid">
+        <div class="trust-item"><svg aria-hidden="true"><use href="#check"/></svg><h3>Propiedad del contenido</h3><p>Tus casos y métodos te pertenecen. No los usamos sin tu aprobación.</p></div>
+        <div class="trust-item"><svg aria-hidden="true"><use href="#check"/></svg><h3>Tú tienes la última palabra</h3><p>La IA propone; nada se publica sin tu revisión.</p></div>
+        <div class="trust-item"><svg aria-hidden="true"><use href="#check"/></svg><h3>Datos cuidados</h3><p>No vendemos tus datos ni los de tus estudiantes.</p></div>
+        <div class="trust-item"><svg aria-hidden="true"><use href="#check"/></svg><h3>Accesible para todos</h3><p>Diseñado según las pautas WCAG 2.1 AA.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Preguntas -->
+  <section class="gap" id="preguntas" aria-labelledby="faq-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Preguntas frecuentes</p>
+        <h2 id="faq-title">Lo que suelen preguntarnos</h2>
+      </div>
+      <div class="faq">
+        <details><summary>¿Necesito experiencia enseñando?</summary><p>No. Necesitas experiencia real en tu industria. Avantia te ayuda a convertirla en un curso.</p></details>
+        <details><summary>¿La IA va a escribir el curso por mí?</summary><p>La IA ordena lo que tú cuentas y propone una estructura. El contenido, los casos y la voz son tuyos, y tú apruebas todo antes de publicar.</p></details>
+        <details><summary>¿Cuánto tiempo toma crear un curso?</summary><p>Mucho menos que hacerlo solo. La parte más larga es la conversación inicial; Avantia se encarga de darle forma.</p></details>
+        <details><summary>¿Puedo ofrecer mi curso a empresas?</summary><p>Sí. Tu curso puede llegar a profesionales individuales y también a equipos de empresas de tu industria.</p></details>
+        <details><summary>¿De quién es el contenido?</summary><p>Tuyo. Avantia no usa tus casos ni tus métodos sin tu autorización.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. CTA final -->
+  <section class="final" id="crear" aria-labelledby="final-title">
+    <div class="wrap">
+      <div class="panel">
+        <div>
+          <h2 id="final-title">Tu experiencia merece llegar más lejos</h2>
+          <p class="lead">Crea tu cuenta de Creador y empieza tu primer curso hoy.</p>
+        </div>
+        <form id="apply-form" novalidate>
+          <div class="field"><label for="ap-name">Nombre</label><input id="ap-name" name="name" autocomplete="name" required></div>
+          <div class="field"><label for="ap-email">Correo</label><input id="ap-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="ap-ind">Tu industria</label>
+            <select id="ap-ind" name="industry" required>
+              <option value="">Elige una opción</option>
+              <option>Minería y energía</option>
+              <option>Construcción e infraestructura</option>
+              <option>Logística y cadena de suministro</option>
+              <option>Retail y consumo</option>
+              <option>Servicios financieros</option>
+              <option>Salud</option>
+              <option>Tecnología</option>
+              <option>Otra</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit">Crear mi cuenta de Creador</button>
+          <p class="form-msg" id="apply-msg" role="status" aria-live="polite"></p>
+          <p class="alt">¿Buscas formar a tu equipo? <a href="#para-quien">Conoce Avantia para empresas</a>.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <a class="brand" href="#top" aria-label="avantia, inicio"><svg aria-hidden="true"><use href="#mono"/></svg>avantia</a>
+      <span class="tagline">Learning. Forward.</span>
+    </div>
+    <div class="foot-cols">
+      <div><h4>Plataforma</h4><ul><li><a href="#producto">Estudio con IA</a></li><li><a href="#producto">Comunidad</a></li><li><a href="#producto">Analítica</a></li></ul></div>
+      <div><h4>Para</h4><ul><li><a href="#para-quien">Creadores</a></li><li><a href="#para-quien">Profesionales</a></li><li><a href="#para-quien">Empresas</a></li></ul></div>
+      <div><h4>Recursos</h4><ul><li><a href="#preguntas">Preguntas frecuentes</a></li><li><a href="#como">Cómo funciona</a></li></ul></div>
+      <div><h4>Legal</h4><ul><li><a href="#trust-title">Privacidad</a></li><li><button type="button" id="a11y-btn" aria-expanded="false" aria-controls="a11y-panel" style="background:none;border:0;padding:0;font:inherit;color:var(--ink-2);cursor:pointer">Accesibilidad</button></li></ul></div>
+    </div>
+    <div class="a11y-panel" id="a11y-panel" hidden>
+      <h3>Declaración de accesibilidad</h3>
+      <p>Diseñamos este sitio siguiendo las pautas WCAG 2.1 nivel AA: contraste suficiente, navegación completa con teclado y compatibilidad con lectores de pantalla. Si tu sistema pide reducir el movimiento, el sitio lo respeta.</p>
+      <label class="toggle"><input type="checkbox" id="dys-toggle"> Activar lectura más espaciada</label>
+      <p class="fine">Si encuentras una barrera, escríbenos y la corregimos.</p>
+    </div>
+    <p class="fine">© 2026 Avantia.</p>
+  </div>
+</footer>
+
+<div class="mbar" id="mbar"><a class="btn btn-primary" href="#crear">Empieza a crear</a></div>
+
+<script>
+  (function () {
+    var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var note = " Esta página es un prototipo y el registro todavía no se guarda.";
+    var smooth = function () { return matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"; };
+
+    document.getElementById("hero-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var inp = document.getElementById("hero-email"), msg = document.getElementById("hero-msg");
+      if (!re.test(inp.value.trim())) {
+        msg.className = "form-msg"; msg.textContent = "Revisa tu correo: debe tener la forma nombre@dominio.com.";
+        inp.setAttribute("aria-invalid", "true"); inp.focus(); return;
+      }
+      inp.removeAttribute("aria-invalid");
+      document.getElementById("ap-email").value = inp.value.trim();
+      msg.className = "form-msg ok";
+      msg.textContent = "Bien. Completa dos datos más abajo para crear tu cuenta.";
+      document.getElementById("crear").scrollIntoView({ behavior: smooth() });
+      setTimeout(function () { document.getElementById("ap-name").focus({ preventScroll: true }); }, 500);
+    });
+
+    document.getElementById("apply-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var n = document.getElementById("ap-name"), m = document.getElementById("ap-email"), i = document.getElementById("ap-ind"), msg = document.getElementById("apply-msg");
+      var bad = !n.value.trim() ? [n, "Escribe tu nombre."] : !re.test(m.value.trim()) ? [m, "Revisa tu correo: debe tener la forma nombre@dominio.com."] : !i.value ? [i, "Elige tu industria."] : null;
+      [n, m, i].forEach(function (el) { el.removeAttribute("aria-invalid"); });
+      if (bad) { msg.className = "form-msg"; msg.textContent = bad[1]; bad[0].setAttribute("aria-invalid", "true"); bad[0].focus(); return; }
+      msg.className = "form-msg ok";
+      msg.textContent = "Gracias, " + n.value.trim().split(" ")[0] + "." + note;
+    });
+
+    var btn = document.getElementById("a11y-btn"), panel = document.getElementById("a11y-panel");
+    btn.addEventListener("click", function () { panel.hidden = !panel.hidden; btn.setAttribute("aria-expanded", String(!panel.hidden)); });
+    var dys = document.getElementById("dys-toggle");
+    try { if (localStorage.getItem("av-dys") === "1") { dys.checked = true; document.body.classList.add("dyslexia"); } } catch (e) {}
+    dys.addEventListener("change", function () {
+      document.body.classList.toggle("dyslexia", dys.checked);
+      try { localStorage.setItem("av-dys", dys.checked ? "1" : "0"); } catch (e) {}
+    });
+
+    var bar = document.getElementById("mbar"), hero = document.getElementById("hero-form"), fin = document.getElementById("crear");
+    if ("IntersectionObserver" in window) {
+      var heroVis = true, finVis = false;
+      var upd = function () { bar.classList.toggle("show", !heroVis && !finVis); };
+      new IntersectionObserver(function (es) { heroVis = es[0].isIntersecting; upd(); }).observe(hero);
+      new IntersectionObserver(function (es) { finVis = es[0].isIntersecting; upd(); }).observe(fin);
+    }
+  })();
+</script>

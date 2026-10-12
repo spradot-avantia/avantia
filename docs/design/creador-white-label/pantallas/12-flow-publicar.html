@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="only light">
+<title>Flujo para publicar el primer curso</title>
+<script src="14e2c13e-62d4-41bf-af85-cf0ff3d22685"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("be00a383-4103-4674-b0eb-18938c6665bf") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("be00a383-4103-4674-b0eb-18938c6665bf") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("be00a383-4103-4674-b0eb-18938c6665bf") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("be00a383-4103-4674-b0eb-18938c6665bf") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+html,body{margin:0;background:#FAF9F6;color-scheme:only light}
+a{color:#0A1029}a:hover{color:#3B4163}
+</style>
+</helmet>
+<div style="position: relative; width: 2440px; height: 720px; background: #FAF9F6; font-family: Inter, system-ui, sans-serif; color: #0A1029; -webkit-font-smoothing: antialiased">
+
+<svg width="63" height="8" sc-camel-view-box="0 0 63 8" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 264px; top: 416px; width: 63px; height: 8px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-1" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 59 4" marker-end="url(#dc-arrow-head-filled-1)"></path></svg>
+<svg width="63" height="8" sc-camel-view-box="0 0 63 8" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 528px; top: 416px; width: 63px; height: 8px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-2" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 59 4" marker-end="url(#dc-arrow-head-filled-2)"></path></svg>
+<svg width="63" height="8" sc-camel-view-box="0 0 63 8" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 792px; top: 416px; width: 63px; height: 8px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-3" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 59 4" marker-end="url(#dc-arrow-head-filled-3)"></path></svg>
+<svg width="63" height="8" sc-camel-view-box="0 0 63 8" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 1056px; top: 416px; width: 63px; height: 8px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-4" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 59 4" marker-end="url(#dc-arrow-head-filled-4)"></path></svg>
+<svg width="63" height="8" sc-camel-view-box="0 0 63 8" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 1320px; top: 416px; width: 63px; height: 8px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-5" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 59 4" marker-end="url(#dc-arrow-head-filled-5)"></path></svg>
+<svg width="63" height="8" sc-camel-view-box="0 0 63 8" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 1584px; top: 416px; width: 63px; height: 8px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-6" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 59 4" marker-end="url(#dc-arrow-head-filled-6)"></path></svg>
+<svg width="63" height="8" sc-camel-view-box="0 0 63 8" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 1848px; top: 416px; width: 63px; height: 8px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-7" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 59 4" marker-end="url(#dc-arrow-head-filled-7)"></path></svg>
+<svg width="63" height="8" sc-camel-view-box="0 0 63 8" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 2112px; top: 416px; width: 63px; height: 8px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-8" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 0 4 L 59 4" marker-end="url(#dc-arrow-head-filled-8)"></path></svg>
+<svg width="8" height="91" sc-camel-view-box="0 0 8 91" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 127px; top: 285px; width: 8px; height: 91px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-9" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 4 91 L 4 4" marker-end="url(#dc-arrow-head-filled-9)"></path></svg>
+<svg width="8" height="91" sc-camel-view-box="0 0 8 91" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 193px; top: 284px; width: 8px; height: 91px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-10" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 4 0 L 4 87" marker-end="url(#dc-arrow-head-filled-10)"></path></svg>
+<svg width="8" height="75" sc-camel-view-box="0 0 8 75" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 424px; top: 480px; width: 8px; height: 75px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-11" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 4 0 L 4 71" marker-end="url(#dc-arrow-head-filled-11)"></path></svg>
+<svg width="164" height="8" sc-camel-view-box="0 0 164 8" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 164px; top: 596px; width: 164px; height: 8px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M 0 4 L 164 4"></path></svg>
+<svg width="8" height="135" sc-camel-view-box="0 0 8 135" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 160px; top: 465px; width: 8px; height: 135px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-12" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 4 135 L 4 4" marker-end="url(#dc-arrow-head-filled-12)"></path></svg>
+<svg width="8" height="75" sc-camel-view-box="0 0 8 75" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 1216px; top: 480px; width: 8px; height: 75px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-13" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 4 0 L 4 71" marker-end="url(#dc-arrow-head-filled-13)"></path></svg>
+<svg width="8" height="75" sc-camel-view-box="0 0 8 75" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 1744px; top: 480px; width: 8px; height: 75px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-14" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 4 0 L 4 71" marker-end="url(#dc-arrow-head-filled-14)"></path></svg>
+<svg width="164" height="8" sc-camel-view-box="0 0 164 8" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 1484px; top: 596px; width: 164px; height: 8px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M 0 4 L 164 4"></path></svg>
+<svg width="8" height="135" sc-camel-view-box="0 0 8 135" sc-camel-preserve-aspect-ratio="none" style="position: absolute; left: 1480px; top: 465px; width: 8px; height: 135px; overflow: visible; fill: none; stroke: #7C7F9C; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><defs><marker id="dc-arrow-head-filled-15" orient="auto" sc-camel-marker-width="5" sc-camel-marker-height="5" sc-camel-ref-x="2" sc-camel-ref-y="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#7C7F9C" stroke="none" style="stroke: none; fill: #7C7F9C; fill: context-stroke"></path></marker></defs><path d="M 4 135 L 4 4" marker-end="url(#dc-arrow-head-filled-15)"></path></svg>
+
+<div style="position: absolute; left: 64px; top: 56px; font-size: 28px; line-height: 36px; font-weight: 700; letter-spacing: -0.015em">Publica tu primer curso · flujo del creador</div>
+<div style="position: absolute; left: 64px; top: 96px; font-size: 15px; line-height: 22px; color: #3B4163">Desde el paso Revisar y publicar hasta Inicio con el curso publicado y el siguiente paso: registrar estudiantes.</div>
+
+<div style="position: absolute; left: 64px; top: 196px; width: 200px; height: 88px; box-sizing: border-box; padding: 8px 12px; display: flex; align-items: center; justify-content: center; text-align: center; background: #FDFCFA; border: 1px solid #DEDCE8; border-radius: 12px; font-size: 15px; line-height: 22px"><span><b>Vista previa</b><br>Escritorio y móvil</span></div>
+<div style="position: absolute; left: 64px; top: 376px; width: 200px; height: 88px; box-sizing: border-box; padding: 8px 12px; display: flex; align-items: center; justify-content: center; text-align: center; background: #0A1029; color: #FAF9F6; border-radius: 44px; font-size: 15px; line-height: 22px"><span><b>Paso 6</b><br>Revisar y publicar</span></div>
+<div style="position: absolute; left: 328px; top: 360px; width: 200px; height: 120px; box-sizing: border-box; padding: 8px 36px; display: flex; align-items: center; justify-content: center; text-align: center; background: #DCD8E8; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); font-size: 14px; line-height: 18px; font-weight: 600">¿Cumple lo necesario?</div>
+<div style="position: absolute; left: 328px; top: 556px; width: 200px; height: 88px; box-sizing: border-box; padding: 8px 12px; display: flex; align-items: center; justify-content: center; text-align: center; background: #FCE6E4; border: 1px solid #B42318; border-radius: 12px; font-size: 15px; line-height: 22px"><span><b>Lista de pendientes</b><br>Con enlace a cada paso</span></div>
+<div style="position: absolute; left: 592px; top: 376px; width: 200px; height: 88px; box-sizing: border-box; padding: 8px 12px; display: flex; align-items: center; justify-content: center; text-align: center; background: #FDFCFA; border: 1px solid #DEDCE8; border-radius: 12px; font-size: 15px; line-height: 22px"><span><b>Publicar curso</b><br>Botón en la barra</span></div>
+<div style="position: absolute; left: 856px; top: 376px; width: 200px; height: 88px; box-sizing: border-box; padding: 8px 12px; display: flex; align-items: center; justify-content: center; text-align: center; background: #FDFCFA; border: 1.5px solid #0F766E; border-radius: 12px; font-size: 15px; line-height: 22px"><span><b>Confirmar</b><br>Qué pasa al publicar</span></div>
+<div style="position: absolute; left: 1120px; top: 360px; width: 200px; height: 120px; box-sizing: border-box; padding: 8px 40px; display: flex; align-items: center; justify-content: center; text-align: center; background: #DCD8E8; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); font-size: 14px; line-height: 18px; font-weight: 600">¿Confirma?</div>
+<div style="position: absolute; left: 1120px; top: 556px; width: 200px; height: 88px; box-sizing: border-box; padding: 8px 12px; display: flex; align-items: center; justify-content: center; text-align: center; background: #FDFCFA; border: 1px solid #DEDCE8; border-radius: 12px; font-size: 15px; line-height: 22px"><span><b>Seguir revisando</b><br>Queda en borrador</span></div>
+<div style="position: absolute; left: 1384px; top: 376px; width: 200px; height: 88px; box-sizing: border-box; padding: 8px 12px; display: flex; align-items: center; justify-content: center; text-align: center; background: #FDFCFA; border: 1px solid #DEDCE8; border-radius: 12px; font-size: 15px; line-height: 22px"><span><b>Publicando…</b><br>Botón en espera</span></div>
+<div style="position: absolute; left: 1648px; top: 360px; width: 200px; height: 120px; box-sizing: border-box; padding: 8px 40px; display: flex; align-items: center; justify-content: center; text-align: center; background: #DCD8E8; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); font-size: 14px; line-height: 18px; font-weight: 600">¿Se guardó?</div>
+<div style="position: absolute; left: 1648px; top: 556px; width: 200px; height: 88px; box-sizing: border-box; padding: 8px 12px; display: flex; align-items: center; justify-content: center; text-align: center; background: #FCE6E4; border: 1px solid #B42318; border-radius: 12px; font-size: 15px; line-height: 22px"><span><b>Aviso de error</b><br>El borrador sigue a salvo</span></div>
+<div style="position: absolute; left: 1912px; top: 376px; width: 200px; height: 88px; box-sizing: border-box; padding: 8px 12px; display: flex; align-items: center; justify-content: center; text-align: center; background: #0F766E; color: #FFFFFF; border-radius: 12px; font-size: 15px; line-height: 22px"><span><b>Curso publicado</b><br>Enlace para compartir</span></div>
+<div style="position: absolute; left: 2176px; top: 376px; width: 200px; height: 88px; box-sizing: border-box; padding: 8px 12px; display: flex; align-items: center; justify-content: center; text-align: center; background: #0A1029; color: #FAF9F6; border-radius: 44px; font-size: 15px; line-height: 22px"><span><b>Inicio · 3 de 4</b><br>Siguiente: estudiantes</span></div>
+
+<div style="position: absolute; left: 209px; top: 322px; width: 64px; text-align: center; font-size: 13px; line-height: 16px; color: #3B4163">Opcional</div>
+<div style="position: absolute; left: 440px; top: 510px; width: 28px; text-align: center; font-size: 13px; line-height: 16px; color: #3B4163; font-weight: 600">No</div>
+<div style="position: absolute; left: 548px; top: 392px; width: 24px; text-align: center; font-size: 13px; line-height: 16px; color: #3B4163; font-weight: 600">Sí</div>
+<div style="position: absolute; left: 182px; top: 612px; width: 128px; text-align: center; font-size: 13px; line-height: 16px; color: #3B4163">Corrige y vuelve</div>
+<div style="position: absolute; left: 1340px; top: 392px; width: 24px; text-align: center; font-size: 13px; line-height: 16px; color: #3B4163; font-weight: 600">Sí</div>
+<div style="position: absolute; left: 1232px; top: 510px; width: 28px; text-align: center; font-size: 13px; line-height: 16px; color: #3B4163; font-weight: 600">No</div>
+<div style="position: absolute; left: 1868px; top: 392px; width: 24px; text-align: center; font-size: 13px; line-height: 16px; color: #3B4163; font-weight: 600">Sí</div>
+<div style="position: absolute; left: 1760px; top: 510px; width: 28px; text-align: center; font-size: 13px; line-height: 16px; color: #3B4163; font-weight: 600">No</div>
+<div style="position: absolute; left: 1526px; top: 612px; width: 80px; text-align: center; font-size: 13px; line-height: 16px; color: #3B4163">Reintentar</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:2440,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+
+
+</body></html>

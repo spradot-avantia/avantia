@@ -1,0 +1,220 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Avantia — Flujo de una request",
+    "output": "avantia-flujo-request.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1150,
+      660
+    ]
+  },
+  "lanes": [
+    {
+      "id": "client",
+      "label": "Cliente"
+    },
+    {
+      "id": "edge",
+      "label": "Edge (Vercel)"
+    },
+    {
+      "id": "server",
+      "label": "Next.js (Node.js)"
+    },
+    {
+      "id": "data",
+      "label": "Datos y pagos"
+    }
+  ],
+  "phases": [
+    {
+      "id": "entrada",
+      "label": "Entrada",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "tenant",
+      "label": "Resolver tenant",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "respuesta",
+      "label": "Render y respuesta",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "user",
+    "mw",
+    "layout",
+    "resolve",
+    "page",
+    "html"
+  ],
+  "nodes": [
+    {
+      "id": "user",
+      "lane": "client",
+      "col": 0,
+      "type": "external",
+      "label": "Usuario",
+      "sublabel": "academiadejuan.com",
+      "width": 140
+    },
+    {
+      "id": "html",
+      "lane": "client",
+      "col": 5,
+      "type": "frontend",
+      "label": "HTML con theming",
+      "sublabel": "SSR, sin esperar JS",
+      "width": 140
+    },
+    {
+      "id": "mw",
+      "lane": "edge",
+      "col": 1,
+      "type": "cloud",
+      "label": "middleware.ts",
+      "sublabel": "hostname → [domain]",
+      "tag": "sin consulta a BD",
+      "width": 150
+    },
+    {
+      "id": "layout",
+      "lane": "server",
+      "col": 2,
+      "type": "backend",
+      "label": "[domain]/layout.tsx",
+      "sublabel": "Server Component",
+      "width": 140
+    },
+    {
+      "id": "resolve",
+      "lane": "server",
+      "col": 3,
+      "type": "backend",
+      "label": "tenant/resolve.ts",
+      "sublabel": "caché en memoria 60s",
+      "width": 140
+    },
+    {
+      "id": "notfound",
+      "lane": "server",
+      "col": 4,
+      "type": "security",
+      "label": "notFound()",
+      "sublabel": "404 sin academia",
+      "width": 140
+    },
+    {
+      "id": "page",
+      "lane": "server",
+      "col": 5,
+      "type": "frontend",
+      "label": "Página del tenant",
+      "sublabel": "landing / curso / checkout",
+      "width": 140
+    },
+    {
+      "id": "db",
+      "lane": "data",
+      "col": 3,
+      "type": "database",
+      "label": "Supabase · tenants",
+      "sublabel": "service role",
+      "width": 140
+    },
+    {
+      "id": "pay",
+      "lane": "data",
+      "col": 5,
+      "type": "external",
+      "label": "Stripe / Mercado Pago",
+      "sublabel": "split + comisión",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "visit",
+      "from": "user",
+      "to": "mw",
+      "label": "HTTPS",
+      "variant": "emphasis"
+    },
+    {
+      "id": "rewrite",
+      "from": "mw",
+      "to": "layout",
+      "label": "rewrite"
+    },
+    {
+      "id": "layout-resolve",
+      "from": "layout",
+      "to": "resolve"
+    },
+    {
+      "id": "resolve-db",
+      "from": "resolve",
+      "to": "db",
+      "label": "consulta",
+      "variant": "security"
+    },
+    {
+      "id": "resolve-page",
+      "from": "resolve",
+      "to": "page",
+      "label": "tenant ok",
+      "variant": "emphasis"
+    },
+    {
+      "id": "resolve-404",
+      "from": "resolve",
+      "to": "notfound",
+      "label": "no existe",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "page-html",
+      "from": "page",
+      "to": "html",
+      "role": "return",
+      "variant": "emphasis"
+    },
+    {
+      "id": "page-pay",
+      "from": "page",
+      "to": "pay",
+      "label": "checkout",
+      "variant": "dashed",
+      "role": "branch"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Borde",
+      "items": [
+        "El middleware solo mira el hostname y reescribe la ruta",
+        "Nunca consulta la base de datos"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Tenant",
+      "items": [
+        "El layout resuelve el tenant una vez por hostname",
+        "Sin tenant: notFound() devuelve 404"
+      ]
+    }
+  ]
+}

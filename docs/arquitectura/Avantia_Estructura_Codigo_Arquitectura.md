@@ -45,7 +45,6 @@ avantia/
 │       │   │   │
 │       │   │   └── api/              # Route handlers (reemplazan a Express)
 │       │   │       ├── webhooks/
-│       │   │       │   ├── stripe/route.ts
 │       │   │       │   └── mercadopago/route.ts
 │       │   │       ├── ai/
 │       │   │       │   └── generar-curso/route.ts
@@ -69,7 +68,6 @@ avantia/
 │       │   │   │   └── resolve.ts    # hostname -> tenant (con cache)
 │       │   │   ├── tenantContext.tsx # expone el tenant ya resuelto a los
 │       │   │   │                     # Client Components del sitio público
-│       │   │   ├── stripe.ts
 │       │   │   ├── mercadopago.ts
 │       │   │   └── ai/
 │       │   │       └── generarCurso.ts   # lógica de prompting contra la API del LLM
@@ -144,8 +142,8 @@ graph TD
     J -->|"Políticas RLS filtran\nautomáticamente por tenant"| I
 
     G --> K[Checkout de un curso]
-    K --> L["lib/stripe.ts o\nlib/mercadopago.ts"]
-    L --> M["Stripe Connect /\nMercado Pago Connect"]
+    K --> L["lib/mercadopago.ts"]
+    L --> M["Mercado Pago Connect"]
     M -->|split payment| N[Cuenta del tenant]
     M -->|comisión| O[Cuenta de Avantia]
 

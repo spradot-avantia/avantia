@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="only light">
+<title>Crea tu primer curso</title>
+<script src="e0e37808-a0a1-44a5-bafd-aab9d7e1fc83"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("e9d11af2-3ff3-41a6-8825-6e4fba20425a") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("e9d11af2-3ff3-41a6-8825-6e4fba20425a") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("e9d11af2-3ff3-41a6-8825-6e4fba20425a") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("e9d11af2-3ff3-41a6-8825-6e4fba20425a") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+html,body{margin:0;background:#FAF9F6;color-scheme:only light}
+a{color:#0A1029}a:hover{color:#3B4163}
+.r *{box-sizing:border-box}
+.r h1,.r h2,.r p{margin:0}
+.ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.side{flex:0 0 248px;display:flex;flex-direction:column;gap:4px;padding:20px 14px 16px;background:#F2F0F7;border-right:1px solid #DEDCE8;min-height:1000px}
+.main{flex:999 1 560px;min-width:0;padding:24px 28px 64px}
+.acad{display:flex;align-items:center;gap:10px;padding:6px 8px 18px;min-width:0}
+.acad b{display:block;font:600 15px/1.25 Inter,sans-serif}
+.acad small{display:block;font:500 12px/1.4 Inter,sans-serif;color:#5A5F7A}
+.lg{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;flex:none;background:#fff;border:1px solid #DEDCE8;padding:5px}
+.nav{display:grid;gap:2px}
+.ni{display:flex;align-items:center;gap:10px;min-height:42px;padding:0 12px;border-radius:10px;font:500 14.5px/1.2 Inter,sans-serif;color:#3B4163;text-decoration:none}
+.ni:hover{background:#FDFCFA;color:#0A1029}
+.ni[aria-current="page"]{background:#FDFCFA;color:#0A1029;font-weight:600;box-shadow:inset 3px 0 0 var(--ac)}
+.foot{margin-top:auto;padding:14px 8px 0;border-top:1px solid #DEDCE8;display:grid;gap:8px}
+.foot span{font:500 12px/1.4 Inter,sans-serif;color:#5A5F7A}
+.card{background:#FDFCFA;border:1px solid #DEDCE8;border-radius:16px;padding:20px}
+.ov{font:700 11.5px/1.3 Inter,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#3B4163}
+.small{font:400 13px/1.45 Inter,sans-serif;color:#5A5F7A}
+.start{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:16px;align-items:center;padding:20px;border:1px solid #DEDCE8;border-radius:16px;background:#FDFCFA;text-decoration:none;color:#0A1029;transition:border-color .16s,box-shadow .16s}
+.start:hover{border-color:#7C7F9C;color:#0A1029;box-shadow:0 1px 2px rgba(10,16,41,.05),0 4px 12px rgba(10,16,41,.05)}
+.start:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.start--rec{border-color:color-mix(in srgb,var(--ac) 45%,#DEDCE8);background:color-mix(in srgb,var(--ac) 5%,#FDFCFA)}
+.start b{display:block;font:600 16px/1.35 Inter,sans-serif}
+.start small{display:block;font:400 14px/1.5 Inter,sans-serif;color:#3B4163;margin-top:2px}
+.bigico{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background:#F2F0F7;color:#3B4163}
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font:600 12px/1.4 Inter,sans-serif;background:color-mix(in srgb,var(--ac) 12%,#FDFCFA);color:#0A1029;white-space:nowrap}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.steps li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid #DEDCE8}
+.steps li:first-child{border-top:0;padding-top:0}
+.num{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 12px/1 Inter,sans-serif;border:1.5px solid #7C7F9C;color:#3B4163;flex:none}
+@media (max-width:899px){.side{display:none}.main{padding:18px 16px 64px}.start{grid-template-columns:48px minmax(0,1fr)}.start .tag{grid-column:2;justify-self:start}}
+</style>
+</helmet>
+<div class="r" style="--ac: {{accent}}; font-family: Inter, system-ui, sans-serif; color: #0A1029; background: #FAF9F6; font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; display: flex; flex-wrap: wrap; min-height: 1000px">
+
+<aside class="side" aria-label="Navegación principal">
+<div class="acad">
+<span class="lg" aria-hidden="true"><svg sc-camel-view-box="0 0 32 32" width="100%" height="100%"><circle cx="22" cy="9" r="4" fill="#E0A82E"></circle><path d="M2 27 12 11l6 9 3-4 9 11z" fill="{{accent}}"></path><path d="M12 11l3 4.6-3 1.4-3-1.4z" fill="#fff" opacity=".7"></path></svg></span>
+<div style="min-width: 0"><b>Contratos Mineros</b><small>Contratos en minería, explicados por quien los firma</small></div>
+</div>
+<nav class="nav" aria-label="Secciones">
+<a class="ni" href="Main.dc.html"><svg class="ico" sc-camel-view-box="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Inicio</a>
+<a class="ni" href="#" aria-current="page"><svg class="ico" sc-camel-view-box="0 0 24 24" aria-hidden="true"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg>Cursos</a>
+<a class="ni" href="#"><svg class="ico" sc-camel-view-box="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Estudiantes</a>
+<a class="ni" href="MiAcademia.dc.html"><svg class="ico" sc-camel-view-box="0 0 24 24" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"></path><path d="M22 10v6"></path><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"></path></svg>Mi academia</a>
+</nav>
+<div class="foot">
+<span>Con la tecnología de</span>
+<span role="img" aria-label="Avantia" style="display: inline-flex; align-items: center; gap: 8px"><img src="7c601b65-6a60-4456-bd12-634a5a9876ca" alt="" style="height: 24px; width: auto"><img src="a69137ac-2626-4d1d-ae2b-1a469b035ebd" alt="" style="height: 12px; width: auto"></span>
+</div>
+</aside>
+
+<main class="main">
+<div style="max-width: 1160px; margin: 0 auto">
+<div style="display: grid; gap: 6px; margin-bottom: 28px">
+<a href="Main.dc.html" style="font: 600 14px/1.4 Inter, sans-serif; color: {{accent}}; text-underline-offset: 3px; justify-self: start">Volver a Inicio</a>
+<span class="ov">Cursos</span>
+<h1 style="font: 700 24px/1.2 Inter, sans-serif; letter-spacing: -0.015em">Crea tu primer curso</h1>
+<p style="color: #3B4163; max-width: 64ch">Tú lo armas, a tu ritmo. El borrador se guarda solo y lo publicas cuando esté listo.</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+<section style="flex: 1.55 1 480px; min-width: 0; display: grid; gap: 12px" aria-labelledby="how-h">
+<h2 id="how-h" style="font: 600 18px/1.3 Inter, sans-serif; letter-spacing: -0.015em">¿Cómo quieres empezar?</h2>
+<a class="start start--rec" href="EditorCurso.dc.html">
+<span class="bigico" style="background: color-mix(in srgb, {{accent}} 14%, #FDFCFA); color: {{accent}}" aria-hidden="true"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 22px; height: 22px"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M9 21V9"></path></svg></span>
+<span><b>Con una estructura sugerida</b><small>Partes con tres módulos (contexto, casos reales y aplicación) que puedes renombrar, mover o borrar.</small></span>
+<span class="tag">Recomendado</span>
+</a>
+<a class="start" href="EditorCurso.dc.html">
+<span class="bigico" aria-hidden="true"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 22px; height: 22px"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg></span>
+<span><b>Desde cero</b><small>Si ya tienes clara la estructura de tu curso.</small></span>
+<span></span>
+</a>
+<p class="small">En ambos casos usas el mismo editor y puedes cambiar todo después.</p>
+</section>
+
+<aside style="flex: 1 1 300px; min-width: 0; display: grid; gap: 16px">
+<section class="card" aria-labelledby="st-h">
+<h2 id="st-h" style="font: 600 18px/1.3 Inter, sans-serif; letter-spacing: -0.015em; margin-bottom: 12px">Lo que vas a definir</h2>
+<ol class="steps">
+<li><span class="num" aria-hidden="true">1</span><span><b style="font-weight: 600">Lo esencial</b><br><span class="small">Título y descripción</span></span></li>
+<li><span class="num" aria-hidden="true">2</span><span><b style="font-weight: 600">Objetivo</b><br><span class="small">Qué podrán hacer al terminar</span></span></li>
+<li><span class="num" aria-hidden="true">3</span><span><b style="font-weight: 600">Estructura y contenido</b><br><span class="small">Módulos, lecciones y actividades</span></span></li>
+<li><span class="num" aria-hidden="true">4</span><span><b style="font-weight: 600">Modalidad y fechas</b><br><span class="small">A su ritmo o con fechas</span></span></li>
+<li><span class="num" aria-hidden="true">5</span><span><b style="font-weight: 600">Acceso</b><br><span class="small">Quién puede inscribirse</span></span></li>
+<li><span class="num" aria-hidden="true">6</span><span><b style="font-weight: 600">Revisar y publicar</b><br><span class="small">Vista previa y publicación</span></span></li>
+</ol>
+</section>
+<section class="card" aria-labelledby="hand-h">
+<h2 id="hand-h" style="font: 600 15px/1.35 Inter, sans-serif; margin-bottom: 8px">Te conviene tener a mano</h2>
+<p class="small" style="color: #3B4163">Los enlaces de tus videos (YouTube, Vimeo o Google Drive) y de tus documentos. Subir archivos aún no está disponible.</p>
+</section>
+</aside>
+</div>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0F766E&quot;,&quot;options&quot;:[&quot;#0F766E&quot;,&quot;#2563EB&quot;,&quot;#7C3AED&quot;,&quot;#B45309&quot;]},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#0F766E' };
+  }
+}
+</script>
+
+
+</body></html>

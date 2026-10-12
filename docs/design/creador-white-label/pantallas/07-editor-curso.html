@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="only light">
+<title>Editor de curso</title>
+<script src="f180c3c6-a559-4f51-a2ae-cf3dc9963f37"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("c8926ef6-3d39-440f-9b39-575e717acbd1") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("c8926ef6-3d39-440f-9b39-575e717acbd1") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("c8926ef6-3d39-440f-9b39-575e717acbd1") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("c8926ef6-3d39-440f-9b39-575e717acbd1") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+html,body{margin:0;background:#FAF9F6;color-scheme:only light}
+a{color:#0A1029}a:hover{color:#3B4163}
+.r *{box-sizing:border-box}
+.r h1,.r h2,.r h3,.r p{margin:0}
+.r button,.r input,.r textarea{font-family:inherit}
+.ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hdr{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:10px 20px;background:#FDFCFA;border-bottom:1px solid #DEDCE8;flex-wrap:wrap}
+.lg{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;background:#fff;border:1px solid #DEDCE8;padding:4px}
+.sep{width:1px;height:28px;background:#DEDCE8;flex:none}
+.card{background:#FDFCFA;border:1px solid #DEDCE8;border-radius:16px;padding:20px}
+.ov{font:700 11.5px/1.3 Inter,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#3B4163}
+.h1{font:700 24px/1.2 Inter,sans-serif;letter-spacing:-0.015em}
+.h2{font:600 18px/1.3 Inter,sans-serif;letter-spacing:-0.015em}
+.lbl{font:600 14px/1.35 Inter,sans-serif;color:#0A1029}
+.opt{font-weight:500;color:#5A5F7A;font-size:13px;margin-left:4px}
+.help,.small{font:400 13px/1.45 Inter,sans-serif;color:#5A5F7A}
+.field{display:grid;gap:6px;margin-bottom:20px}
+.in{width:100%;min-height:44px;padding:10px 12px;border-radius:10px;border:1px solid #7C7F9C;background:#FDFCFA;color:#0A1029;font:400 15px/1.5 Inter,sans-serif}
+textarea.in{min-height:110px;resize:vertical}
+.in:focus{outline:3px solid color-mix(in srgb,var(--ac) 40%,transparent);border-color:var(--ac)}
+.in--bad{border:2px solid #B42318;padding:9px 11px}
+.err{display:flex;gap:6px;align-items:flex-start;font:500 13px/1.4 Inter,sans-serif;color:#B42318}
+.meta{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;color:#5A5F7A}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:10px;border:1px solid #7C7F9C;background:#FDFCFA;color:#0A1029;font:600 14px/1 Inter,sans-serif;cursor:pointer;white-space:nowrap;text-decoration:none}
+.btn:hover{background:#F2F0F7;color:#0A1029}
+.btn--p{background:var(--ac);border-color:var(--ac);color:#fff}
+.btn--p:hover{background:color-mix(in srgb,var(--ac) 82%,#0A1029);color:#fff}
+.btn--g{border-color:transparent;background:transparent}
+.btn--sm{min-height:34px;padding:0 12px;font-size:13px;border-radius:8px}
+.btn:disabled{background:#E6E3EF;border-color:transparent;color:#5A5F7A;cursor:not-allowed}
+.btn:focus-visible,.stp:focus-visible,.choice:focus-within,.seg button:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.stp{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:center;width:100%;padding:8px 10px;border:0;border-radius:10px;background:transparent;text-align:left;cursor:pointer;color:#0A1029}
+.stp:hover{background:#F2F0F7}
+.stp--cur{background:#FDFCFA;box-shadow:inset 3px 0 0 var(--ac),0 1px 2px rgba(10,16,41,.05),0 4px 12px rgba(10,16,41,.05)}
+.dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:700 12.5px/1 Inter,sans-serif;border:1.5px solid #7C7F9C;color:#5A5F7A;background:#FDFCFA}
+.dot--done{background:#E3F4E8;color:#166534;border-color:transparent}
+.dot--bad{border-color:#B42318;color:#B42318}
+.dot--cur{border-color:var(--ac);color:#0A1029}
+.st{display:block;font:600 14px/1.3 Inter,sans-serif}
+.ss{display:block;font:400 12px/1.35 Inter,sans-serif;color:#5A5F7A}
+.ss--bad{color:#B42318}
+.module{border:1px solid #DEDCE8;border-radius:14px;background:#FDFCFA;overflow:hidden}
+.module-h{display:flex;gap:10px;align-items:center;padding:12px 14px;background:#F2F0F7;border-bottom:1px solid #DEDCE8}
+.mnum{font:700 11.5px/1 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#3B4163;white-space:nowrap}
+.lrow{display:flex;gap:12px;align-items:center;padding:10px 14px;border-top:1px solid #DEDCE8}
+.lrow:first-child{border-top:0}
+.chip{display:inline-flex;align-items:center;padding:1px 7px;border-radius:6px;border:1px solid #7C7F9C;font:600 11.5px/1.5 Inter,sans-serif;color:#3B4163}
+.pend{color:#A15C07;font-weight:600}
+.bad{color:#B42318;font-weight:600}
+.ledit{padding:14px;background:#FAF9F6;border-top:1px solid #DEDCE8}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:10px;background:#F2F0F7;border:1px solid #DEDCE8}
+.seg button{min-height:34px;padding:0 12px;border-radius:8px;border:0;background:transparent;cursor:pointer;font:600 13.5px/1 Inter,sans-serif;color:#3B4163}
+.seg button[aria-pressed="true"]{background:#FDFCFA;color:#0A1029;box-shadow:0 1px 2px rgba(10,16,41,.06),0 4px 12px rgba(10,16,41,.06)}
+.choice{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;align-items:start;padding:14px 16px;border:1px solid #DEDCE8;border-radius:10px;background:#FDFCFA;cursor:pointer}
+.choice:hover{border-color:#7C7F9C}
+.choice--on{border-color:var(--ac);box-shadow:inset 0 0 0 1px var(--ac)}
+.choice input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--ac)}
+.choice b{display:block;font:600 15px/1.35 Inter,sans-serif}
+.choice small{display:block;font:400 13px/1.45 Inter,sans-serif;color:#5A5F7A}
+.tag{display:inline-flex;align-items:center;padding:1px 8px;border-radius:6px;font:600 12px/1.4 Inter,sans-serif;background:color-mix(in srgb,var(--ac) 12%,#FDFCFA);margin-left:6px}
+.errsum{padding:16px;border-radius:12px;border:2px solid #B42318;background:#FCE6E4}
+.errsum ul{margin:8px 0 0;padding-left:20px;display:grid;gap:6px;font-size:14px}
+.link{background:none;border:0;padding:0;color:var(--ac);font:600 14px/1.4 Inter,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.crit{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.crit li{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #DEDCE8;font-size:14.5px}
+.crit li:first-child{border-top:0}
+.ci{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ci--ok{background:#E3F4E8;color:#166534}
+.ci--no{background:#F2F0F7;color:#5A5F7A}
+.actbar{position:sticky;bottom:0;background:#FDFCFA;border-top:1px solid #DEDCE8;padding:12px 20px}
+.scrim{position:absolute;inset:0;background:rgba(10,16,41,.42);display:grid;place-items:center;padding:16px;z-index:10}
+@media (max-width:899px){.stepper{display:none}.hdr .hide-m{display:none}}
+</style>
+</helmet>
+<div class="r" style="--ac: {{accent}}; position: relative; font-family: Inter, system-ui, sans-serif; color: #0A1029; background: #FAF9F6; font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; min-height: 1400px; display: flex; flex-direction: column">
+
+<header class="hdr">
+<div style="display: flex; align-items: center; gap: 10px; min-width: 0">
+<span class="lg" aria-hidden="true"><svg sc-camel-view-box="0 0 32 32" width="100%" height="100%"><circle cx="22" cy="9" r="4" fill="#E0A82E"></circle><path d="M2 27 12 11l6 9 3-4 9 11z" fill="{{accent}}"></path><path d="M12 11l3 4.6-3 1.4-3-1.4z" fill="#fff" opacity=".7"></path></svg></span>
+<b class="hide-m" style="font-size: 14px; white-space: nowrap">Contratos Mineros</b>
+</div>
+<span class="sep hide-m" aria-hidden="true"></span>
+<div style="flex: 1; min-width: 0; display: grid; gap: 2px">
+<span style="font-weight: 600; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{titleShown}}</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #5A5F7A" role="status">
+<span class="chip">{{statusLabel}}</span>
+<sc-if value="{{saving}}" hint-placeholder-val="{{ false }}"><span>Guardando…</span></sc-if>
+<sc-if value="{{saved}}" hint-placeholder-val="{{ true }}"><span>Borrador guardado</span></sc-if>
+</span>
+</div>
+<a class="btn btn--g btn--sm" href="Main.dc.html">Guardar y salir</a>
+</header>
+
+<sc-if value="{{published}}" hint-placeholder-val="{{ false }}">
+<div style="max-width: 640px; margin: 0 auto; padding: 56px 16px 96px; display: grid; gap: 20px; width: 100%">
+<span style="width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: #E3F4E8; color: #166534" aria-hidden="true"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 26px; height: 26px"><path d="M20 6 9 17l-5-5"></path></svg></span>
+<div style="display: grid; gap: 8px">
+<h1 class="h1">Tu curso está publicado</h1>
+<p style="color: #3B4163">«{{titleShown}}» ya aparece en tus cursos. Puedes seguir editándolo cuando quieras.</p>
+</div>
+<section class="card" aria-labelledby="nx-h">
+<h2 class="h2" id="nx-h" style="margin-bottom: 8px">Siguiente paso</h2>
+<p class="small" style="color: #3B4163; margin-bottom: 14px">Registra a los estudiantes del piloto para llevar su seguimiento. El envío de invitaciones desde la plataforma aún no está disponible: comparte el enlace tú.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 8px"><a class="btn btn--p" href="#">Registrar estudiantes</a><a class="btn" href="InicioPublicado.dc.html">Volver a Inicio</a></div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{editing}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 24px 24px 40px; display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+
+<nav class="stepper" style="flex: 0 0 260px; display: grid; gap: 2px" aria-label="Pasos para crear el curso">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="6">
+<button type="button" class="{{s.cls}}" aria-current="{{s.cur}}" sc-camel-on-click="{{s.go}}">
+<span class="{{s.dotCls}}" aria-hidden="true">
+<sc-if value="{{s.done}}" hint-placeholder-val="{{ false }}"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 15px; height: 15px"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+<sc-if value="{{s.notDone}}" hint-placeholder-val="{{ true }}">{{s.num}}</sc-if>
+</span>
+<span><span class="st">{{s.t}}</span><span class="{{s.subCls}}">{{s.sub}}</span></span>
+</button>
+</sc-for>
+<p class="small" style="margin-top: 14px; padding: 12px; border-radius: 12px; background: #F2F0F7; color: #3B4163">Puedes avanzar en cualquier orden. Solo al publicar revisamos que esté todo.</p>
+</nav>
+
+<div style="flex: 999 1 480px; min-width: 0; max-width: 720px; display: grid; gap: 14px; align-content: start">
+<div style="display: grid; gap: 6px; margin-bottom: 6px">
+<span class="ov">Paso {{stepNum}} de 6</span>
+<h1 class="h1">{{stepTitle}}</h1>
+<p style="color: #3B4163; max-width: 62ch">{{stepIntro}}</p>
+</div>
+
+<sc-if value="{{s0}}" hint-placeholder-val="{{ true }}">
+<div class="card">
+<div class="field">
+<label class="lbl" for="f-title">Título del curso</label>
+<input class="{{titleCls}}" id="f-title" value="{{title}}" maxlength="80" placeholder="Ej.: Negociar contratos de suministro en minería" sc-camel-on-input="{{onTitle}}">
+<div class="meta"><span>Nombra el resultado, no el tema.</span><span>{{titleCount}}/80</span></div>
+<sc-if value="{{errTitle}}" hint-placeholder-val="{{ false }}"><p class="err">Escribe un título de al menos 5 caracteres.</p></sc-if>
+</div>
+<div class="field">
+<label class="lbl" for="f-desc">Descripción breve</label>
+<textarea class="{{descCls}}" id="f-desc" maxlength="400" placeholder="De qué trata, qué problema resuelve y qué hace distinto a este curso." value="{{desc}}" sc-camel-on-input="{{onDesc}}"></textarea>
+<div class="meta"><span>Entre 50 y 400 caracteres.</span><span>{{descCount}}/400</span></div>
+<sc-if value="{{errDesc}}" hint-placeholder-val="{{ false }}"><p class="err">La descripción necesita al menos 50 caracteres.</p></sc-if>
+</div>
+<div class="field" style="margin-bottom: 0">
+<label class="lbl" for="f-aud">¿Para quién es? <span class="opt">Opcional</span></label>
+<input class="in" id="f-aud" value="{{audience}}" maxlength="140" placeholder="Ej.: Administradores de contrato con 2 o más años en faena" sc-camel-on-input="{{onAud}}">
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{s1}}" hint-placeholder-val="{{ false }}">
+<div class="card" style="display: grid; gap: 12px">
+<span style="font-weight: 600">Al terminar este curso, tus estudiantes podrán…</span>
+<sc-for list="{{objectives}}" as="o" hint-placeholder-count="1">
+<div style="display: flex; gap: 8px; align-items: center">
+<label class="help" for="{{o.id}}" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Objetivo {{o.num}}</label>
+<input class="in" id="{{o.id}}" value="{{o.val}}" maxlength="160" placeholder="{{o.ph}}" sc-camel-on-input="{{o.onInput}}">
+<sc-if value="{{o.canRm}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--g btn--sm" style="width: 40px; padding: 0" aria-label="Quitar objetivo {{o.num}}" sc-camel-on-click="{{o.rm}}"><svg class="ico" sc-camel-view-box="0 0 24 24"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></button></sc-if>
+</div>
+</sc-for>
+<sc-if value="{{errObj}}" hint-placeholder-val="{{ false }}"><p class="err">Agrega al menos un objetivo.</p></sc-if>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<sc-if value="{{canAddObj}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--sm" sc-camel-on-click="{{addObj}}"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 16px; height: 16px" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Agregar otro objetivo</button></sc-if>
+<span class="small">Hasta 3. Si tienes más, quizás son dos cursos.</span>
+</div>
+</div>
+<div class="card" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; font-size: 14px">
+<b style="color: #B42318">Evita</b><b style="color: #166534">Mejor</b>
+<span>«Conocer los contratos de suministro»</span><span>«Identificar las tres cláusulas que más riesgo traen en un contrato de suministro»</span>
+</div>
+</sc-if>
+
+<sc-if value="{{s2}}" hint-placeholder-val="{{ false }}">
+<p class="small">{{contentSummary}}</p>
+<sc-if value="{{errMods}}" hint-placeholder-val="{{ false }}"><p class="err">Cada módulo necesita un nombre y lecciones, y cada lección su contenido.</p></sc-if>
+<sc-for list="{{modules}}" as="m" hint-placeholder-count="3">
+<div class="module">
+<div class="module-h">
+<span class="mnum">Módulo {{m.num}}</span>
+<label for="{{m.id}}" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Nombre del módulo {{m.num}}</label>
+<input class="in" id="{{m.id}}" style="min-height: 38px; padding: 6px 10px" value="{{m.title}}" placeholder="Nombre del módulo" sc-camel-on-input="{{m.onTitle}}">
+<button type="button" class="btn btn--g btn--sm" style="width: 36px; padding: 0" aria-label="Eliminar módulo {{m.num}}" sc-camel-on-click="{{m.rm}}"><svg class="ico" sc-camel-view-box="0 0 24 24"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></button>
+</div>
+<sc-for list="{{m.lessons}}" as="l" hint-placeholder-count="1">
+<div>
+<div class="lrow">
+<div style="flex: 1; min-width: 0">
+<b style="display: block; font: 600 14.5px/1.35 Inter, sans-serif">{{l.title}}</b>
+<span class="small"><span class="chip">{{l.typeLabel}}</span> · <span class="{{l.statusCls}}">{{l.status}}</span></span>
+</div>
+<button type="button" class="btn btn--sm" aria-expanded="{{l.isOpen}}" sc-camel-on-click="{{l.toggle}}">{{l.btn}}</button>
+</div>
+<sc-if value="{{l.isOpen}}" hint-placeholder-val="{{ false }}">
+<div class="ledit">
+<div class="field">
+<label class="lbl" for="{{l.idT}}">Título de la lección</label>
+<input class="in" id="{{l.idT}}" value="{{l.title}}" maxlength="90" sc-camel-on-input="{{l.onTitle}}">
+</div>
+<div class="field">
+<span class="lbl">Formato</span>
+<div class="seg" role="group" aria-label="Formato de la lección">
+<button type="button" aria-pressed="{{l.isVideo}}" sc-camel-on-click="{{l.setVideo}}">Video</button>
+<button type="button" aria-pressed="{{l.isTexto}}" sc-camel-on-click="{{l.setTexto}}">Texto</button>
+<button type="button" aria-pressed="{{l.isDoc}}" sc-camel-on-click="{{l.setDoc}}">Documento</button>
+</div>
+</div>
+<div class="field">
+<label class="lbl" for="{{l.idC}}">{{l.contentLabel}}</label>
+<input class="in" id="{{l.idC}}" value="{{l.content}}" placeholder="{{l.contentPh}}" sc-camel-on-input="{{l.onContent}}">
+<span class="help">{{l.contentHelp}}</span>
+</div>
+<div style="display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap">
+<button type="button" class="btn btn--g btn--sm" sc-camel-on-click="{{l.rm}}">Eliminar lección</button>
+<button type="button" class="btn btn--p btn--sm" sc-camel-on-click="{{l.toggle}}">Listo</button>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+<sc-if value="{{m.empty}}" hint-placeholder-val="{{ false }}"><p class="small" style="padding: 10px 14px">Este módulo todavía no tiene lecciones.</p></sc-if>
+<div style="padding: 10px 14px; border-top: 1px solid #DEDCE8"><button type="button" class="btn btn--sm" sc-camel-on-click="{{m.addLesson}}"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 16px; height: 16px" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Agregar lección</button></div>
+</div>
+</sc-for>
+<sc-if value="{{noModules}}" hint-placeholder-val="{{ false }}">
+<div class="card" style="display: grid; gap: 10px; justify-items: start">
+<b>Tu curso todavía no tiene módulos.</b>
+<span class="small">Un módulo agrupa lecciones sobre un mismo tema. La mayoría de los cursos tiene entre 3 y 5.</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap"><button type="button" class="btn btn--p" sc-camel-on-click="{{useTemplate}}">Usar estructura sugerida</button><button type="button" class="btn" sc-camel-on-click="{{addModule}}">Agregar módulo</button></div>
+</div>
+</sc-if>
+<sc-if value="{{hasModules}}" hint-placeholder-val="{{ true }}"><div><button type="button" class="btn" sc-camel-on-click="{{addModule}}"><svg class="ico" sc-camel-view-box="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Agregar módulo</button></div></sc-if>
+</sc-if>
+
+<sc-if value="{{s3}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; gap: 10px" role="radiogroup" aria-label="Modalidad">
+<label class="{{ritmoCls}}"><input type="radio" name="modality" checked="{{isRitmo}}" sc-camel-on-change="{{pickRitmo}}"><span><b>A su ritmo <span class="tag">Más simple</span></b><small>Cada estudiante empieza cuando se inscribe y avanza cuando puede.</small></span></label>
+<label class="{{fechasCls}}"><input type="radio" name="modality" checked="{{isFechas}}" sc-camel-on-change="{{pickFechas}}"><span><b>Con fechas de inicio y término</b><small>Todo el grupo avanza en el mismo periodo. Útil para pilotos con empresas.</small></span></label>
+</div>
+<sc-if value="{{isFechas}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 14px">
+<div class="field"><label class="lbl" for="f-start">Inicio</label><input class="in" id="f-start" type="date"></div>
+<div class="field"><label class="lbl" for="f-end">Término <span class="opt">Opcional</span></label><input class="in" id="f-end" type="date"></div>
+</div>
+</sc-if>
+<sc-if value="{{errModality}}" hint-placeholder-val="{{ false }}"><p class="err">Elige una modalidad.</p></sc-if>
+<div class="card"><label style="display: flex; gap: 10px; align-items: flex-start; cursor: pointer"><input type="checkbox" checked="{{live}}" sc-camel-on-change="{{toggleLive}}" style="width: 20px; height: 20px; margin: 2px 0 0; accent-color: {{accent}}"><span><b>Incluir sesiones en vivo</b><br><span class="small">Encuentros por videollamada dentro del curso. Tú registras la asistencia después de cada sesión.</span></span></label></div>
+</sc-if>
+
+<sc-if value="{{s4}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; gap: 10px" role="radiogroup" aria-label="Acceso">
+<label class="{{inviteCls}}"><input type="radio" name="access" checked="{{isInvite}}" sc-camel-on-change="{{pickInvite}}"><span><b>Solo personas que yo invite <span class="tag">Recomendado para pilotos</span></b><small>Solo podrán inscribirse las personas que registres.</small></span></label>
+<label class="{{linkCls}}"><input type="radio" name="access" checked="{{isLink}}" sc-camel-on-change="{{pickLink}}"><span><b>Cualquiera con el enlace</b><small>Quien tenga el enlace podrá inscribirse.</small></span></label>
+</div>
+<sc-if value="{{errAccess}}" hint-placeholder-val="{{ false }}"><p class="err">Elige quién puede inscribirse.</p></sc-if>
+<p class="small">Los cobros no están disponibles en esta etapa: todos los cursos son sin costo para el estudiante.</p>
+</sc-if>
+
+<sc-if value="{{s5}}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{showErrSum}}" hint-placeholder-val="{{ false }}">
+<div class="errsum" role="alert">
+<b>Faltan {{blockCount}} cosas para publicar</b>
+<ul>
+<sc-for list="{{blockers}}" as="b" hint-placeholder-count="2"><li>{{b.msg}} <button type="button" class="link" sc-camel-on-click="{{b.go}}">Corregir en {{b.stepName}}</button></li></sc-for>
+</ul>
+</div>
+</sc-if>
+<sc-if value="{{ready}}" hint-placeholder-val="{{ false }}"><div style="padding: 12px 14px; border-radius: 10px; background: #E3F4E8; border: 1px solid color-mix(in srgb, #166534 30%, transparent); font-weight: 600">Tu curso cumple todo lo necesario para publicarse.</div></sc-if>
+
+<section class="card" aria-labelledby="pv-h">
+<h2 class="h2" id="pv-h" style="margin-bottom: 12px">Así lo verán tus estudiantes</h2>
+<div style="border: 1px solid #DEDCE8; border-radius: 12px; overflow: hidden">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #DEDCE8; background: #FDFCFA"><span class="lg" style="width: 28px; height: 28px; border-radius: 8px; padding: 3px" aria-hidden="true"><svg sc-camel-view-box="0 0 32 32" width="100%" height="100%"><circle cx="22" cy="9" r="4" fill="#E0A82E"></circle><path d="M2 27 12 11l6 9 3-4 9 11z" fill="{{accent}}"></path></svg></span><b style="font-size: 13.5px">Contratos Mineros</b></div>
+<div style="height: 8px; background: {{accent}}"></div>
+<div style="padding: 16px 14px; display: grid; gap: 6px; background: #FAF9F6">
+<b style="font-size: 18px; line-height: 1.3">{{titleShown}}</b>
+<p class="small" style="color: #3B4163">{{descShown}}</p>
+<span class="small">{{contentSummary}}</span>
+</div>
+</div>
+</section>
+
+<section class="card" aria-labelledby="cr-h">
+<h2 class="h2" id="cr-h" style="margin-bottom: 6px">Necesario para publicar</h2>
+<ul class="crit">
+<sc-for list="{{criteria}}" as="c" hint-placeholder-count="5">
+<li><span class="{{c.cls}}" aria-hidden="true"><sc-if value="{{c.ok}}" hint-placeholder-val="{{ true }}"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 14px; height: 14px"><path d="M20 6 9 17l-5-5"></path></svg></sc-if><sc-if value="{{c.no}}" hint-placeholder-val="{{ false }}"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 14px; height: 14px"><circle cx="12" cy="12" r="1"></circle></svg></sc-if></span><span style="flex: 1">{{c.t}}<span style="position: absolute; width: 1px; height: 1px; overflow: hidden">{{c.sr}}</span></span><sc-if value="{{c.no}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--g btn--sm" sc-camel-on-click="{{c.go}}">Ir</button></sc-if></li>
+</sc-for>
+</ul>
+</section>
+</sc-if>
+</div>
+</div>
+
+<div class="actbar">
+<div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<button type="button" class="btn" disabled="{{isFirst}}" sc-camel-on-click="{{back}}">Atrás</button>
+<span class="small" style="flex: 1; min-width: 160px">{{barHint}}</span>
+<sc-if value="{{notLast}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--p" sc-camel-on-click="{{next}}">Siguiente</button></sc-if>
+<sc-if value="{{isLast}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--p" sc-camel-on-click="{{tryPublish}}">Publicar curso</button></sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{confirm}}" hint-placeholder-val="{{ false }}">
+<div class="scrim">
+<div role="dialog" aria-modal="true" aria-labelledby="cf-h" style="width: min(480px, 100%); background: #FDFCFA; border-radius: 20px; padding: 24px; display: grid; gap: 12px; box-shadow: 0 8px 20px rgba(10,16,41,.12), 0 24px 60px rgba(10,16,41,.18)">
+<h2 class="h2" id="cf-h">¿Publicar «{{titleShown}}»?</h2>
+<p class="small" style="color: #3B4163">Quedará disponible para las personas con acceso. Después de publicar puedes seguir editándolo.</p>
+<div style="display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 4px"><button type="button" class="btn btn--g" sc-camel-on-click="{{cancelPublish}}">Seguir revisando</button><button type="button" class="btn btn--p" sc-camel-on-click="{{doPublish}}">Publicar curso</button></div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0F766E&quot;,&quot;options&quot;:[&quot;#0F766E&quot;,&quot;#2563EB&quot;,&quot;#7C3AED&quot;,&quot;#B45309&quot;]},&quot;start&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;sugerida&quot;,&quot;cero&quot;],&quot;default&quot;:&quot;sugerida&quot;},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1400}}">
+const STEP_INFO = [
+  ['Lo esencial', 'Título y descripción', 'Lo mínimo para que alguien entienda tu curso de un vistazo. Lo demás puede esperar.'],
+  ['Objetivo', 'Qué podrán hacer al terminar', 'Un buen objetivo describe algo que tus estudiantes podrán hacer en su trabajo.'],
+  ['Estructura y contenido', 'Módulos, lecciones y actividades', 'Ordena tu curso en módulos y lecciones. Cada lección puede ser un video, un texto o un documento.'],
+  ['Modalidad y fechas', 'A su ritmo o con fechas', 'Define cuándo y cómo avanzan tus estudiantes. Si no estás seguro, a su ritmo es lo más simple.'],
+  ['Acceso', 'Quién puede inscribirse', 'Decide quién puede inscribirse. Para un piloto, lo habitual es invitar a personas específicas.'],
+  ['Revisar y publicar', 'Vista previa y publicación', 'Revisa el resumen, mira tu curso como lo verán tus estudiantes y publícalo.']
+];
+const TYPE_INFO = {
+  video: ['Video', 'Enlace del video', 'https://', 'YouTube, Vimeo o Google Drive, como enlace no listado.'],
+  texto: ['Texto', 'Texto de la lección', 'Escribe o pega el texto', 'Puedes pegarlo desde tu documento.'],
+  doc: ['Documento', 'Enlace al documento', 'https://', 'Google Drive, Dropbox o OneDrive, con acceso para quien tenga el enlace.']
+};
+let uid = 0;
+const nid = () => 'x' + (++uid);
+const les = (title, type) => ({ id: nid(), title: title, type: type, content: '' });
+const template = () => [
+  { id: nid(), title: 'Contexto y conceptos clave', lessons: [les('Por qué importa este tema', 'video')] },
+  { id: nid(), title: 'Casos reales', lessons: [les('Un caso que salió bien y uno que no', 'texto')] },
+  { id: nid(), title: 'Aplicación en tu trabajo', lessons: [les('Cómo llevarlo a tu equipo', 'texto')] }
+];
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 0, title: '', desc: '', audience: '', objectives: [''], modules: (props.start === 'cero') ? [] : template(), modality: '', live: false, access: '', open: null, tried: false, confirm: false, published: false, saving: false };
+  }
+  componentWillUnmount() { clearTimeout(this.t); }
+  upd(patch) {
+    this.setState(Object.assign({}, patch, { saving: true }));
+    clearTimeout(this.t);
+    this.t = setTimeout(() => this.setState({ saving: false }), 700);
+  }
+  mods(fn) { const m = JSON.parse(JSON.stringify(this.state.modules)); fn(m); this.upd({ modules: m }); }
+  blockersOf(s) {
+    const b = [];
+    if (s.title.trim().length < 5) b.push({ step: 0, msg: 'Falta un título de al menos 5 caracteres.' });
+    if (s.desc.trim().length < 50) b.push({ step: 0, msg: 'La descripción necesita al menos 50 caracteres.' });
+    if (!s.objectives.some((o) => o.trim())) b.push({ step: 1, msg: 'Falta al menos un objetivo.' });
+    if (!s.modules.length) b.push({ step: 2, msg: 'Tu curso no tiene módulos.' });
+    s.modules.forEach((m, i) => {
+      if (!m.title.trim()) b.push({ step: 2, msg: 'El módulo ' + (i + 1) + ' no tiene nombre.' });
+      if (!m.lessons.length) b.push({ step: 2, msg: 'El módulo ' + (i + 1) + ' no tiene lecciones.' });
+      m.lessons.forEach((l) => { if (!l.content.trim()) b.push({ step: 2, msg: 'La lección «' + (l.title || 'sin título') + '» no tiene contenido.' }); });
+    });
+    if (!s.modality) b.push({ step: 3, msg: 'Falta elegir la modalidad.' });
+    if (!s.access) b.push({ step: 4, msg: 'Falta definir quién puede inscribirse.' });
+    return b;
+  }
+  renderVals() {
+    const s = this.state, accent = this.props.accent ?? '#0F766E';
+    const B = this.blockersOf(s);
+    const bad = (st) => B.filter((x) => x.step === st).length;
+    const go = (i) => () => this.setState({ step: i, open: null });
+    const tried = s.tried;
+    const nL = s.modules.reduce((a, m) => a + m.lessons.length, 0);
+    const nC = s.modules.reduce((a, m) => a + m.lessons.filter((l) => l.content.trim()).length, 0);
+    const plural = (n, a, b) => n + ' ' + (n === 1 ? a : b);
+    const steps = STEP_INFO.map((x, i) => {
+      const n = bad(i), cur = s.step === i, done = i < 5 && !n;
+      const showBad = tried && n > 0;
+      return {
+        t: x[0], num: i + 1, go: go(i), cur: cur ? 'step' : 'false', done: done && !cur, notDone: !(done && !cur),
+        cls: 'stp' + (cur ? ' stp--cur' : ''),
+        dotCls: 'dot' + (done && !cur ? ' dot--done' : showBad ? ' dot--bad' : cur ? ' dot--cur' : ''),
+        sub: showBad ? plural(n, 'pendiente', 'pendientes') : (done ? 'Listo' : x[1]),
+        subCls: 'ss' + (showBad ? ' ss--bad' : '')
+      };
+    });
+    const objectives = s.objectives.map((o, i) => ({
+      id: 'f-obj-' + i, num: i + 1, val: o, ph: i === 0 ? 'negociar una cláusula de reajuste sin perder margen' : 'otro resultado concreto', canRm: s.objectives.length > 1,
+      onInput: (e) => { const a = s.objectives.slice(); a[i] = e.target.value; this.upd({ objectives: a }); },
+      rm: () => { const a = s.objectives.slice(); a.splice(i, 1); this.upd({ objectives: a }); }
+    }));
+    const modules = s.modules.map((m, mi) => ({
+      id: 'f-mod-' + m.id, num: mi + 1, title: m.title, empty: !m.lessons.length,
+      onTitle: (e) => { const v = e.target.value; this.mods((M) => { M[mi].title = v; }); },
+      rm: () => this.mods((M) => { M.splice(mi, 1); }),
+      addLesson: () => { const l = les('Nueva lección', 'video'); this.mods((M) => { M[mi].lessons.push(l); }); this.setState({ open: l.id }); },
+      lessons: m.lessons.map((l, li) => {
+        const T = TYPE_INFO[l.type], isOpen = s.open === l.id, has = !!l.content.trim();
+        const setType = (t) => () => this.mods((M) => { M[mi].lessons[li].type = t; });
+        return {
+          title: l.title || 'Lección sin título', typeLabel: T[0], isOpen: isOpen, btn: isOpen ? 'Cerrar' : 'Editar',
+          status: has ? 'Con contenido' : (tried ? 'Falta completar' : 'Sin contenido'), statusCls: has ? '' : (tried ? 'bad' : 'pend'),
+          idT: 'f-lt-' + l.id, idC: 'f-lc-' + l.id, content: l.content, contentLabel: T[1], contentPh: T[2], contentHelp: T[3],
+          isVideo: l.type === 'video', isTexto: l.type === 'texto', isDoc: l.type === 'doc',
+          setVideo: setType('video'), setTexto: setType('texto'), setDoc: setType('doc'),
+          toggle: () => this.setState({ open: isOpen ? null : l.id }),
+          onTitle: (e) => { const v = e.target.value; this.mods((M) => { M[mi].lessons[li].title = v; }); },
+          onContent: (e) => { const v = e.target.value; this.mods((M) => { M[mi].lessons[li].content = v; }); },
+          rm: () => this.mods((M) => { M[mi].lessons.splice(li, 1); })
+        };
+      })
+    }));
+    const crit = [['Título y descripción completos', 0], ['Al menos un objetivo de aprendizaje', 1], ['Cada módulo tiene lecciones y cada lección tiene contenido', 2], ['Modalidad elegida', 3], ['Acceso definido', 4]];
+    const choice = (on) => 'choice' + (on ? ' choice--on' : '');
+    const nextName = s.step < 5 ? STEP_INFO[s.step + 1][0] : '';
+    return {
+      accent: accent,
+      titleShown: s.title.trim() || 'Curso sin título', descShown: s.desc.trim() || 'Aquí aparecerá la descripción de tu curso.',
+      statusLabel: s.published ? 'Publicado' : 'Borrador', saving: s.saving, saved: !s.saving,
+      published: s.published, editing: !s.published, confirm: s.confirm,
+      steps: steps, stepNum: s.step + 1, stepTitle: STEP_INFO[s.step][0], stepIntro: STEP_INFO[s.step][2],
+      s0: s.step === 0, s1: s.step === 1, s2: s.step === 2, s3: s.step === 3, s4: s.step === 4, s5: s.step === 5,
+      title: s.title, titleCount: s.title.length, desc: s.desc, descCount: s.desc.length, audience: s.audience,
+      errTitle: tried && s.title.trim().length < 5, errDesc: tried && s.desc.trim().length < 50,
+      titleCls: 'in' + (tried && s.title.trim().length < 5 ? ' in--bad' : ''), descCls: 'in' + (tried && s.desc.trim().length < 50 ? ' in--bad' : ''),
+      onTitle: (e) => this.upd({ title: e.target.value }), onDesc: (e) => this.upd({ desc: e.target.value }), onAud: (e) => this.upd({ audience: e.target.value }),
+      objectives: objectives, canAddObj: s.objectives.length < 3, addObj: () => this.upd({ objectives: s.objectives.concat(['']) }), errObj: tried && bad(1) > 0,
+      modules: modules, noModules: !s.modules.length, hasModules: s.modules.length > 0, errMods: tried && bad(2) > 0,
+      contentSummary: s.modules.length ? plural(s.modules.length, 'módulo', 'módulos') + ' · ' + plural(nL, 'lección', 'lecciones') + ' · ' + nC + ' con contenido' : 'Sin módulos todavía',
+      useTemplate: () => this.upd({ modules: template() }),
+      addModule: () => this.mods((M) => { M.push({ id: nid(), title: '', lessons: [] }); }),
+      isRitmo: s.modality === 'ritmo', isFechas: s.modality === 'fechas', ritmoCls: choice(s.modality === 'ritmo'), fechasCls: choice(s.modality === 'fechas'),
+      pickRitmo: () => this.upd({ modality: 'ritmo' }), pickFechas: () => this.upd({ modality: 'fechas' }), errModality: tried && !s.modality,
+      live: s.live, toggleLive: () => this.upd({ live: !s.live }),
+      isInvite: s.access === 'invite', isLink: s.access === 'link', inviteCls: choice(s.access === 'invite'), linkCls: choice(s.access === 'link'),
+      pickInvite: () => this.upd({ access: 'invite' }), pickLink: () => this.upd({ access: 'link' }), errAccess: tried && !s.access,
+      blockers: B.map((x) => ({ msg: x.msg, stepName: STEP_INFO[x.step][0], go: go(x.step) })), blockCount: B.length,
+      showErrSum: tried && B.length > 0, ready: !B.length,
+      criteria: crit.map((c) => { const ok = !bad(c[1]); return { t: c[0], ok: ok, no: !ok, cls: 'ci ' + (ok ? 'ci--ok' : 'ci--no'), sr: ok ? ': cumple' : ': pendiente', go: go(c[1]) }; }),
+      isFirst: s.step === 0, isLast: s.step === 5, notLast: s.step < 5,
+      barHint: s.step < 5 ? 'Siguiente: ' + nextName : 'Te pediremos confirmar antes de publicar.',
+      back: () => this.setState({ step: Math.max(0, s.step - 1), open: null }),
+      next: () => this.setState({ step: Math.min(5, s.step + 1), open: null }),
+      tryPublish: () => { if (B.length) this.setState({ tried: true }); else this.setState({ confirm: true }); },
+      cancelPublish: () => this.setState({ confirm: false }),
+      doPublish: () => this.setState({ confirm: false, published: true })
+    };
+  }
+}
+</script>
+
+
+</body></html>

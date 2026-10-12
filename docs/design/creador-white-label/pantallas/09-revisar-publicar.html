@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="only light">
+<title>Revisar y publicar el curso</title>
+<script src="83e7dad3-eead-47ab-a03b-081a057a8678"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("560de5cd-4929-4059-8ccb-e22459bdc208") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("560de5cd-4929-4059-8ccb-e22459bdc208") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("560de5cd-4929-4059-8ccb-e22459bdc208") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("560de5cd-4929-4059-8ccb-e22459bdc208") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+html,body{margin:0;background:#FAF9F6;color-scheme:only light}
+a{color:#0A1029}a:hover{color:#3B4163}
+.r *{box-sizing:border-box}
+.r h1,.r h2,.r p{margin:0}
+.r button,.r input{font-family:inherit}
+.ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hdr{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:10px 20px;background:#FDFCFA;border-bottom:1px solid #DEDCE8;flex-wrap:wrap}
+.lg{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;background:#fff;border:1px solid #DEDCE8;padding:4px}
+.sep{width:1px;height:28px;background:#DEDCE8;flex:none}
+.chip{display:inline-flex;align-items:center;padding:1px 7px;border-radius:6px;border:1px solid #7C7F9C;font:600 11.5px/1.5 Inter,sans-serif;color:#3B4163}
+.chip--ok{border-color:transparent;background:#E3F4E8;color:#166534}
+.card{background:#FDFCFA;border:1px solid #DEDCE8;border-radius:16px;padding:20px}
+.ov{font:700 11.5px/1.3 Inter,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#3B4163}
+.h1{font:700 24px/1.2 Inter,sans-serif;letter-spacing:-0.015em}
+.h2{font:600 18px/1.3 Inter,sans-serif;letter-spacing:-0.015em}
+.small{font:400 13px/1.45 Inter,sans-serif;color:#5A5F7A}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:10px;border:1px solid #7C7F9C;background:#FDFCFA;color:#0A1029;font:600 14px/1 Inter,sans-serif;cursor:pointer;white-space:nowrap;text-decoration:none}
+.btn:hover{background:#F2F0F7;color:#0A1029}
+.btn--p{background:var(--ac);border-color:var(--ac);color:#fff}
+.btn--p:hover{background:color-mix(in srgb,var(--ac) 82%,#0A1029);color:#fff}
+.btn--g{border-color:transparent;background:transparent}
+.btn--sm{min-height:34px;padding:0 12px;font-size:13px;border-radius:8px}
+.btn[aria-busy="true"]{cursor:progress;opacity:.85}
+.btn:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.stp{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:center;padding:8px 10px;border-radius:10px;text-decoration:none;color:#0A1029}
+.stp:hover{background:#F2F0F7;color:#0A1029}
+.stp--cur{background:#FDFCFA;box-shadow:inset 3px 0 0 var(--ac),0 1px 2px rgba(10,16,41,.05),0 4px 12px rgba(10,16,41,.05)}
+.dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:700 12.5px/1 Inter,sans-serif;border:1.5px solid #7C7F9C;color:#5A5F7A;background:#FDFCFA}
+.dot--done{background:#E3F4E8;color:#166534;border-color:transparent}
+.dot--bad{border-color:#B42318;color:#B42318}
+.dot--cur{border-color:var(--ac);color:#0A1029}
+.st{display:block;font:600 14px/1.3 Inter,sans-serif}
+.ss{display:block;font:400 12px/1.35 Inter,sans-serif;color:#5A5F7A}
+.ss--bad{color:#B42318}
+.crit{list-style:none;margin:0;padding:0}
+.crit li{display:flex;gap:10px;align-items:center;padding:11px 0;border-top:1px solid #DEDCE8;font-size:14.5px}
+.crit li:first-child{border-top:0;padding-top:4px}
+.ci{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ci--ok{background:#E3F4E8;color:#166534}
+.ci--no{background:#F2F0F7;color:#5A5F7A}
+.ci--bad{background:#FCE6E4;color:#B42318}
+.ci--rec{background:#E8EFFD;color:#1D4ED8}
+.errsum{padding:16px;border-radius:12px;border:2px solid #B42318;background:#FCE6E4}
+.errsum ul{margin:8px 0 0;padding-left:20px;display:grid;gap:6px;font-size:14px}
+.ok{padding:12px 14px;border-radius:10px;background:#E3F4E8;border:1px solid color-mix(in srgb,#166534 30%,transparent);display:flex;gap:10px;align-items:center;font-weight:600}
+.sum{display:grid;gap:0}
+.srow{display:grid;grid-template-columns:130px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px 0;border-top:1px solid #DEDCE8;font-size:14px}
+.srow:first-child{border-top:0}
+.srow > span:first-child{color:#5A5F7A;font-weight:600;font-size:13px}
+.muted{color:#5A5F7A;font-style:italic}
+.actbar{position:sticky;bottom:0;background:#FDFCFA;border-top:1px solid #DEDCE8;padding:12px 20px}
+.scrim{position:absolute;inset:0;background:rgba(10,16,41,.42);display:grid;place-items:center;padding:16px;z-index:10}
+.linkbox{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.linkbox code{flex:1 1 260px;min-width:0;padding:10px 12px;border-radius:10px;border:1px dashed #7C7F9C;background:#F2F0F7;font:500 14px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}
+.nx{list-style:none;margin:0;padding:0}
+.nx li{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid #DEDCE8}
+.nx li:first-child{border-top:0;padding-top:0}
+@media (max-width:899px){.stepper{display:none}.hdr .hide-m{display:none}.srow{grid-template-columns:minmax(0,1fr) auto}.srow > span:first-child{grid-column:1 / -1}}
+</style>
+</helmet>
+<div class="r" style="--ac: {{accent}}; position: relative; font-family: Inter, system-ui, sans-serif; color: #0A1029; background: #FAF9F6; font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; min-height: 1500px; display: flex; flex-direction: column">
+
+<header class="hdr">
+<div style="display: flex; align-items: center; gap: 10px">
+<span class="lg" aria-hidden="true"><svg sc-camel-view-box="0 0 32 32" width="100%" height="100%"><circle cx="22" cy="9" r="4" fill="#E0A82E"></circle><path d="M2 27 12 11l6 9 3-4 9 11z" fill="{{accent}}"></path><path d="M12 11l3 4.6-3 1.4-3-1.4z" fill="#fff" opacity=".7"></path></svg></span>
+<b class="hide-m" style="font-size: 14px; white-space: nowrap">Contratos Mineros</b>
+</div>
+<span class="sep hide-m" aria-hidden="true"></span>
+<div style="flex: 1; min-width: 0; display: grid; gap: 2px">
+<span style="font-weight: 600; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Negociar contratos de suministro en minería</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #5A5F7A"><span class="{{statusCls}}">{{statusLabel}}</span><span>{{savedLabel}}</span></span>
+</div>
+<a class="btn btn--g btn--sm" href="VistaPrevia.dc.html"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 16px; height: 16px" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>Vista previa</a>
+<a class="btn btn--g btn--sm" href="InicioPublicado.dc.html">Guardar y salir</a>
+</header>
+
+<sc-if value="{{published}}" hint-placeholder-val="{{ false }}">
+<div style="max-width: 680px; width: 100%; margin: 0 auto; padding: 56px 16px 96px; display: grid; gap: 20px">
+<span style="width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: #E3F4E8; color: #166534" aria-hidden="true"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 26px; height: 26px"><path d="M20 6 9 17l-5-5"></path></svg></span>
+<div style="display: grid; gap: 8px">
+<h1 class="h1" tabindex="-1">Tu curso está publicado</h1>
+<p style="color: #3B4163">«Negociar contratos de suministro en minería» ya aparece como publicado en tus cursos. Puedes seguir editándolo cuando quieras.</p>
+</div>
+<section class="card" aria-labelledby="lk-h">
+<h2 class="h2" id="lk-h" style="margin-bottom: 6px">Enlace del curso</h2>
+<p class="small" style="margin-bottom: 12px">Compártelo con las personas que invitaste. Solo podrán inscribirse quienes registres.</p>
+<div class="linkbox">
+<code>contratosmineros.academia/negociar-contratos-suministro</code>
+<button type="button" class="btn" sc-camel-on-click="{{copy}}">{{copyLabel}}</button>
+</div>
+<p class="small" role="status" style="margin-top: 6px">{{copyMsg}}</p>
+</section>
+<section class="card" aria-labelledby="nx-h">
+<h2 class="h2" id="nx-h" style="margin-bottom: 12px">Lo que sigue</h2>
+<ul class="nx">
+<li><span class="ci ci--no" aria-hidden="true">4</span><span style="flex: 1"><b style="display: block">Registra a los estudiantes del piloto</b><span class="small">Así llevas su seguimiento desde Estudiantes.</span></span><a class="btn btn--p btn--sm" href="#">Registrar estudiantes</a></li>
+<li><span class="ci ci--no" aria-hidden="true"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 14px; height: 14px"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg></span><span style="flex: 1"><b style="display: block">Programa una sesión en vivo</b><span class="small">Opcional. Pegas el enlace de Zoom, Meet o Teams.</span></span><a class="btn btn--sm" href="#">Programar</a></li>
+</ul>
+</section>
+<div><a class="btn btn--g" href="InicioPublicado.dc.html">Volver a Inicio</a></div>
+</div>
+</sc-if>
+
+<sc-if value="{{editing}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 24px 24px 40px; display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+<nav class="stepper" style="flex: 0 0 260px; display: grid; gap: 2px" aria-label="Pasos para crear el curso">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="6">
+<a class="{{s.cls}}" href="EditorCurso.dc.html" aria-current="{{s.cur}}">
+<span class="{{s.dotCls}}" aria-hidden="true"><sc-if value="{{s.done}}" hint-placeholder-val="{{ true }}"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 15px; height: 15px"><path d="M20 6 9 17l-5-5"></path></svg></sc-if><sc-if value="{{s.notDone}}" hint-placeholder-val="{{ false }}">{{s.num}}</sc-if></span>
+<span><span class="st">{{s.t}}</span><span class="{{s.subCls}}">{{s.sub}}</span></span>
+</a>
+</sc-for>
+</nav>
+
+<div style="flex: 999 1 480px; min-width: 0; max-width: 720px; display: grid; gap: 14px; align-content: start">
+<div style="display: grid; gap: 6px; margin-bottom: 6px">
+<span class="ov">Paso 6 de 6</span>
+<h1 class="h1">Revisar y publicar</h1>
+<p style="color: #3B4163; max-width: 62ch">Revisa el resumen, mira tu curso como lo verán tus estudiantes y publícalo. Después de publicar puedes seguir editando.</p>
+</div>
+
+<sc-if value="{{showErr}}" hint-placeholder-val="{{ false }}">
+<div class="errsum" role="alert">
+<b>Faltan 2 cosas para publicar</b>
+<ul>
+<li>La lección «Cómo llevarlo a tu equipo» no tiene contenido. <a href="EditorCurso.dc.html" style="color: #0A1029; font-weight: 600">Corregir en Estructura y contenido</a></li>
+<li>Falta definir quién puede inscribirse. <a href="EditorCurso.dc.html" style="color: #0A1029; font-weight: 600">Corregir en Acceso</a></li>
+</ul>
+</div>
+</sc-if>
+<sc-if value="{{ready}}" hint-placeholder-val="{{ false }}">
+<div class="ok"><svg class="ico" sc-camel-view-box="0 0 24 24" style="color: #166534" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Tu curso cumple todo lo necesario para publicarse.</div>
+</sc-if>
+
+<section class="card" aria-labelledby="pv-h">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px">
+<h2 class="h2" id="pv-h">Vista previa</h2>
+<a class="btn" href="VistaPrevia.dc.html"><svg class="ico" sc-camel-view-box="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>Ver como estudiante</a>
+</div>
+<p class="small">Recomendado antes de publicar: así detectas lo que falta o se ve raro.</p>
+</section>
+
+<section class="card" aria-labelledby="cr-h">
+<h2 class="h2" id="cr-h" style="margin-bottom: 8px">Necesario para publicar</h2>
+<ul class="crit">
+<sc-for list="{{criteria}}" as="c" hint-placeholder-count="5">
+<li><span class="{{c.cls}}" aria-hidden="true"><sc-if value="{{c.ok}}" hint-placeholder-val="{{ true }}"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 14px; height: 14px"><path d="M20 6 9 17l-5-5"></path></svg></sc-if><sc-if value="{{c.no}}" hint-placeholder-val="{{ false }}"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 14px; height: 14px"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg></sc-if></span>
+<span style="flex: 1">{{c.t}}<sc-if value="{{c.no}}" hint-placeholder-val="{{ false }}"><span class="small" style="display: block">{{c.detail}}</span></sc-if></span>
+<sc-if value="{{c.no}}" hint-placeholder-val="{{ false }}"><a class="btn btn--g btn--sm" href="EditorCurso.dc.html">Ir</a></sc-if></li>
+</sc-for>
+</ul>
+</section>
+
+<section class="card" aria-labelledby="rc-h">
+<h2 class="h2" id="rc-h" style="margin-bottom: 8px">Recomendaciones <span class="small" style="font-weight: 500">No impiden publicar</span></h2>
+<ul class="crit">
+<li><span class="ci ci--rec" aria-hidden="true"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 14px; height: 14px"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg></span><span style="flex: 1">Agrega una actividad para practicar en al menos un módulo.</span><a class="btn btn--g btn--sm" href="EditorCurso.dc.html">Ir</a></li>
+<li><span class="ci ci--rec" aria-hidden="true"><svg class="ico" sc-camel-view-box="0 0 24 24" style="width: 14px; height: 14px"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg></span><span style="flex: 1">Revisa la vista previa antes de publicar.</span><a class="btn btn--g btn--sm" href="VistaPrevia.dc.html">Ver</a></li>
+</ul>
+</section>
+
+<section class="card" aria-labelledby="sm-h">
+<h2 class="h2" id="sm-h" style="margin-bottom: 4px">Resumen</h2>
+<div class="sum">
+<div class="srow"><span>Título</span><span>Negociar contratos de suministro en minería</span><a class="btn btn--g btn--sm" href="EditorCurso.dc.html">Editar</a></div>
+<div class="srow"><span>Descripción</span><span>Aprende a leer, negociar y administrar contratos de suministro con casos reales de faena, para cuidar el margen sin romper la relación con el proveedor.</span><a class="btn btn--g btn--sm" href="EditorCurso.dc.html">Editar</a></div>
+<div class="srow"><span>Objetivos</span><span>Identificar las tres cláusulas que más riesgo traen<br>Negociar una cláusula de reajuste sin perder margen</span><a class="btn btn--g btn--sm" href="EditorCurso.dc.html">Editar</a></div>
+<div class="srow"><span>Contenido</span><span>3 módulos · 5 lecciones · 1 actividad</span><a class="btn btn--g btn--sm" href="EditorCurso.dc.html">Editar</a></div>
+<div class="srow"><span>Modalidad</span><span>A su ritmo</span><a class="btn btn--g btn--sm" href="EditorCurso.dc.html">Editar</a></div>
+<div class="srow"><span>Acceso</span><span>{{accessShown}}</span><a class="btn btn--g btn--sm" href="EditorCurso.dc.html">Editar</a></div>
+</div>
+</section>
+</div>
+</div>
+
+<div class="actbar">
+<div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<a class="btn" href="EditorCurso.dc.html">Atrás</a>
+<span class="small" style="flex: 1; min-width: 160px">Te pediremos confirmar antes de publicar.</span>
+<button type="button" class="btn btn--p" aria-busy="{{publishing}}" sc-camel-on-click="{{tryPublish}}">{{publishLabel}}</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{confirm}}" hint-placeholder-val="{{ false }}">
+<div class="scrim">
+<div role="dialog" aria-modal="true" aria-labelledby="cf-h" style="width: min(500px, 100%); background: #FDFCFA; border-radius: 20px; padding: 24px; display: grid; gap: 12px; box-shadow: 0 8px 20px rgba(10,16,41,.12), 0 24px 60px rgba(10,16,41,.18)">
+<h2 class="h2" id="cf-h">¿Publicar «Negociar contratos de suministro en minería»?</h2>
+<ul style="margin: 0; padding-left: 20px; display: grid; gap: 6px; color: #3B4163; font-size: 14.5px">
+<li>Aparecerá como publicado en tus cursos.</li>
+<li>Podrán inscribirse solo las personas que registres.</li>
+<li>Puedes seguir editándolo; los cambios se guardan solos.</li>
+</ul>
+<div style="display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 4px"><button type="button" class="btn btn--g" sc-camel-on-click="{{cancel}}">Seguir revisando</button><button type="button" class="btn btn--p" sc-camel-on-click="{{doPublish}}">Publicar curso</button></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{failed}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 50%; bottom: 88px; transform: translateX(-50%); z-index: 11; display: flex; gap: 12px; align-items: center; padding: 10px 14px; border-radius: 10px; background: #0A1029; color: #FAF9F6; font: 500 14px/1.4 Inter, sans-serif; box-shadow: 0 2px 4px rgba(10,16,41,.06), 0 10px 24px rgba(10,16,41,.08)" role="alert">No se pudo publicar. Tu borrador sigue guardado.<button type="button" sc-camel-on-click="{{retry}}" style="background: none; border: 0; color: inherit; font: 700 14px/1 Inter, sans-serif; text-decoration: underline; cursor: pointer; padding: 6px; min-height: 32px">Reintentar</button></div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0F766E&quot;,&quot;options&quot;:[&quot;#0F766E&quot;,&quot;#2563EB&quot;,&quot;#7C3AED&quot;,&quot;#B45309&quot;]},&quot;estado&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;listo&quot;,&quot;pendientes&quot;,&quot;falla al publicar&quot;],&quot;default&quot;:&quot;listo&quot;},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1500}}">
+const STEPS = [['Lo esencial', 'Título y descripción'], ['Objetivo', 'Qué podrán hacer al terminar'], ['Estructura y contenido', 'Módulos, lecciones y actividades'], ['Modalidad y fechas', 'A su ritmo o con fechas'], ['Acceso', 'Quién puede inscribirse'], ['Revisar y publicar', 'Vista previa y publicación']];
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tried: false, confirm: false, publishing: false, published: false, failed: false, copied: false };
+  }
+  componentWillUnmount() { clearTimeout(this.t); }
+  publish() {
+    this.setState({ confirm: false, publishing: true, failed: false });
+    clearTimeout(this.t);
+    this.t = setTimeout(() => {
+      if (this.props.estado === 'falla al publicar' && !this.retried) { this.retried = true; this.setState({ publishing: false, failed: true }); }
+      else this.setState({ publishing: false, published: true });
+    }, 900);
+  }
+  renderVals() {
+    const s = this.state, estado = this.props.estado ?? 'listo', pend = estado === 'pendientes';
+    const badStep = (i) => pend && (i === 2 || i === 4);
+    const steps = STEPS.map((x, i) => {
+      const cur = i === 5, bad = badStep(i) && s.tried, done = !cur && !badStep(i);
+      return { t: x[0], num: i + 1, cur: cur ? 'step' : 'false', done: done, notDone: !done, cls: 'stp' + (cur ? ' stp--cur' : ''), dotCls: 'dot' + (done ? ' dot--done' : bad ? ' dot--bad' : cur ? ' dot--cur' : ''), sub: bad ? '1 pendiente' : done ? 'Listo' : x[1], subCls: 'ss' + (bad ? ' ss--bad' : '') };
+    });
+    const crit = [
+      ['Título y descripción completos', false, ''],
+      ['Al menos un objetivo de aprendizaje', false, ''],
+      ['Cada módulo tiene lecciones y cada lección tiene contenido', pend, '1 pendiente: «Cómo llevarlo a tu equipo»'],
+      ['Modalidad y fechas válidas', false, ''],
+      ['Acceso definido', pend, 'Elige quién puede inscribirse']
+    ].map((c) => ({ t: c[0], ok: !c[1], no: c[1], detail: c[2], cls: 'ci ' + (!c[1] ? 'ci--ok' : s.tried ? 'ci--bad' : 'ci--no') }));
+    return {
+      accent: this.props.accent ?? '#0F766E',
+      steps: steps, criteria: crit,
+      published: s.published, editing: !s.published, confirm: s.confirm, failed: s.failed,
+      showErr: pend && s.tried, ready: !pend,
+      accessShown: pend ? 'Sin elegir' : 'Solo personas que yo invite',
+      statusLabel: s.published ? 'Publicado' : 'Borrador', statusCls: 'chip' + (s.published ? ' chip--ok' : ''),
+      savedLabel: s.publishing ? 'Publicando…' : 'Borrador guardado',
+      publishing: s.publishing ? 'true' : 'false', publishLabel: s.publishing ? 'Publicando…' : 'Publicar curso',
+      tryPublish: () => { if (s.publishing) return; if (pend) this.setState({ tried: true }); else this.setState({ confirm: true, failed: false }); },
+      cancel: () => this.setState({ confirm: false }),
+      doPublish: () => this.publish(),
+      retry: () => this.publish(),
+      copyLabel: s.copied ? 'Copiado' : 'Copiar enlace',
+      copyMsg: s.copied ? 'Enlace copiado.' : '',
+      copy: () => { try { navigator.clipboard && navigator.clipboard.writeText('contratosmineros.academia/negociar-contratos-suministro'); } catch (e) {} this.setState({ copied: true }); }
+    };
+  }
+}
+</script>
+
+
+</body></html>

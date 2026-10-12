@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Viaje del usuario — MVP Avantia",
+    "output": "docs/producto/avantia-viaje-usuario-mvp.html",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "cliente", "label": "Alta de cliente + academia", "focus": ["p0", "s0", "p1", "p2", "p3"], "note": "Flujos 1 y 2: registro del profesor y creación del tenant." },
+      { "id": "curso", "label": "Creación de curso", "focus": ["p3", "s2", "a0"], "note": "Flujo 3: el curso nace en el panel y aparece en la página pública." },
+      { "id": "alumno", "label": "Alta de alumno", "focus": ["a0", "a1", "s0"], "note": "Flujo 4: mismo sistema de auth, sin dashboard de alumno." },
+      { "id": "inscripcion", "label": "Inscripción y pago", "focus": ["a1", "s3", "s4", "a2", "p4"], "note": "Flujo 5: rama gratis vs. pago, el insert nunca ocurre antes del webhook." },
+      { "id": "bloqueantes", "label": "Qué falta para el MVP", "focus": ["s0", "p2", "p3", "s3", "s4", "a1"], "note": "Todo lo marcado Falta es bloqueante para cerrar el recorrido completo." }
+    ]
+  },
+  "lanes": [
+    { "id": "profesor", "label": "Profesor" },
+    { "id": "sistema", "label": "Backend / datos" },
+    { "id": "alumno", "label": "Alumno" }
+  ],
+  "phases": [
+    { "id": "cuenta", "label": "1 · Cliente", "fromCol": 0, "toCol": 1 },
+    { "id": "academia", "label": "2 · Academia", "fromCol": 2, "toCol": 2 },
+    { "id": "curso", "label": "3 · Curso", "fromCol": 3, "toCol": 3 },
+    { "id": "inscripcion", "label": "4-5 · Alumno + pago", "fromCol": 4, "toCol": 5, "variant": "emphasis" }
+  ],
+  "mainPath": ["p0", "s0", "p1", "p2", "p3", "s2", "a0", "a1", "s4", "a2"],
+  "nodes": [
+    { "id": "p0", "lane": "profesor", "col": 0, "type": "frontend", "label": "Registro", "sublabel": "/registro", "width": 100 },
+    { "id": "p1", "lane": "profesor", "col": 1, "type": "frontend", "label": "Login", "sublabel": "sin academia", "width": 100 },
+    { "id": "p2", "lane": "profesor", "col": 2, "type": "backend", "label": "Crea academia", "sublabel": "slug + tenants", "tag": "Falta", "width": 130 },
+    { "id": "p3", "lane": "profesor", "col": 3, "type": "frontend", "label": "Crea curso", "sublabel": "IA o manual", "tag": "Falta", "width": 110 },
+    { "id": "p4", "lane": "profesor", "col": 5, "type": "external", "label": "Venta OK", "sublabel": "payout", "tag": "Falta", "width": 100 },
+
+    { "id": "s0", "lane": "sistema", "col": 0, "type": "security", "label": "Supabase Auth", "sublabel": "auth.users", "tag": "Falta", "width": 120 },
+    { "id": "s2", "lane": "sistema", "col": 3, "type": "database", "label": "cursos", "tag": "Existe", "width": 100 },
+    { "id": "s3", "lane": "sistema", "col": 4, "type": "security", "label": "Checkout", "sublabel": "Stripe/MP", "tag": "Falta", "width": 110 },
+    { "id": "s4", "lane": "sistema", "col": 5, "type": "database", "label": "inscripciones", "sublabel": "vía webhook", "tag": "Falta", "width": 120 },
+
+    { "id": "a0", "lane": "alumno", "col": 3, "type": "frontend", "label": "curso/[slug]", "sublabel": "público", "tag": "Existe", "width": 110 },
+    { "id": "a1", "lane": "alumno", "col": 4, "type": "frontend", "label": "Inscribirme", "sublabel": "→ registro", "tag": "Falta", "width": 110 },
+    { "id": "a2", "lane": "alumno", "col": 5, "type": "frontend", "label": "aprender/…", "sublabel": "RLS", "tag": "Falta", "width": 110 }
+  ],
+  "edges": [
+    { "from": "p0", "to": "s0", "label": "crea usuario" },
+    { "from": "s0", "to": "p1", "label": "verifica email" },
+    { "from": "p1", "to": "p2", "label": "sin academia" },
+    { "from": "p2", "to": "p3", "label": "al panel" },
+    { "from": "p3", "to": "s2", "label": "guarda" },
+    { "from": "s2", "to": "a0", "label": "publicado" },
+    { "from": "a0", "to": "a1", "label": "inscribirme" },
+    { "from": "a1", "to": "s3", "label": "pago", "variant": "security" },
+    { "from": "a1", "to": "s4", "label": "gratis", "variant": "dashed" },
+    { "from": "s3", "to": "s4", "label": "webhook", "variant": "security" },
+    { "from": "s4", "to": "a2", "label": "acceso" },
+    { "from": "s4", "to": "p4", "label": "payout", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Ya existe hoy", "items": ["tablas tenants, membresias y cursos", "POST /api/tenants y ruta de creación de curso con IA", "páginas checkout, aprender y curso/[slug]", "endpoints de webhook de Stripe/Mercado Pago (como stubs)"] },
+    { "dot": "rose", "title": "Falta y es bloqueante", "items": ["Supabase Auth real (hoy DEMO_TENANT_SLUG fijo)", "tabla inscripciones con RLS", "onboarding de Stripe Connect / Mercado Pago Connect por tenant — lo más grande que falta", "lógica del webhook que hace el insert en inscripciones"] },
+    { "dot": "cyan", "title": "Regla de oro del Flujo 5", "items": ["la inscripción nunca se crea antes de la confirmación del webhook", "curso gratuito → insert directo, sin checkout", "un solo proveedor de pago activo para el MVP"] }
+  ]
+}
