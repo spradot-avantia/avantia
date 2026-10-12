@@ -1,0 +1,97 @@
+/* Inicio, Cursos y Estudiantes del Espacio del Creador. Prefijo .ci-. Solo tokens --av-*. */
+.ci-stack { display: flex; flex-direction: column; gap: var(--av-space-5); }
+.ci-card {
+  background: var(--av-surface);
+  border: 1px solid var(--av-line);
+  border-radius: var(--av-radius-lg);
+  box-shadow: var(--av-shadow-xs);
+  padding: var(--av-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-3);
+  min-width: 0;
+}
+.ci-card--accent { border-color: var(--av-blue-200); background: var(--av-blue-50); }
+.ci-card--soon { border-style: dashed; border-color: var(--av-line-dashed); background: var(--av-surface-2); }
+.ci-card__title { font-size: var(--av-fs-lg); font-weight: var(--av-fw-semibold); line-height: var(--av-lh-heading); }
+.ci-card__text { color: var(--av-ink-2); }
+.ci-muted { color: var(--av-muted); font-size: var(--av-fs-sm); }
+.ci-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ci-overline {
+  font-size: var(--av-fs-xs); font-weight: var(--av-fw-medium);
+  letter-spacing: var(--av-ls-overline); text-transform: uppercase; color: var(--av-blue-700);
+}
+.ci-actions { display: flex; flex-wrap: wrap; gap: var(--av-space-3); }
+.ci-actions > * { flex: 1 1 100%; }
+@media (min-width: 560px) { .ci-actions > * { flex: 0 0 auto; } }
+
+.ci-grid { display: grid; gap: var(--av-space-4); grid-template-columns: 1fr; }
+@media (min-width: 600px) { .ci-grid--kpi { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .ci-grid--kpi { grid-template-columns: repeat(4, 1fr); } }
+
+.ci-kpi__value { font-size: var(--av-fs-h3); font-weight: var(--av-fw-semibold); line-height: 1; letter-spacing: var(--av-ls-h2); }
+.ci-kpi__label { font-size: var(--av-fs-sm); color: var(--av-muted); font-weight: var(--av-fw-medium); }
+
+/* Checklist */
+.ci-check__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--av-space-3); }
+.ci-check__count { font-size: var(--av-fs-sm); color: var(--av-muted); font-weight: var(--av-fw-medium); white-space: nowrap; }
+.ci-bar { height: 6px; border-radius: var(--av-radius-full); background: var(--av-line); overflow: hidden; }
+.ci-bar i { display: block; height: 100%; background: var(--av-blue-600); border-radius: inherit; }
+.ci-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.ci-step { display: flex; gap: var(--av-space-3); align-items: flex-start; padding: var(--av-space-3) 0; border-top: 1px solid var(--av-line); min-height: var(--av-target); }
+.ci-step:first-child { border-top: 0; }
+.ci-step__dot {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--av-surface-2); color: var(--av-ink-2); font-size: var(--av-fs-xs); font-weight: var(--av-fw-semibold);
+}
+.ci-step--hecho .ci-step__dot { background: var(--av-success-bg); color: var(--av-success); }
+.ci-step__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ci-step__title { font-weight: var(--av-fw-medium); }
+.ci-step--bloqueado .ci-step__title { color: var(--av-muted); }
+.ci-step__side { align-self: center; }
+.ci-step__link { display: inline-flex; align-items: center; min-height: var(--av-target); font-weight: var(--av-fw-medium); }
+
+/* Lista de cursos / estudiantes */
+.ci-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--av-space-3); }
+.ci-row {
+  display: flex; flex-direction: column; gap: var(--av-space-3);
+  background: var(--av-surface); border: 1px solid var(--av-line); border-radius: var(--av-radius-lg);
+  padding: var(--av-space-4); min-width: 0;
+}
+.ci-row--compact { padding: var(--av-space-3) var(--av-space-4); border-radius: var(--av-radius-md); }
+.ci-row__main { display: flex; flex-direction: column; gap: var(--av-space-2); min-width: 0; }
+.ci-row__title { font-weight: var(--av-fw-semibold); overflow-wrap: anywhere; }
+.ci-row__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--av-space-2) var(--av-space-3); color: var(--av-muted); font-size: var(--av-fs-sm); }
+@media (min-width: 700px) {
+  .ci-row { flex-direction: row; align-items: center; justify-content: space-between; }
+  .ci-row .ci-actions { flex-shrink: 0; flex-wrap: nowrap; }
+}
+
+/* Como empezar */
+.ci-options { display: grid; gap: var(--av-space-4); grid-template-columns: 1fr; }
+@media (min-width: 700px) { .ci-options { grid-template-columns: 1fr 1fr; } }
+.ci-option {
+  display: flex; flex-direction: column; gap: var(--av-space-3); align-items: flex-start; text-align: left;
+  width: 100%; min-height: var(--av-target); padding: var(--av-space-4);
+  background: var(--av-surface); border: 1.5px solid var(--av-line-strong); border-radius: var(--av-radius-lg);
+  font: inherit; color: inherit; cursor: pointer;
+}
+.ci-option:hover { border-color: var(--av-blue-600); }
+.ci-option--rec { border-color: var(--av-blue-600); }
+.ci-option[disabled] { opacity: 0.6; cursor: progress; }
+.ci-steplist { counter-reset: s; list-style: none; margin: 0; padding: 0; display: grid; gap: var(--av-space-3); }
+@media (min-width: 700px) { .ci-steplist { grid-template-columns: 1fr 1fr; } }
+.ci-steplist li { display: flex; gap: var(--av-space-3); align-items: flex-start; }
+.ci-steplist li::before {
+  counter-increment: s; content: counter(s); flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--av-surface-2); font-size: var(--av-fs-xs); font-weight: var(--av-fw-semibold);
+}
+.ci-steplist strong { display: block; }
+
+/* Formulario de estudiantes */
+.ci-form { display: flex; flex-direction: column; gap: var(--av-space-4); }
+.ci-link { font-family: var(--av-font-mono); font-size: var(--av-fs-sm); overflow-wrap: anywhere; background: var(--av-surface); padding: var(--av-space-3); border-radius: var(--av-radius-md); margin-top: var(--av-space-3); }
+.ci-result { margin: 0; padding-left: 1.2em; }
+.ci-skel { height: 96px; border-radius: var(--av-radius-lg); background: var(--av-line); animation: ci-pulse 1.4s ease-in-out infinite; }
+@keyframes ci-pulse { 50% { opacity: 0.5; } }
+@media (prefers-reduced-motion: reduce) { .ci-skel { animation: none; } }

@@ -1,7 +1,6 @@
+import { redirect } from "next/navigation";
+
+// La marca vive ahora en /mi-academia.
 export default function MarcaPage() {
-  return (
-    <section>
-      <h1>Logo, colores y theming</h1>
-    </section>
-  );
+  redirect("/mi-academia");
 }
