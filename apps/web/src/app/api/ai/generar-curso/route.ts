@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 import { generarCursoDesdeMaterial } from "../../../../lib/ai/generarCurso";
+import { getCreadorContext } from "../../../../lib/creador/tenantActual";
 
 export async function POST(request: Request) {
-  // TODO: derivar el tenant de la sesión del usuario logueado (panel
-  // interno, sin hostname propio) en vez de recibirlo en el body. Mismo gap
-  // que existía en la versión Express: resolveTenant no fijaba tenant para
-  // requests al panel, quedaba pendiente resolverlo por sesión.
-  const { tenantId, materialCrudo } = (await request.json()) as {
-    tenantId?: string;
-    materialCrudo?: string;
-  };
+  // El tenant se deriva de la sesión (membresía), nunca del body. Sin sesión
+  // no hay llamada al LLM: el modo demo (sin sesión) tampoco aplica aquí.
+  const ctx = await getCreadorContext();
+  if (!ctx || ctx.modo !== "sesion") {
+    return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  }
 
-  if (!tenantId) {
-    return NextResponse.json(
-      { error: "No se pudo determinar el tenant" },
-      { status: 400 }
-    );
+  let materialCrudo: string | undefined;
+  try {
+    ({ materialCrudo } = (await request.json()) as { materialCrudo?: string });
+  } catch {
+    return NextResponse.json({ error: "Body inválido" }, { status: 400 });
   }
 
   if (!materialCrudo) {
@@ -26,7 +25,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    const curso = await generarCursoDesdeMaterial({ tenantId, materialCrudo });
+    const curso = await generarCursoDesdeMaterial({
+      tenantId: ctx.tenant.id,
+      materialCrudo,
+    });
     return NextResponse.json(curso);
   } catch {
     return NextResponse.json(
