@@ -9,7 +9,7 @@ Idioma: documentación, commits y UI en **español** (es-CL por defecto). Códig
 - `apps/web` — Next.js (App Router) + TypeScript: panel `(dashboard)`, sitio público `(public)/[domain]`, landing `(marketing)` y API (`app/api`).
 - `db/` — `schema.sql` (tablas + RLS) y `migrations/` versionadas.
 - `docs/arquitectura` — arquitectura y `Supuestos_y_Pendientes.md`.
-- `docs/decisiones` — ADRs. `docs/producto` — flujos, requerimientos, investigación. `docs/design` — sistema de diseño. `docs/sprints`, `docs/skills`.
+- `docs/decisiones` — ADRs. `docs/producto` — flujos, requerimientos, investigación. `docs/design` — sistema de diseño. `docs/sprints` (backlog y planes), `docs/skills`.
 - `html/` y `docs/legacy` — mockups antiguos; no son fuente de verdad.
 
 ## Cómo trabajar con decisiones (ADRs)
@@ -28,7 +28,7 @@ Idioma: documentación, commits y UI en **español** (es-CL por defecto). Códig
 - Dos clientes de Supabase: `lib/supabase/server.ts` (sesión + RLS) y `admin.ts` (service role). `admin.ts` solo en backend, jamás importado desde código de cliente ni usado para saltarse RLS por comodidad.
 - Un único endpoint para llamadas al LLM (`app/api/ai/generar-curso`); no hay otras llamadas directas a proveedores de IA.
 - Un solo proyecto Next.js (ADR 002). No se vuelve a separar front y API.
-- El `tenant_id` se deriva de la sesión/host, **nunca** del body de la request (pendiente conocido en `generar-curso`).
+- El `tenant_id` se deriva de la sesión/host, **nunca** del body de la request (`generar-curso` ya lo cumple).
 - Cuentas de alumno y credenciales **por tenant**; el mismo correo puede existir en academias distintas.
 - Pagos: Mercado Pago como pasarela local del MVP (Stripe fue retirado del código). Webhooks verifican firma e idempotencia.
 - Secretos solo en variables de entorno (Vercel); nunca en el repo.
@@ -36,6 +36,12 @@ Idioma: documentación, commits y UI en **español** (es-CL por defecto). Códig
 ## Decisiones de producto vigentes (revisión de flujos 2026-10-12)
 
 Ver `docs/Revision_Flujos_Creador_Alumno_2026-10-12.md`. Resumen: creador entra solo con Google (+ validación de correo/MFA); lecciones solo video (enlace) + texto; sin acceso por invitación; quiz de término; dashboard del creador (CR-11); identidad visual genérica con iniciales; **mobile-first** (alumno 100% móvil; creador: edición pesada en escritorio). La retención es el diferenciador: cadencia/cohortes, práctica de recuperación, presencia del creador, nudges con normas sociales, lecciones cortas, analítica y A/B por tenant. Gamificación pesada e IA adaptativa quedan fuera del MVP.
+
+## Backlog y sprints
+
+- El backlog vive en `docs/sprints/BACKLOG.md`; los planes por día/sprint, en `docs/sprints/AAAA-MM-DD_*.md`.
+- Al empezar una sesión de trabajo, lee el backlog. Al cerrar un ítem (o descubrir uno nuevo, un bloqueo o una decisión abierta), actualiza `BACKLOG.md` en el mismo cambio: mueve el ítem a "Hecho" con la fecha y ajusta "Última actualización".
+- Un pendiente que es una decisión de arquitectura sigue la regla de ADRs (sección anterior) y se refleja también en `Supuestos_y_Pendientes.md`.
 
 ## Diseño y UI
 
