@@ -152,9 +152,15 @@ for (const { cursos, ...tenantData } of TENANTS) {
         onConflict: "curso_id,orden",
       });
     }
-    const existentes = modulos.length
-      ? await supabaseRequest(`modulos?select=id&curso_id=eq.${cursoRow.id}&limit=1`)
-      : [];
+    // Se considera sembrado si el curso ya tiene lecciones; si quedaron modulos
+    // huerfanos de una corrida fallida, se borran y se recrean.
+    let existentes = [];
+    if (modulos.length) {
+      existentes = await supabaseRequest(`lecciones?select=id&curso_id=eq.${cursoRow.id}&limit=1`);
+      if (existentes.length === 0) {
+        await supabaseRequest(`modulos?curso_id=eq.${cursoRow.id}`, { method: "DELETE" });
+      }
+    }
     if (modulos.length && existentes.length === 0) {
       for (const [mi, { lecciones = [], ...modulo }] of modulos.entries()) {
         const [mod] = await supabaseRequest("modulos", {
@@ -164,7 +170,10 @@ for (const { cursos, ...tenantData } of TENANTS) {
         if (lecciones.length) {
           await supabaseRequest("lecciones", {
             method: "POST",
+            // PostgREST exige las mismas claves en cada objeto del lote.
             body: lecciones.map((l, li) => ({
+              contenido_url: null,
+              contenido_texto: null,
               ...l,
               orden: li,
               tenant_id: tenant.id,
