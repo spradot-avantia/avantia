@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { classifyHost } from "./lib/tenant/host";
 
 const PANEL_HOST_SUFFIX = process.env.PANEL_HOST_SUFFIX ?? "app.avantia.app";
 const MARKETING_HOSTS = (process.env.MARKETING_HOSTS ?? "avantia.app,www.avantia.app")
@@ -23,7 +24,12 @@ const MARKETING_HOSTS = (process.env.MARKETING_HOSTS ?? "avantia.app,www.avantia
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host")?.split(":")[0] ?? "";
 
-  if (MARKETING_HOSTS.includes(hostname)) {
+  const kind = classifyHost(hostname, {
+    panelHost: PANEL_HOST_SUFFIX,
+    marketingHosts: MARKETING_HOSTS,
+  });
+
+  if (kind === "marketing") {
     if (request.nextUrl.pathname === "/") {
       const url = request.nextUrl.clone();
       url.pathname = "/landing";
@@ -32,10 +38,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const isPanelHost =
-    hostname === "localhost" || hostname.endsWith(PANEL_HOST_SUFFIX);
-
-  if (isPanelHost) {
+  if (kind === "panel") {
     return NextResponse.next();
   }
 
