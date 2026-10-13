@@ -29,5 +29,7 @@ jobs:
           cache: npm
 
       - run: npm install
+      - name: Regla - lib/supabase/admin solo en lista blanca
+        run: node scripts/check-admin-imports.mjs
       - run: npm run lint
       - run: npm run build
