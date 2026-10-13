@@ -5,6 +5,8 @@
 > Los planes por día/sprint viven en este mismo directorio (`AAAA-MM-DD_*.md`).
 > Última actualización: 2026-10-13.
 
+Foto del avance contra el MVP completo: `Estado_MVP_2026-10-13.md`.
+
 Estados: `Pendiente` · `En curso` · `Bloqueado` · `Hecho`.
 
 ## En curso / siguiente
@@ -17,6 +19,7 @@ Estados: `Pendiente` · `En curso` · `Bloqueado` · `Hecho`.
 | B-04 | ADR de identidad del alumno (Q1) | RQ-05 | Bloqueado por decisión de Samuel | Recomendación: identidad global + tabla `alumnos(tenant_id, user_id)`; ver Requerimientos §Q1 |
 | B-05 | Auth con Google (hoy correo + contraseña) | RQ-01 | Pendiente | ADR 003 lo deja como "después" |
 | B-06 | Migrar `configuracion/dominio` y `/api/tenants/domain` a tenant por sesión | RQ-04 | Pendiente | Mismo patrón que `generar-curso` |
+| B-08 | Resolver historia de git: `main` remoto no comparte historia con `dev` (bloquea el PR y por tanto el job `rls`) | RQ-31 | Bloqueado por decisión de Samuel | Opciones: reemplazar `main`, merge con `--allow-unrelated-histories`, o disparar CI con push |
 | B-07 | Móvil base: viewport, inputs ≥16 px, botones ≥44 px, sidebar colapsable, manifest PWA por tenant | Impacto_Movil | Sin confirmar | Revisar qué quedó hecho |
 
 ## H1 — academia gratis cursable desde celular
