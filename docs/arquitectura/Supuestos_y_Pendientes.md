@@ -35,7 +35,7 @@
 | Filtrado explícito por `tenant_id` a nivel de aplicación además de RLS | RLS es la última línea de defensa, pero repetir el filtro en cada query es manual y depende de que nadie lo olvide | Un helper/repositorio central que fuerce el filtro por `tenant_id` en cada acceso, en vez de confiar en que cada desarrollador lo escriba a mano |
 | Admin de dominio guarda el dominio en Supabase pero no lo verifica ni provisiona de verdad (mock: estado y registros DNS son fijos) | Alcanza para demostrar el flujo de UI sin depender de tener ya una cuenta de Vercel con dominio propio configurado | Llamada real a la Vercel Domains API (`POST /v10/projects/{id}/domains`), ya marcada como comentario en `app/api/tenants/domain/route.ts`, una vez exista el proyecto de Vercel |
 | `auth_tenant_id()` asume un usuario por tenant (toma la primera fila de `membresias`, sin orden garantizado) | Todavía no hay UI ni flujo para que un profesor pertenezca a varios tenants | Si un usuario necesita pertenecer a más de un tenant, `auth_tenant_id()` deja de alcanzar y hace falta resolver el tenant activo por sesión/selección explícita, no por lookup directo |
-| Espacio del Creador usa `getCurrentTenant()` (`lib/creador/tenantActual.ts`): con sesión (correo+contraseña, [ADR 003](../decisiones/003-identidad-y-sesion.md), Propuesta) usa el cliente con RLS; sin sesión el panel redirige a `/login`. La rama `DEMO_TENANT_SLUG` solo opera con `ALLOW_DEMO_TENANT=true` (dev local): el pendiente del demo queda resuelto. Queda por migrar `configuracion/dominio` y `/api/tenants/domain` (aún no derivan el tenant de la sesión) | El demo ya no es camino de producción | Login con Google (después); borrar la rama demo cuando no haga falta en local |
+| Espacio del Creador usa `getCurrentTenant()` (`lib/creador/tenantActual.ts`): con sesión (correo+contraseña, [ADR 003](../decisiones/003-identidad-y-sesion.md), Aceptada) usa el cliente con RLS; sin sesión el panel redirige a `/login`. La rama `DEMO_TENANT_SLUG` solo opera con `ALLOW_DEMO_TENANT=true` (dev local): el pendiente del demo queda resuelto. Queda por migrar `configuracion/dominio` y `/api/tenants/domain` (aún no derivan el tenant de la sesión) | El demo ya no es camino de producción | Login con Google (después); borrar la rama demo cuando no haga falta en local |
 | Rol staff de Avantia = lista `STAFF_EMAILS` (`lib/staff.ts`), deniega por defecto; protege `/admin` | Solución mínima mientras no hay roles | Rol real (claim JWT o tabla `staff`) |
 | Limitador de intentos de auth en memoria por instancia (`lib/auth/limite.ts`), además de los límites de Supabase Auth (NF-23) | Alcanza para el MVP sin infraestructura extra | Limitador compartido (Upstash/Redis o tabla) |
 | Sanitizador de SVG del logo por lista de bloqueo (`lib/creador/validacion.ts`) | Samuel aceptó SVG; es la opción más barata | Rasterizar a PNG o librería de sanitización dedicada ([ADR 005](../decisiones/005-almacenamiento-logo.md)) |
@@ -44,13 +44,12 @@
 
 | Tema | Estado actual | Fuente |
 |---|---|---|
-| Resolución del tenant por sesión en `generar-curso` | Hoy se recibe el `tenant_id` en el body del request en vez de derivarlo de la sesión del usuario logueado | TODO en `app/api/ai/generar-curso/route.ts`, señalado también en [ADR 002](../decisiones/002-vuelta-a-nextjs.md#consecuencias) |
 | Onboarding de Mercado Pago Connect | No hay documentado cómo un tenant conecta su cuenta para recibir el split payment, ni qué pasa si no lo hace | — |
 | Identidad de alumnos por tenant (credenciales por academia sobre un único `auth.users`) | Sin decidir; el ADR 003 solo cubre al creador | [ADR 003](../decisiones/003-identidad-y-sesion.md) |
 | Separación de rol "equipo de Avantia" vs. "dueño de una academia" | Hay sesión y `STAFF_EMAILS` protege `/admin`, pero ambos paneles (el interno de Avantia y el de cada tenant) conviven en el mismo host de panel sin ninguna distinción de acceso | `app/(dashboard)/page.tsx` |
 | Bucket privado `materiales` con URLs firmadas para documentos subidos | Modelo preparado (`lecciones.storage_path`, `contenido_tipo`); MVP solo usa enlaces | [ADR 005](../decisiones/005-almacenamiento-logo.md) |
 | Sesiones en vivo y actividades en el Espacio del Creador | "Próximamente" en la UI; sin backend | [Reconciliación](../producto/Reconciliacion_Diseno_Creador.md) filas 12 y 21 |
-| Migración `0001_espacio_creador.sql` sin aplicar en ninguna base | Solo se versionó el SQL; aplicar en Supabase y probar RLS/Storage | `db/migrations/0001_espacio_creador.sql` |
+| Migraciones `0001`–`0003` sin confirmar como aplicadas en la base remota | Verificar en Supabase y probar RLS/Storage | `db/migrations/` |
 
 ---
 

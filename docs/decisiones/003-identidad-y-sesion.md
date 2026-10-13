@@ -1,7 +1,7 @@
 # 003 — Identidad y sesión del creador
 
 - **Fecha:** 2026-10-12
-- **Estado:** Propuesta (pendiente de aprobación de Samuel)
+- **Estado:** Aceptada (2026-10-13)
 
 ## Contexto
 
