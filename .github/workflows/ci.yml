@@ -33,3 +33,32 @@ jobs:
         run: node scripts/check-admin-imports.mjs
       - run: npm run lint
       - run: npm run build
+
+  rls:
+    # Aislamiento entre tenants (RQ-04): aplica db/schema.sql y las migraciones
+    # sobre un Postgres descartable y corre scripts/test-rls.mjs.
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://postgres:test@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm install
+      - run: npm run test:rls
