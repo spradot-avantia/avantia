@@ -8,10 +8,10 @@ import { NextResponse, type NextRequest } from "next/server";
  * Por qué middleware: los Server Components no pueden escribir cookies, así que
  * sin esto un access token vencido nunca se renovaría durante la navegación.
  *
- * Costo: una llamada de red a Supabase Auth (getUser) por request del panel,
- * y SOLO si la request trae cookies de sesión (`sb-*-auth-token*`); las
- * anónimas no pagan nada. getUser valida contra Auth (no solo decodifica el
- * JWT) y renueva con el refresh token cuando corresponde.
+ * Costo: solo si la request trae cookies de sesión (`sb-*-auth-token*`); las
+ * anónimas no pagan nada. getSession lee la cookie y únicamente va a la red
+ * cuando el token venció (renueva con el refresh token). La validación del
+ * JWT contra Auth la hace el layout con getUser, una vez por request.
  *
  * También fija `x-av-pathname` (pisando lo que mande el cliente) para que el
  * layout pueda armar `/login?next=...` sin depender de headers internos.
@@ -37,7 +37,11 @@ export async function refrescarSesionPanel(request: NextRequest): Promise<NextRe
   });
 
   try {
-    await supabase.auth.getUser();
+    // getSession lee la cookie y solo va a la red si el token vencio (para
+    // renovarlo). NO valida el JWT: la autorizacion real la hace getUser()
+    // en el layout (getUsuarioActual), una vez por request. Evita una
+    // llamada de red (~200 ms) en cada navegacion.
+    await supabase.auth.getSession();
   } catch {
     // Si Supabase no responde, se deja pasar: el layout resolverá la sesión.
   }

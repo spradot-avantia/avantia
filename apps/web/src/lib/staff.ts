@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from "./supabase/server";
+import { getUsuarioActual } from "./auth/usuario";
 
 /**
  * STUB de rol "equipo de Avantia" (Supuestos_y_Pendientes: separacion de rol
@@ -13,11 +13,7 @@ export async function esStaff(): Promise<boolean> {
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
   if (lista.length === 0) return false;
-  try {
-    const { data } = await createSupabaseServerClient().auth.getUser();
-    const email = data.user?.email?.toLowerCase();
-    return !!email && lista.includes(email);
-  } catch {
-    return false;
-  }
+  // Reutiliza la sesion cacheada por request (sin otra llamada a Auth).
+  const email = (await getUsuarioActual())?.email?.toLowerCase();
+  return !!email && lista.includes(email);
 }

@@ -163,8 +163,17 @@ alter table cursos add constraint cursos_fechas_check
 
 -- (tenant_id, slug) ya es unique desde el esquema base.
 -- Clave unica extra para FKs compuestas que garantizan coherencia de tenant.
-alter table cursos drop constraint if exists cursos_id_tenant_id_key;
-alter table cursos add constraint cursos_id_tenant_id_key unique (id, tenant_id);
+-- No se hace drop/add: las FKs compuestas de modulos, lecciones, etc. dependen
+-- de esta clave y el drop falla al re-ejecutar la migracion.
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'cursos_id_tenant_id_key' and conrelid = 'public.cursos'::regclass
+  ) then
+    alter table cursos add constraint cursos_id_tenant_id_key unique (id, tenant_id);
+  end if;
+end $$;
 
 create index if not exists cursos_tenant_estado_idx on cursos (tenant_id, estado);
 

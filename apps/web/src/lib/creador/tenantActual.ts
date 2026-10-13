@@ -1,5 +1,6 @@
 import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { getUsuarioActual } from "../auth/usuario";
 import { createSupabaseServerClient } from "../supabase/server";
 import type { LogoModo, TenantCreador } from "./types";
 
@@ -47,9 +48,11 @@ function mapTenant(r: any): TenantCreador {
 /** Devuelve el contexto o null si no hay tenant (sin sesion y sin DEMO_TENANT_SLUG valido). */
 export const getCreadorContext = cache(async (): Promise<CreadorContext | null> => {
   const supabase = createSupabaseServerClient();
-  const { data: auth } = await supabase.auth.getUser();
+  // getUsuarioActual esta cacheado por request: el layout y las paginas
+  // comparten UNA sola llamada de red a Supabase Auth.
+  const usuario = await getUsuarioActual();
 
-  if (auth.user) {
+  if (usuario) {
     // RLS limita tenants a auth_tenant_id(); aun asi tomamos el unico visible.
     const { data } = await supabase.from("tenants").select(COLUMNAS).limit(1).maybeSingle();
     if (data) return { tenant: mapTenant(data), db: supabase, modo: "sesion" };
