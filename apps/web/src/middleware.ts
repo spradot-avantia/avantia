@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { classifyHost } from "./lib/tenant/host";
+import { refrescarSesionPanel } from "./lib/supabase/middleware";
 
 const PANEL_HOST_SUFFIX = process.env.PANEL_HOST_SUFFIX ?? "app.avantia.app";
 const MARKETING_HOSTS = (process.env.MARKETING_HOSTS ?? "avantia.app,www.avantia.app")
@@ -17,11 +18,14 @@ const MARKETING_HOSTS = (process.env.MARKETING_HOSTS ?? "avantia.app,www.avantia
  *    reescrito hacia el segmento real [domain] para que el route group
  *    reciba el hostname como parámetro.
  *
+ * En el host del panel además refresca la sesión de Supabase Auth (ver
+ * lib/supabase/middleware.ts; una llamada a Auth solo si hay cookie de sesión).
+ *
  * No consulta la base de datos acá (eso es costoso en cada request de edge):
  * la existencia real del tenant se resuelve en app/(public)/[domain]/layout.tsx,
  * un Server Component que corre en runtime Node.js.
  */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const hostname = request.headers.get("host")?.split(":")[0] ?? "";
 
   const kind = classifyHost(hostname, {
@@ -39,7 +43,8 @@ export function middleware(request: NextRequest) {
   }
 
   if (kind === "panel") {
-    return NextResponse.next();
+    // Único trabajo de sesión: refrescar cookies de Supabase (sin tocar tablas).
+    return refrescarSesionPanel(request);
   }
 
   const url = request.nextUrl.clone();

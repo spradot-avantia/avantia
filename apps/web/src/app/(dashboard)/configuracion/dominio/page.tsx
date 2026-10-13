@@ -6,15 +6,16 @@ import { DomainForm } from "./DomainForm";
 export const dynamic = "force-dynamic";
 
 export default async function DominioPage() {
-  const demoTenantSlug = process.env.DEMO_TENANT_SLUG;
+  // Solo con el demo local habilitado: esta pagina (y /api/tenants/domain) aun no derivan el tenant de la sesion.
+  const demoTenantSlug = process.env.ALLOW_DEMO_TENANT === "true" ? process.env.DEMO_TENANT_SLUG : undefined;
 
   if (!demoTenantSlug) {
     return (
       <section>
         <h1>Conectar dominio propio</h1>
         <p>
-          Falta la variable de entorno <code>DEMO_TENANT_SLUG</code> (mientras
-          no hay login, esta página necesita saber sobre qué academia opera).
+          Esta función todavía no está disponible con sesión real (pendiente: derivar la academia de la sesión).
+          En desarrollo local, activa <code>ALLOW_DEMO_TENANT=true</code> y define <code>DEMO_TENANT_SLUG</code>.
         </p>
       </section>
     );

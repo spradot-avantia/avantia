@@ -6,14 +6,15 @@ import "@/components/marketing/landing.css";
 
 export const metadata: Metadata = {
   title: "Crear cuenta o ingresar | Avantia",
-  description: "Los creadores de Avantia crean su cuenta e ingresan solo con Google.",
+  description: "Crea tu cuenta de creador en Avantia o ingresa a tu academia con correo y contraseña.",
 };
 
 // Destino de los CTA "Continuar con Google" / "Ingresar" de la landing.
-// Decisión (Revision_Flujos 2026-10-12, CR-01): registro e ingreso de creadores
-// solo con Google. Pendiente: conectar Supabase Auth (provider Google) y apuntar
-// el botón a la ruta de inicio de OAuth; hasta entonces queda deshabilitado.
+// El acceso del creador vive en el host del panel (ADR 003): aquí solo se
+// deriva hacia /signup y /login de NEXT_PUBLIC_PANEL_URL. Google queda como
+// "Próximamente" (RQ-01 original; se retoma después).
 export default function RegistroPage() {
+  const panel = (process.env.NEXT_PUBLIC_PANEL_URL ?? "http://localhost:3000").replace(/\/+$/, "");
   return (
     <main className="av-scope lp-auth">
       <Link href="/landing" aria-label="avantia, inicio">
@@ -22,14 +23,19 @@ export default function RegistroPage() {
       <div className="av-card lp-auth__card">
         <h1 className="av-h2" style={{ fontSize: 28 }}>Crea tu cuenta o ingresa</h1>
         <p className="av-lede" style={{ fontSize: 16 }}>
-          Los creadores usan su cuenta de Google: un solo paso, sin contraseña que recordar.
+          Entra con tu correo y una contraseña. Te toma un minuto y después nombras tu academia.
         </p>
+        <a className="av-btn av-btn--primary av-btn--lg" href={`${panel}/signup`} style={{ width: "100%" }}>
+          Crear mi cuenta
+        </a>
+        <a className="av-btn av-btn--secondary av-btn--lg" href={`${panel}/login`} style={{ width: "100%" }}>
+          Ya tengo cuenta: ingresar
+        </a>
         <button type="button" className="av-btn av-btn--secondary av-btn--lg" disabled aria-describedby="google-nota" style={{ width: "100%" }}>
-          <GoogleG /> Continuar con Google
+          <GoogleG /> Continuar con Google · Próximamente
         </button>
         <p id="google-nota" className="av-legal" role="note">
-          <span className="av-todo">[Pendiente]</span> La conexión con Google todavía no está activa. Mientras tanto, postula al programa fundador desde la{" "}
-          <Link href="/landing#fundador">página principal</Link>.
+          El acceso con Google estará disponible más adelante.
         </p>
         <span id="ingresar" />
       </div>

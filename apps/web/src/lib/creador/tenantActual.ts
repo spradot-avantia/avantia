@@ -10,12 +10,11 @@ import type { LogoModo, TenantCreador } from "./types";
  * un parametro del request/body. Todos los repos reciben este contexto y
  * filtran explicitamente por `tenant.id`.
  *
- * TODO(RQ-01, sesion real): hoy, si no hay usuario autenticado, se usa
- * DEMO_TENANT_SLUG (provisional, ver Supuestos_y_Pendientes.md). En ese modo
- * RLS no puede resolver auth_tenant_id() (no hay auth.uid()), asi que se usa
- * el cliente admin de forma INEVITABLE y acotada: siempre con .eq("tenant_id",
- * tenant.id). Al llegar el login con Google, se elimina la rama demo y todo
- * pasa por el cliente con sesion + RLS.
+ * Con sesion (Supabase Auth, correo+contrasena) todo pasa por el cliente con
+ * RLS. La rama "demo" (sin sesion) SOLO existe para desarrollo local: exige
+ * ALLOW_DEMO_TENANT=true ademas de DEMO_TENANT_SLUG. Usa el cliente admin de
+ * forma inevitable y acotada (siempre .eq("tenant_id", tenant.id)); en
+ * produccion no debe activarse.
  */
 export interface CreadorContext {
   tenant: TenantCreador;
@@ -57,7 +56,7 @@ export const getCreadorContext = cache(async (): Promise<CreadorContext | null> 
     return null;
   }
 
-  const demoSlug = process.env.DEMO_TENANT_SLUG;
+  const demoSlug = process.env.ALLOW_DEMO_TENANT === "true" ? process.env.DEMO_TENANT_SLUG : undefined;
   if (!demoSlug) return null;
   const { supabaseAdmin } = await import("../supabase/admin");
   const { data } = await supabaseAdmin.from("tenants").select(COLUMNAS).eq("subdomain", demoSlug).maybeSingle();
@@ -79,7 +78,7 @@ export async function requireCreadorContext(): Promise<CreadorContext> {
 
 export class SinTenantError extends Error {
   constructor() {
-    super("No hay una academia activa. Inicia sesión o define DEMO_TENANT_SLUG.");
+    super("No hay una academia activa. Inicia sesión para continuar.");
     this.name = "SinTenantError";
   }
 }

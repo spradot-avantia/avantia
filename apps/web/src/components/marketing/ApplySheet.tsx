@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { GoogleG, Icon } from "./icons";
+import { Icon } from "./icons";
 import { EMAIL_RE, useSignup } from "./SignupContext";
 
 type Field = "email" | "name" | "url" | "students";
@@ -12,7 +12,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [ta
 /**
  * Sheet de postulación al programa fundador (modal accesible: foco atrapado,
  * Escape cierra, el foco vuelve al disparador).
- * Registro/ingreso de creadores: solo Google -> /registro. El formulario de
+ * Registro/ingreso de creadores: correo y contraseña en el panel, via /registro (Google: proximamente). El formulario de
  * postulación es la lista de espera del programa y todavía no persiste datos.
  */
 export function ApplySheet() {
@@ -91,7 +91,7 @@ export function ApplySheet() {
             </div>
 
             <Link className="av-btn av-btn--secondary av-btn--lg lp-google" href="/registro">
-              <GoogleG /> Continuar con Google
+              Crear cuenta o ingresar
             </Link>
             <p className="lp-or" aria-hidden="true"><span>o déjanos tus datos y te escribimos</span></p>
 

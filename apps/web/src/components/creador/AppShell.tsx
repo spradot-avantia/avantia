@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import { signOutAction } from "../../lib/auth/actions";
 import { textoSobre } from "../../lib/creador/color";
 import type { TenantCreador } from "../../lib/creador/types";
 import { MobileMenu } from "./MobileMenu";
 import { NavLinks, type ItemNav } from "./NavLinks";
 import { TenantMark } from "./TenantMark";
 import "./creador.css";
+import "./auth/auth.css";
 
 const FIRMA = "Con la tecnología de Avantia";
 
@@ -20,6 +22,8 @@ interface Props {
   tenant: TenantCreador | null;
   /** Muestra el enlace /admin (solo staff de Avantia). */
   mostrarAdmin?: boolean;
+  /** Correo del usuario con sesion (null en modo demo local). */
+  usuarioEmail?: string | null;
   children: ReactNode;
 }
 
@@ -28,7 +32,7 @@ interface Props {
  * + menu desplegable en movil. La firma de Avantia vive SOLO aqui (panel del
  * creador), nunca en el sitio publico de la academia.
  */
-export function AppShell({ tenant, mostrarAdmin, children }: Props) {
+export function AppShell({ tenant, mostrarAdmin, usuarioEmail, children }: Props) {
   const color = tenant?.colorPrimario ?? "#2563eb";
   const items = mostrarAdmin ? [...ITEMS, { href: "/admin", label: "Academias (staff)", separador: true }] : ITEMS;
   const marca = (
@@ -39,6 +43,16 @@ export function AppShell({ tenant, mostrarAdmin, children }: Props) {
       color={color}
     />
   );
+  const sesion = usuarioEmail ? (
+    <div className="au-user">
+      <span className="au-user__mail">{usuarioEmail}</span>
+      <form action={signOutAction}>
+        <button type="submit" className="av-btn cr-btn cr-btn--ghost cr-btn--block">
+          Cerrar sesión
+        </button>
+      </form>
+    </div>
+  ) : null;
   return (
     <div
       className="av-scope cr-shell"
@@ -47,6 +61,7 @@ export function AppShell({ tenant, mostrarAdmin, children }: Props) {
       <aside className="cr-side" aria-label="Navegación principal">
         <div className="cr-side__brand">{marca}</div>
         <NavLinks items={items} />
+        {sesion}
         <p className="cr-side__foot">{FIRMA}</p>
       </aside>
 
@@ -54,6 +69,7 @@ export function AppShell({ tenant, mostrarAdmin, children }: Props) {
         {marca}
         <MobileMenu>
           <NavLinks items={items} etiqueta="Secciones (móvil)" />
+          {sesion}
         </MobileMenu>
       </header>
 
