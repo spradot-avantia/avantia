@@ -6,6 +6,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import {
   restablecerContrasenaAction,
   signInAction,
+  signInWithGoogleAction,
   signUpAction,
   solicitarRecuperacionAction,
 } from "../../../lib/auth/actions";
@@ -22,6 +23,26 @@ function Enviar({ children }: { children: string }) {
     <Button type="submit" bloque className="av-btn--lg" disabled={pending} aria-busy={pending}>
       {pending ? "Un momento…" : children}
     </Button>
+  );
+}
+
+function IconoOjo() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function IconoOjoTachado() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.9 3.9" />
+      <path d="M6.6 6.6C3.7 8.5 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+      <path d="M3 3l18 18" />
+    </svg>
   );
 }
 
@@ -70,8 +91,15 @@ function CampoContrasena({
           required
           onChange={onValor ? (e) => onValor(e.target.value) : undefined}
         />
-        <button type="button" className="au-toggle" onClick={() => setVer((v) => !v)} aria-pressed={ver}>
-          {ver ? "Ocultar" : "Mostrar"}
+        <button
+          type="button"
+          className="au-toggle"
+          onClick={() => setVer((v) => !v)}
+          aria-pressed={ver}
+          aria-label="Mostrar contraseña"
+          title={ver ? "Ocultar contraseña" : "Mostrar contraseña"}
+        >
+          {ver ? <IconoOjoTachado /> : <IconoOjo />}
         </button>
       </div>
       {ev && (
@@ -94,7 +122,7 @@ export function FormLogin({ next, aviso }: { next: string; aviso?: { tono: "info
     <form action={accion} className="au-form" noValidate>
       {aviso && <Callout tono={aviso.tono}>{aviso.texto}</Callout>}
       <input type="hidden" name="next" value={next} />
-      <Field id="email" label="Correo" error={estado.errores?.email}>
+      <Field id="email" label="Correo electrónico" error={estado.errores?.email}>
         <Input id="email" name="email" type="email" inputMode="email" autoComplete="email" defaultValue={estado.valores?.email} invalido={!!estado.errores?.email} required />
       </Field>
       <CampoContrasena id="password" label="Contraseña" autoComplete="current-password" error={estado.errores?.password} />
@@ -102,7 +130,6 @@ export function FormLogin({ next, aviso }: { next: string; aviso?: { tono: "info
       <Enviar>Ingresar</Enviar>
       <div className="au-links">
         <Link href="/olvide-contrasena">Olvidé mi contraseña</Link>
-        <Link href="/signup">Crear una cuenta</Link>
       </div>
     </form>
   );
@@ -132,7 +159,7 @@ export function FormSignup() {
         id="password"
         label="Contraseña"
         autoComplete="new-password"
-        ayuda={`Mínimo ${LARGO_MIN_CONTRASENA} caracteres. Una frase larga es más segura que una palabra con símbolos.`}
+        ayuda={`Mínimo ${LARGO_MIN_CONTRASENA} caracteres.`}
         error={estado.errores?.password}
         onValor={setPw}
         indicador={pw}
@@ -149,9 +176,6 @@ export function FormSignup() {
       </div>
       <Mensaje estado={estado} />
       <Enviar>Crear mi cuenta</Enviar>
-      <div className="au-links">
-        <Link href="/login">Ya tengo cuenta</Link>
-      </div>
     </form>
   );
 }
@@ -187,9 +211,46 @@ export function FormRestablecer() {
         onValor={setPw}
         indicador={pw}
       />
-      <CampoContrasena id="confirmacion" name="confirmacion" label="Repite la nueva contraseña" autoComplete="new-password" error={estado.errores?.confirmacion} />
+            <CampoContrasena id="password" label="Contraseña" autoComplete="current-password" error={estado.errores?.password} />
       <Mensaje estado={estado} />
       <Enviar>Guardar contraseña</Enviar>
     </form>
+  );
+}
+
+export function BotonGoogle({ next }: { next: string }) {
+  return (
+    <form action={signInWithGoogleAction}>
+      <input type="hidden" name="next" value={next} />
+      <EnviarGoogle />
+    </form>
+  );
+}
+
+function EnviarGoogle() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      className="av-btn av-btn--secondary av-btn--lg"
+      style={{ width: "100%" }}
+      disabled={pending}
+      aria-busy={pending}
+    >
+      <GoogleIcon />
+      {pending ? "Conectando con Google…" : "Continuar con Google"}
+    </button>
+  );
+}
+
+/** Logo "G" oficial de Google, el que piden sus pautas para botones de inicio de sesión. */
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+    </svg>
   );
 }
