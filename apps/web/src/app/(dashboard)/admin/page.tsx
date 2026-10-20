@@ -73,6 +73,8 @@ export default async function AdminAcademiasPage() {
       </div>
       <p style={{ marginTop: "1rem" }}>
         <Link href="/configuracion/dominio">Configurar dominio</Link>
+        {" · "}
+        <Link href="/admin/postulaciones">Postulaciones al programa fundador</Link>
       </p>
     </section>
   );

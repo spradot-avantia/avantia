@@ -261,3 +261,21 @@
   .au-check span,
   .au-google-legal { white-space: nowrap; }
 }
+/* /postular: indicador de paso y caja de la confirmación. */
+.au-stepper {
+  margin: 0 0 calc(-1 * var(--av-space-2));
+  font-size: var(--av-fs-xs);
+  font-weight: var(--av-fw-medium);
+  letter-spacing: var(--av-ls-overline);
+  text-transform: uppercase;
+  color: var(--av-blue-700);
+}
+.au-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-3);
+  padding: var(--av-space-4);
+  background: var(--av-surface);
+  border: 1px solid var(--av-line);
+  border-radius: var(--av-radius-lg);
+}

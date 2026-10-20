@@ -1,80 +1,50 @@
-"use client";
-
-import { useState, type FormEvent, type ReactNode } from "react";
-import { EMAIL_RE, useSignup } from "./SignupContext";
+import type { ReactNode } from "react";
+import { GoogleG } from "./icons";
 
 type Size = "lg" | "sm";
 
-/** Botón que abre el sheet de postulación. */
+// Postulación al programa fundador: primero cuenta con Google y luego el
+// formulario corto, ambos en /postular del host del panel (la sesión del
+// creador vive solo ahí, ADR 003 y 011). Los CTA son enlaces simples.
+export function postularHref(): string {
+  return `${(process.env.NEXT_PUBLIC_PANEL_URL ?? "http://localhost:3000").replace(/\/+$/, "")}/postular`;
+}
+
+/** Botón (enlace) que lleva a la postulación. */
 export function ApplyButton({ children, size = "lg" }: { children: ReactNode; size?: Size }) {
-  const { openSheet } = useSignup();
   return (
-    <button type="button" className={`av-btn av-btn--primary av-btn--${size}`} onClick={() => openSheet(false)}>
+    <a className={`av-btn av-btn--primary av-btn--${size}`} href={postularHref()}>
       {children}
-    </button>
+    </a>
   );
 }
 
-/** Captura de correo (hero y cierre): valida y abre el sheet con el correo precargado. */
-export function EmailCapture({ id }: { id: string }) {
-  const { email, setEmail, openSheet } = useSignup();
-  const [invalid, setInvalid] = useState(false);
-
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (email.trim() && !EMAIL_RE.test(email.trim())) {
-      setInvalid(true);
-      return;
-    }
-    setInvalid(false);
-    openSheet(true);
-  }
-
+/** CTA principal (hero y cierre): postular entrando con Google. */
+export function GoogleCta() {
   return (
-    <form className="lp-capture" noValidate onSubmit={onSubmit}>
-      <div className="lp-capture__row">
-        <label className="av-sr-only" htmlFor={id}>Tu correo</label>
-        <input
-          className="av-input"
-          id={id}
-          name="email"
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          placeholder="tu@correo.com"
-          value={email}
-          aria-invalid={invalid || undefined}
-          aria-describedby={invalid ? `${id}-err` : undefined}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <button className="av-btn av-btn--primary av-btn--lg" type="submit">
-          Postula al programa fundador
-        </button>
-      </div>
-      {invalid && (
-        <p id={`${id}-err`} className="av-legal" role="alert">
-          Revisa tu correo: debe tener la forma nombre@dominio.com.
-        </p>
-      )}
+    <div className="lp-capture">
+      <a className="av-btn av-btn--primary av-btn--lg" href={postularHref()}>
+        <span className="lp-g"><GoogleG size={18} /></span>
+        Postula con tu cuenta de Google
+      </a>
       <p className="av-legal">
-        Al continuar aceptas la <a href="#privacidad">política de privacidad</a>.
+        Al continuar aceptas los <a href="/terminos">términos y condiciones</a> y la <a href="/privacidad">política de privacidad</a>.
       </p>
-    </form>
+    </div>
   );
 }
 
 /** Barra fija inferior en móvil (se oculta desde 900px por CSS). */
 export function StickyBar() {
-  const { openSheet } = useSignup();
   return (
     <div className="lp-sticky">
       <div className="lp-sticky__lbl">
         <b>Programa fundador</b>
-        <span>5 cupos · 30 días gratis</span>
+        <span>5 cupos · Programa gratis</span>
       </div>
-      <button type="button" className="av-btn av-btn--primary av-btn--sm" onClick={() => openSheet(false)}>
+      <a className="av-btn av-btn--primary av-btn--sm" href={postularHref()}>
         Postular
-      </button>
+      </a>
     </div>
   );
 }

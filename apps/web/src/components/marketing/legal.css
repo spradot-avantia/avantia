@@ -1,0 +1,32 @@
+/* Páginas legales. Solo tokens --av-*. Mobile-first. */
+
+.lg-back { display: inline-flex; align-items: center; gap: 6px; min-height: var(--av-target); font-size: var(--av-fs-sm); font-weight: var(--av-fw-medium); color: var(--av-blue-700); }
+.lg-back__ico { display: inline-flex; transform: scaleX(-1); }
+
+.lg-doc { display: flex; flex-wrap: wrap; gap: 42px; padding-block: var(--av-space-7) 96px; }
+.lg-toc { flex: 1 1 220px; max-width: 280px; display: flex; flex-direction: column; gap: 10px; font-size: var(--av-fs-sm); }
+.lg-toc b { font-size: var(--av-fs-xs); font-weight: var(--av-fw-semibold); letter-spacing: var(--av-ls-overline); text-transform: uppercase; color: var(--av-muted); }
+.lg-toc ol { padding: 0; margin: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.av-scope .lg-toc a { color: var(--av-muted); text-decoration: none; }
+.av-scope .lg-toc a:hover { color: var(--av-blue-700); }
+
+.lg-body { flex: 999 1 560px; min-width: 0; max-width: 72ch; display: flex; flex-direction: column; gap: 42px; }
+.lg-head { display: flex; flex-direction: column; gap: var(--av-space-4); }
+.lg-head h1 { margin: 0; font-size: var(--av-fs-h1); font-weight: var(--av-fw-semibold); letter-spacing: var(--av-ls-h1); line-height: var(--av-lh-tight); }
+.lg-meta { margin: 0; font-size: var(--av-fs-sm); color: var(--av-muted); }
+
+.lg-sum { background: var(--av-surface); border: 1px solid var(--av-line); border-radius: var(--av-radius-lg); padding: 20px 24px; display: flex; flex-direction: column; gap: 10px; }
+.lg-sum b { font-weight: var(--av-fw-semibold); }
+.lg-sum ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; color: var(--av-ink-2); }
+
+.lg-body section { display: flex; flex-direction: column; gap: var(--av-space-3); scroll-margin-top: 24px; }
+.lg-body h2 { margin: 0; font-size: var(--av-fs-h3); font-weight: var(--av-fw-semibold); line-height: var(--av-lh-heading); }
+.lg-body section p { margin: 0; color: var(--av-ink-2); }
+.lg-body section ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; color: var(--av-ink-2); list-style: disc; }
+.av-scope .lg-body section a { color: var(--av-blue-700); }
+
+.lg-foot { padding-bottom: var(--av-space-6); }
+
+@media (min-width: 900px) {
+  .lg-toc { position: sticky; top: 24px; align-self: flex-start; }
+}
