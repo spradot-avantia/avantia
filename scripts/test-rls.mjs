@@ -149,6 +149,23 @@ check("crear_academia: usuario nuevo crea su academia y ve solo esa", await como
 }));
 check("crear_academia: subdominio reservado falla", await falla("authenticated", U.libre, "select crear_academia('Admin', 'admin')"));
 
+console.log("\nPostulaciones (tabla de plataforma, aislada por usuario):");
+await client.query("insert into postulaciones (user_id, nombre) values ($1, 'Postulante B')", [U.alumB]);
+check("postulante inserta la suya y el correo sale de auth.users", await como("authenticated", U.libre, async (c) => {
+  await c.query("insert into postulaciones (user_id, nombre, url, alumnos) values ($1, 'Libre', 'linkedin.com/in/x', 'lt30')", [U.libre]);
+  return (await c.query("select email from postulaciones")).rows.map((r) => r.email).join() === "libre@test.cl";
+}));
+check("no inserta a nombre de otro usuario", await falla("authenticated", U.libre, "insert into postulaciones (user_id, nombre) values ($1, 'X')", [U.creaA]));
+check("no fija el estado al insertar", await falla("authenticated", U.libre, "insert into postulaciones (user_id, nombre, estado) values ($1, 'X', 'aceptada')", [U.libre]));
+check("no fija el correo al insertar", await falla("authenticated", U.libre, "insert into postulaciones (user_id, nombre, email) values ($1, 'X', 'otro@x.cl')", [U.libre]));
+check("no ve postulaciones ajenas", (await como("authenticated", U.creaA, (c) => cuenta(c, "select 1 from postulaciones"))) === 0);
+check("no edita postulaciones ajenas (0 filas)", (await filasAfectadas("authenticated", U.creaA, "update postulaciones set nombre='hack' where user_id=$1", [U.alumB])) === 0);
+check("edita la suya mientras esta 'nueva'", (await filasAfectadas("authenticated", U.alumB, "update postulaciones set nombre='B2' where user_id=$1", [U.alumB])) === 1);
+check("no cambia su estado", await falla("authenticated", U.alumB, "update postulaciones set estado='aceptada' where user_id=$1", [U.alumB]));
+await client.query("update postulaciones set estado='aceptada' where user_id=$1", [U.alumB]);
+check("no edita la suya una vez revisada (0 filas)", (await filasAfectadas("authenticated", U.alumB, "update postulaciones set nombre='B3' where user_id=$1", [U.alumB])) === 0);
+check("anon no ve postulaciones", (await como("anon", null, (c) => cuenta(c, "select 1 from postulaciones")).catch(() => 0)) === 0);
+
 console.log(`\n${pass} ok, ${fallos.length} fallos`);
 await client.end();
 if (fallos.length) { console.log("Fallos:\n - " + fallos.join("\n - ")); process.exit(1); }
