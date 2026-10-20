@@ -58,18 +58,46 @@
   flex: 1;
   min-width: 0;
 }
+/* Campo de contraseña con el botón de ojo dentro */
+.au-pw {
+  position: relative;
+  display: block !important;
+}
+/* El campo ocupa todo el ancho tanto en modo "password" como en modo "text" */
+.au-pw input,
+.au-pw input[type="password"],
+.au-pw input[type="text"] {
+  width: 100% !important;
+  max-width: none !important;
+  flex: none !important;
+  box-sizing: border-box;
+  padding-right: 48px !important;
+}
 .au-toggle {
-  min-height: var(--av-target);
-  min-width: var(--av-target);
-  padding: 0 12px;
-  border: 1px solid var(--av-line-strong);
-  border-radius: var(--av-radius-md);
-  background: var(--av-surface);
-  color: var(--av-ink-2);
-  font: inherit;
-  font-size: var(--av-fs-sm);
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 8px;
+  background: transparent !important;
+  box-shadow: none !important;
+  display: grid;
+  place-items: center;
+  color: var(--ink-3, #5A5F7A);
   cursor: pointer;
 }
+.au-toggle:hover { color: var(--ink, #0A1029); }
+.au-toggle:focus-visible {
+  outline: 2px solid var(--accent, #2563EB);
+  outline-offset: 0;
+}
+.au-toggle svg { display: block; }
 .au-meter {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -99,19 +127,17 @@
 .au-check {
   display: flex;
   align-items: flex-start;
-  gap: var(--av-space-3);
-  min-height: var(--av-target);
-  cursor: pointer;
+  gap: 8px;
+  font-size: 11.5px;   /* antes 13px */
+  line-height: 1.45;
+  color: var(--ink-3, #5A5F7A);
 }
+.au-check span { font-size: inherit; }
 .au-check input {
-  width: 24px;
-  height: 24px;
-  margin: 10px 0 0;
   flex: none;
-  accent-color: var(--av-blue-600);
-}
-.au-check span {
-  padding-top: 10px;
+  width: 16px;
+  height: 16px;
+  margin: 1px 0 0 !important;
 }
 .au-sep {
   display: flex;
@@ -138,4 +164,100 @@
   font-size: var(--av-fs-xs);
   color: var(--av-muted);
   overflow-wrap: anywhere;
+}
+.au-google-legal {
+  margin-top: 6px;
+  font-size: 11px;     /* antes 12px */
+  text-align: center;
+  color: var(--ink-3, #5A5F7A);
+}
+.au-toggle {
+  flex: none;
+  width: 44px;
+  min-width: 44px;
+  padding: 0 !important;
+  display: grid;
+  place-items: center;
+  color: var(--ink-2, #3B4163);
+}
+.au-toggle:hover { color: var(--ink, #0A1029); }
+.au-toggle svg { display: block; }
+
+/* Pantallas bajas (notebooks): el login completo cabe sin hacer scroll */
+@media (max-height: 820px) {
+  .au-title { font-size: 28px; line-height: 1.15; margin-bottom: 6px; }
+  .au-lede { font-size: 15px; line-height: 1.45; margin-bottom: 4px; }
+
+  /* Menos espacio entre campos */
+  .au-form { gap: 12px; }
+  .au-form .cr-field { gap: 4px; margin: 0; }
+
+  /* Campos y botones más bajos: se fija el alto, no solo el mínimo */
+  .au-form .av-input,
+  .au-form input.av-input {
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+  .av-btn.av-btn--lg {
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .au-links { margin-top: 0; }
+  .au-sep { margin-block: 6px; }
+
+    /* La tarjeta */
+  *:has(> .au-title) { padding-block: 22px !important; }
+
+  /* El contenedor del logo + tarjeta: cabe justo en la ventana */
+  *:has(> * > .au-title) {
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding-block: 10px !important;
+    gap: 12px !important;
+  }
+
+  .au-sep { margin-block: 4px; }
+  .au-alt { margin-top: 10px; }
+
+    /* Zonas de mensajes: no reservan espacio mientras están vacías
+     (siguen en la página para que los lectores de pantalla anuncien los cambios) */
+  .au-meter-txt:empty,
+  .au-msg:empty {
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .au-form > .au-msg:empty { margin-top: -10px !important; }
+
+  /* Barras de seguridad más pegadas al campo */
+  .au-meter { margin-top: 6px; }
+
+  /* Texto de ayuda bajo la etiqueta, más pegado */
+  .au-form .cr-field__ayuda,
+  .au-form [id$="-ayuda"] { font-size: 13px; margin-bottom: 2px; }
+
+    /* Un poco menos de espacio entre campos */
+  .au-form { gap: 10px; }
+
+  /* Título y relleno de la tarjeta algo más compactos */
+  .au-title { font-size: 26px; }
+  .au-lede { margin-bottom: 0; }
+  *:has(> .au-title) { padding-block: 20px 16px !important; }
+
+  /* Enlace final más pegado al botón */
+  .au-links { margin-top: -2px; }
+}
+
+.au-alt {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 15px;
+}
+.au-alt a { font-weight: 600; }
+
+/* Una sola línea desde tablet hacia arriba; en celular se permite partir */
+@media (min-width: 480px) {
+  .au-check span,
+  .au-google-legal { white-space: nowrap; }
 }

@@ -127,3 +127,20 @@ export async function restablecerContrasenaAction(_prev: EstadoForm, fd: FormDat
   if (error) return { mensaje: mensajeErrorAuth(error) || MSG_GENERICO };
   redirect("/");
 }
+
+export async function signInWithGoogleAction(formData: FormData) {
+  const next = sanitizarNext(formData.get("next")?.toString());
+  const origin =
+    headers().get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+    },
+  });
+
+  if (error || !data.url) redirect("/login?error=google");
+  redirect(data.url);
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FormSignup } from "../../../components/creador/auth/FormulariosAuth";
+import { BotonGoogle, FormSignup } from "../../../components/creador/auth/FormulariosAuth";
 import { getUsuarioActual } from "../../../lib/auth/usuario";
 
 export const metadata: Metadata = { title: "Crear cuenta | Avantia" };
@@ -13,10 +14,13 @@ export default async function SignupPage() {
       <p className="au-lede">Después te pediremos el nombre de tu academia.</p>
       <FormSignup />
       <p className="au-sep" aria-hidden="true">o</p>
-      <button type="button" className="av-btn av-btn--secondary av-btn--lg" disabled aria-describedby="google-pronto" style={{ width: "100%" }}>
-        Continuar con Google · Próximamente
-      </button>
-      <p id="google-pronto" className="av-legal">El acceso con Google estará disponible más adelante.</p>
+      <BotonGoogle next="/" />
+      <p className="av-legal au-google-legal">
+        Al continuar con Google aceptas los términos y la política de privacidad.
+      </p>
+      <p className="au-alt">
+        ¿Ya tienes cuenta? <Link href="/login">Ingresar</Link>
+      </p>
     </>
   );
 }
