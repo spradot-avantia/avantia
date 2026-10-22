@@ -227,7 +227,7 @@ export default function Landing() {
                     <Icon name="plus" size={20} />
                     <Icon name="minus" size={20} />
                   </summary>
-                  <p className={`lp-ans${f.pend ? " is-pend" : ""}`}>{f.a}</p>
+                  <p className="lp-ans">{f.a}</p>
                 </details>
               ))}
             </div>
@@ -252,10 +252,10 @@ export default function Landing() {
             <span>© Avantia</span>
           </span>
           <nav aria-label="Legal">
-            <Link href="/terminos">Términos y condiciones <Todo>(borrador)</Todo></Link>
-            <Link href="/privacidad">Política de privacidad <Todo>(borrador)</Todo></Link>
+            <Link href="/terminos">Términos y condiciones</Link>
+            <Link href="/privacidad">Política de privacidad</Link>
             <AgendaLink>Agenda 20 minutos</AgendaLink>
-            <span>Contacto: <a href={`mailto:${CONTACTO}`}>{CONTACTO}</a></span>
+            <span><a href={`mailto:${CONTACTO}`}>{CONTACTO}</a></span>
           </nav>
         </div>
       </footer>

@@ -129,15 +129,12 @@ export async function restablecerContrasenaAction(_prev: EstadoForm, fd: FormDat
 }
 
 export async function signInWithGoogleAction(formData: FormData) {
-  const next = sanitizarNext(formData.get("next")?.toString());
-  const origin =
-    headers().get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const next = sanitizarNext(texto(formData, "next"));
 
-  const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { data, error } = await createSupabaseServerClient().auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      redirectTo: `${urlPanel()}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
 
