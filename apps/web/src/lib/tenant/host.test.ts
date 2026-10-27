@@ -24,6 +24,17 @@ describe("classifyHost", () => {
   });
 });
 
+describe("classifyHost: host único", () => {
+  const unico = { ...cfg, platformHosts: ["goavantia.com", "www.goavantia.com"] };
+  it("sirve landing y panel en el mismo host", () => {
+    expect(classifyHost("goavantia.com", unico)).toBe("plataforma");
+    expect(classifyHost("www.goavantia.com", unico)).toBe("plataforma");
+  });
+  it("una academia bajo el dominio sigue siendo tenant", () => {
+    expect(classifyHost("miacademia.goavantia.com", unico)).toBe("tenant");
+  });
+});
+
 describe("validarSubdominio", () => {
   it("acepta nombres válidos, incluido 'myapp'", () => {
     expect(validarSubdominio("myapp").ok).toBe(true);

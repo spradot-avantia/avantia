@@ -7,12 +7,18 @@ const MARKETING_HOSTS = (process.env.MARKETING_HOSTS ?? "avantia.app,www.avantia
   .split(",")
   .map((h) => h.trim())
   .filter(Boolean);
+const PLATFORM_HOSTS = (process.env.PLATFORM_HOSTS ?? "")
+  .split(",")
+  .map((h) => h.trim())
+  .filter(Boolean);
 
 /**
  * Corre en el edge, antes de cualquier render. Decide entre las dos familias
  * de rutas del proyecto según el hostname de la request:
  *  - avantia.app / www.avantia.app: sitio de marketing; "/" muestra la landing
  *    (app/(marketing)/landing).
+ *  - PLATFORM_HOSTS (host único, ADR 012): landing y panel en el mismo dominio;
+ *    "/" muestra la landing si no hay cookie de sesión y el panel si la hay.
  *  - app.avantia.app (o localhost): panel interno -> app/(dashboard).
  *  - cualquier otro dominio: sitio público de una academia -> app/(public),
  *    reescrito hacia el segmento real [domain] para que el route group
@@ -31,7 +37,20 @@ export async function middleware(request: NextRequest) {
   const kind = classifyHost(hostname, {
     panelHost: PANEL_HOST_SUFFIX,
     marketingHosts: MARKETING_HOSTS,
+    platformHosts: PLATFORM_HOSTS,
   });
+
+  if (kind === "plataforma") {
+    // Solo mira si existe la cookie (sin DB ni red): si está vencida, el layout
+    // del panel redirige a /login.
+    const haySesion = request.cookies.getAll().some((c) => c.name.startsWith("sb-") && c.name.includes("-auth-token"));
+    if (request.nextUrl.pathname === "/" && !haySesion) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/landing";
+      return NextResponse.rewrite(url);
+    }
+    return refrescarSesionPanel(request);
+  }
 
   if (kind === "marketing") {
     if (request.nextUrl.pathname === "/") {

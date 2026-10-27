@@ -1,17 +1,26 @@
 import { headers } from "next/headers";
 import { classifyHost } from "../tenant/host";
 
-/** Misma configuración de hosts que middleware.ts. */
+function lista(valor: string | undefined, porDefecto: string): string[] {
+  return (valor ?? porDefecto)
+    .split(",")
+    .map((h) => h.trim())
+    .filter(Boolean);
+}
+
+/** Configuración de hosts compartida con middleware.ts. */
+export function configHosts() {
+  return {
+    panelHost: process.env.PANEL_HOST_SUFFIX ?? "app.avantia.app",
+    marketingHosts: lista(process.env.MARKETING_HOSTS, "avantia.app,www.avantia.app"),
+    platformHosts: lista(process.env.PLATFORM_HOSTS, ""),
+  };
+}
+
+/** El host puede tener sesión del creador: panel o host único (plataforma). */
 export function hostEsPanel(host: string): boolean {
-  return (
-    classifyHost(host, {
-      panelHost: process.env.PANEL_HOST_SUFFIX ?? "app.avantia.app",
-      marketingHosts: (process.env.MARKETING_HOSTS ?? "avantia.app,www.avantia.app")
-        .split(",")
-        .map((h) => h.trim())
-        .filter(Boolean),
-    }) === "panel"
-  );
+  const kind = classifyHost(host, configHosts());
+  return kind === "panel" || kind === "plataforma";
 }
 
 /** URL base del panel (para enlaces desde marketing y redirects de correo). */
