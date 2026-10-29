@@ -1,7 +1,7 @@
 # 013 — Postulación con cuenta de correo o Google (Google deja de ser obligatorio)
 
 - **Fecha:** 2026-10-29
-- **Estado:** Propuesta (implementada en `dev`, espera la aprobación de Samuel)
+- **Estado:** Reemplazada por 014 (postular sin cuenta; el registro de correo/Google queda para quien sea invitado)
 
 ## Contexto
 

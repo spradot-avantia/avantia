@@ -11,7 +11,7 @@ export default async function SignupPage() {
   return (
     <>
       <h1 className="au-title">Crea tu cuenta</h1>
-      <p className="au-lede">Después te pediremos el nombre de tu academia.</p>
+      <p className="au-lede">Usa el mismo correo con el que postulaste. Después te pediremos el nombre de tu academia.</p>
       <FormSignup />
       <p className="au-sep" aria-hidden="true">o</p>
       <BotonGoogle next="/inicio" />
@@ -19,7 +19,7 @@ export default async function SignupPage() {
         Al continuar con Google aceptas los términos y la política de privacidad.
       </p>
       <p className="au-alt">
-        ¿Ya tienes cuenta? <Link href="/login">Ingresar</Link>
+        ¿Ya tienes cuenta? <Link href="/login">Ingresar</Link> · ¿Aún no postulas? <Link href="/postular">Postular</Link>
       </p>
     </>
   );

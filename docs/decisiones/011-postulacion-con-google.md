@@ -1,7 +1,7 @@
 # 011 — Postulación al programa fundador con Google y tabla `postulaciones`
 
 - **Fecha:** 2026-10-20
-- **Estado:** Propuesta (implementada en `dev`, espera la aprobación de Samuel)
+- **Estado:** Reemplazada parcialmente por 014 (la postulación ya no exige cuenta; la tabla y el trabajo de Google siguen)
 
 ## Contexto
 

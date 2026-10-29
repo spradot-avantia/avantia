@@ -4,6 +4,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "../supabase/server";
 import type { EstadoForm } from "./estado";
+import { MSG_SIN_INVITACION, puedeRegistrarse } from "../postulacion/acceso";
 import { crearLimitador } from "./limite";
 import { COOKIE_NEXT, urlPanel } from "./panel";
 import {
@@ -72,6 +73,8 @@ export async function signUpAction(_prev: EstadoForm, fd: FormData): Promise<Est
   const valores = { email: texto(fd, "email")?.trim(), nombre: texto(fd, "nombre")?.trim() };
   if (!parsed.success) return { errores: erroresPorCampo(parsed.error), valores };
   if (!limiteCorreo.permitir(`signup|${ipCliente()}`)) return { mensaje: MSG_LIMITE, valores };
+  // Registro por invitación (ADR 014): solo correos con postulación aceptada.
+  if (!(await puedeRegistrarse(parsed.data.email))) return { mensaje: MSG_SIN_INVITACION, valores };
 
   const { data, error } = await createSupabaseServerClient().auth.signUp({
     email: parsed.data.email,

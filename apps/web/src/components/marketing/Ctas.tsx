@@ -2,9 +2,8 @@ import type { ReactNode } from "react";
 
 type Size = "lg" | "sm";
 
-// Postulación al programa fundador: cuenta (correo o Google) y luego el
-// formulario corto, ambos en /postular del host del panel (ADR 011 y 013).
-// Los CTA son enlaces simples.
+// Postulación al programa fundador: formulario público de /postular, sin
+// cuenta (ADR 014). Los CTA son enlaces simples.
 export function postularHref(): string {
   return `${(process.env.NEXT_PUBLIC_PANEL_URL ?? "http://localhost:3000").replace(/\/+$/, "")}/postular`;
 }
@@ -28,7 +27,7 @@ export function PostularCta() {
     <div className="lp-capture">
       <ApplyButton>Postula al programa fundador</ApplyButton>
       <p className="av-legal">
-        ¿Ya tienes cuenta? <a href={loginHref()}>Ingresar a mi academia</a>
+        ¿Ya te aceptamos? <a href={loginHref()}>Ingresar a mi academia</a>
       </p>
     </div>
   );

@@ -50,7 +50,7 @@ export const FAQS: { q: string; a: string; pend?: boolean }[] = [
   { q: "¿Mis contenidos y los datos de mis alumnos siguen siendo míos?", a: "Sí. Tus contenidos y los datos de tus alumnos siguen siendo tuyos. Nosotros nos encargamos de almacenarlos y protegerlos por ti." },
   { q: "¿Puedo usar mi propio dominio?", a: "Sí, esa es la idea." },
   { q: "¿Qué pasa si no quedo en el primer grupo?", a: "Quedas en la lista de espera y te avisamos cuando abramos el siguiente." },
-  { q: "¿Cómo postulo?", a: "Creas tu cuenta con tu correo y una contraseña, o con Google, y luego completas un formulario corto. Si ya tienes cuenta, solo ingresas." },
+  { q: "¿Cómo postulo?", a: "Dejas tu nombre, tu correo y una o dos frases sobre lo que haces hoy. No necesitas crear una cuenta. Te escribimos, y si te aceptamos, te invitamos a registrarte. También puedes agendar 20 minutos con nosotros." },
 ];
 
 /** Datos de contacto y enlaces públicos de la landing. */

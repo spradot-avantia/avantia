@@ -52,7 +52,7 @@
 | Sesiones en vivo y actividades en el Espacio del Creador | "Próximamente" en la UI; sin backend | [Reconciliación](../producto/Reconciliacion_Diseno_Creador.md) filas 12 y 21 |
 | Migraciones `0001`–`0003` sin confirmar como aplicadas en la base remota | Verificar en Supabase y probar RLS/Storage | `db/migrations/` |
 | Proveedor Google sin confirmar en Supabase Auth (la migración `0004_postulaciones` ya se aplicó el 2026-10-20) | Necesario para que `/postular` funcione en producción | [ADR 011](../decisiones/011-postulacion-con-google.md) |
-| Registro de creadores abierto: cualquier cuenta puede crear academia sin postulación aceptada (Q4) | `crear_academia()` no exige postulación | [ADR 011](../decisiones/011-postulacion-con-google.md) |
+| Registro de creadores: cerrado en la app (signup y Google exigen postulación aceptada, ADR 014), pero `crear_academia()` no lo exige en la base (Q4 parcial) | Una cuenta ya creada puede llamar al RPC sin postulación aceptada | [ADR 014](../decisiones/014-postulacion-sin-cuenta-y-registro-por-invitacion.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 // Landing pública de Avantia (Server Component). Diseño: mockup "programa fundador".
 // Client Components solo donde hay estado: BrandStage y DemoTabs. Los CTA son
-// enlaces a /postular (cuenta y luego formulario; ADR 011 y 013) y /login.
+// enlaces a /postular (formulario sin cuenta; ADR 014) y /login.
 
 import Image from "next/image";
 import Link from "next/link";

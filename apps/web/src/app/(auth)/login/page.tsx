@@ -11,6 +11,7 @@ type Params = { searchParams: { next?: string; error?: string; aviso?: string } 
 
 const AVISOS: Record<string, string> = {
   enlace_invalido: "El enlace venció o ya se usó. Ingresa con tu contraseña o pide un enlace nuevo.",
+  sin_invitacion: "El registro es solo por invitación. Postula al programa fundador y, cuando te aceptemos, te escribiremos con el acceso.",
   google: "No pudimos ingresar con Google. Inténtalo de nuevo o usa tu correo y contraseña.",
 };
 
@@ -29,7 +30,7 @@ export default async function LoginPage({ searchParams }: Params) {
       <p className="au-sep" aria-hidden="true">o</p>
       <BotonGoogle next={next} />
       <p className="au-alt">
-        ¿No tienes cuenta? <Link href="/signup">Crear una cuenta</Link>
+        ¿Te aceptamos en el programa? <Link href="/signup">Crear mi cuenta</Link> · <Link href="/postular">Postular</Link>
       </p>
     </>
   );
