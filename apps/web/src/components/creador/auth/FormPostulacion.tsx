@@ -25,9 +25,9 @@ export function FormPostulacion() {
     const agenda = agendaHref();
     const externo = agenda.startsWith("http");
     return (
-      <div aria-live="polite">
+      <>
         <h1 className="au-title">Recibimos tu postulación</h1>
-        <p className="au-lede">
+        <p className="au-lede" role="status">
           Revisaremos tu perfil y te escribiremos al correo que dejaste. Si el primer grupo ya está completo, quedarás en la lista de espera para el siguiente.
         </p>
         <div className="au-box">
@@ -36,7 +36,7 @@ export function FormPostulacion() {
             Agenda 20 minutos
           </a>
         </div>
-      </div>
+      </>
     );
   }
 
