@@ -175,7 +175,7 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
         setError(r.error);
         return;
       }
-      router.push("/");
+      router.push("/inicio");
       router.refresh();
     });
   }

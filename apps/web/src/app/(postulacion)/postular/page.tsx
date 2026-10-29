@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { BotonGoogle } from "../../../components/creador/auth/FormulariosAuth";
+import Link from "next/link";
+import { BotonGoogle, FormSignup } from "../../../components/creador/auth/FormulariosAuth";
 import { FormPostulacion } from "../../../components/creador/auth/FormPostulacion";
 import { agendaHref } from "../../../components/marketing/content";
 import { getUsuarioActual } from "../../../lib/auth/usuario";
@@ -10,7 +11,7 @@ export const metadata: Metadata = { title: "Postula al programa fundador | Avant
 
 type Params = { searchParams: { editar?: string } };
 
-// Paso 1: cuenta con Google. Paso 2: formulario corto. Luego: confirmación con
+// Paso 1: crear cuenta (correo y contraseña, o Google). Paso 2: formulario corto. Luego: confirmación con
 // enlace a la agenda de 20 minutos (Google Calendar). ADR 011.
 export default async function PostularPage({ searchParams }: Params) {
   const usuario = await getUsuarioActual();
@@ -20,10 +21,15 @@ export default async function PostularPage({ searchParams }: Params) {
       <>
         <p className="au-stepper">Paso 1 de 2</p>
         <h1 className="au-title">Postula al programa fundador</h1>
-        <p className="au-lede">Primero crea tu cuenta con Google. Después completas un formulario corto, en menos de un minuto.</p>
+        <p className="au-lede">Crea tu cuenta con tu correo o con Google. Después completas un formulario corto, en menos de un minuto.</p>
+        <FormSignup next="/postular" />
+        <p className="au-sep" aria-hidden="true">o</p>
         <BotonGoogle next="/postular" />
-        <p className="av-legal" style={{ margin: 0 }}>
-          Al continuar aceptas los <a href="/terminos">términos y condiciones</a> y la <a href="/privacidad">política de privacidad</a>.
+        <p className="av-legal au-google-legal">
+          Al continuar con Google aceptas los <a href="/terminos">términos y condiciones</a> y la <a href="/privacidad">política de privacidad</a>.
+        </p>
+        <p className="au-alt">
+          ¿Ya tienes cuenta? <Link href="/login?next=%2Fpostular">Ingresar</Link>
         </p>
       </>
     );
@@ -54,7 +60,7 @@ export default async function PostularPage({ searchParams }: Params) {
       />
       <form action={cambiarCuentaAction}>
         <button type="submit" className="au-inline-link" style={{ background: "none", border: 0, padding: 0, cursor: "pointer", font: "inherit" }}>
-          ¿No eres tú? Usar otra cuenta de Google
+          ¿No eres tú? Usar otra cuenta
         </button>
       </form>
     </>

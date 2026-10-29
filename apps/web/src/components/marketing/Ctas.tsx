@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
-import { GoogleG } from "./icons";
 
 type Size = "lg" | "sm";
 
-// Postulación al programa fundador: primero cuenta con Google y luego el
-// formulario corto, ambos en /postular del host del panel (la sesión del
-// creador vive solo ahí, ADR 003 y 011). Los CTA son enlaces simples.
+// Postulación al programa fundador: cuenta (correo o Google) y luego el
+// formulario corto, ambos en /postular del host del panel (ADR 011 y 013).
+// Los CTA son enlaces simples.
 export function postularHref(): string {
   return `${(process.env.NEXT_PUBLIC_PANEL_URL ?? "http://localhost:3000").replace(/\/+$/, "")}/postular`;
 }
@@ -19,16 +18,17 @@ export function ApplyButton({ children, size = "lg" }: { children: ReactNode; si
   );
 }
 
-/** CTA principal (hero y cierre): postular entrando con Google. */
-export function GoogleCta() {
+export function loginHref(): string {
+  return `${(process.env.NEXT_PUBLIC_PANEL_URL ?? "http://localhost:3000").replace(/\/+$/, "")}/login`;
+}
+
+/** CTA principal (hero y cierre): postular, o ingresar si ya tiene cuenta. */
+export function PostularCta() {
   return (
     <div className="lp-capture">
-      <a className="av-btn av-btn--primary av-btn--lg" href={postularHref()}>
-        <span className="lp-g"><GoogleG size={18} /></span>
-        Postula con tu cuenta de Google
-      </a>
+      <ApplyButton>Postula al programa fundador</ApplyButton>
       <p className="av-legal">
-        Al continuar aceptas los <a href="/terminos">términos y condiciones</a> y la <a href="/privacidad">política de privacidad</a>.
+        ¿Ya tienes cuenta? <a href={loginHref()}>Ingresar a mi academia</a>
       </p>
     </div>
   );

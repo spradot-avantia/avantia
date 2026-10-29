@@ -34,6 +34,7 @@
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--av-line);
 }
+.lp-top__act { display: flex; align-items: center; gap: var(--av-space-2); }
 .lp-top__in { display: flex; align-items: center; justify-content: space-between; height: 68px; }
 .lp-logo { display: inline-flex; align-items: center; gap: 12px; }
 

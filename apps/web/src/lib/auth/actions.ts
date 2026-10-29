@@ -1,11 +1,11 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "../supabase/server";
 import type { EstadoForm } from "./estado";
 import { crearLimitador } from "./limite";
-import { urlPanel } from "./panel";
+import { COOKIE_NEXT, urlPanel } from "./panel";
 import {
   MSG_GENERICO,
   MSG_LIMITE,
@@ -68,6 +68,7 @@ export async function signUpAction(_prev: EstadoForm, fd: FormData): Promise<Est
     password: texto(fd, "password"),
     terminos: fd.get("terminos") === "on" ? true : false,
   });
+  const next = sanitizarNext(texto(fd, "next"));
   const valores = { email: texto(fd, "email")?.trim(), nombre: texto(fd, "nombre")?.trim() };
   if (!parsed.success) return { errores: erroresPorCampo(parsed.error), valores };
   if (!limiteCorreo.permitir(`signup|${ipCliente()}`)) return { mensaje: MSG_LIMITE, valores };
@@ -86,8 +87,13 @@ export async function signUpAction(_prev: EstadoForm, fd: FormData): Promise<Est
     if (error.code === "user_already_exists") return { ok: true, mensaje: MSG_REVISA_CORREO };
     return { mensaje: mensajeErrorAuth(error), valores };
   }
-  // Confirmación de correo apagada (solo dev): ya hay sesión, sigue al onboarding.
-  if (data.session) redirect("/");
+  // Confirmación de correo apagada (solo dev): ya hay sesión, sigue a `next`.
+  if (data.session) redirect(next);
+  // El enlace del correo no lleva `next` (la plantilla usa {{ .SiteURL }}): se recuerda
+  // en una cookie para que /auth/confirm vuelva, p. ej., a /postular.
+  if (next !== "/inicio") {
+    cookies().set(COOKIE_NEXT, next, { httpOnly: true, sameSite: "lax", secure: true, path: "/auth", maxAge: 60 * 60 * 24 });
+  }
   return { ok: true, mensaje: MSG_REVISA_CORREO };
 }
 
@@ -125,7 +131,7 @@ export async function restablecerContrasenaAction(_prev: EstadoForm, fd: FormDat
   }
   const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
   if (error) return { mensaje: mensajeErrorAuth(error) || MSG_GENERICO };
-  redirect("/");
+  redirect("/inicio");
 }
 
 export async function signInWithGoogleAction(formData: FormData) {

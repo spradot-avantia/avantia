@@ -1,15 +1,15 @@
 import type { ReactNode } from "react";
-import { Callout, EmptyState, LinkButton, PageHeader, SinAcademia } from "../../components/creador";
-import { ListaCursos, type CursoConUrl } from "../../components/creador/cursos/ListaCursos";
-import { Checklist, type PasoChecklist } from "../../components/creador/inicio/Checklist";
-import { CopiarEnlace } from "../../components/creador/inicio/CopiarEnlace";
-import { Kpis } from "../../components/creador/inicio/Kpis";
-import "../../components/creador/inicio/inicio.css";
-import { listarCursos } from "../../lib/creador/cursos";
-import { listarEstudiantes } from "../../lib/creador/estudiantes";
-import { urlPublicaCurso } from "../../lib/creador/publicacion";
-import { getCurrentTenant } from "../../lib/creador/tenantActual";
-import type { CursoResumen, Invitacion, TenantCreador } from "../../lib/creador/types";
+import { Callout, EmptyState, LinkButton, PageHeader, SinAcademia } from "../../../components/creador";
+import { ListaCursos, type CursoConUrl } from "../../../components/creador/cursos/ListaCursos";
+import { Checklist, type PasoChecklist } from "../../../components/creador/inicio/Checklist";
+import { CopiarEnlace } from "../../../components/creador/inicio/CopiarEnlace";
+import { Kpis } from "../../../components/creador/inicio/Kpis";
+import "../../../components/creador/inicio/inicio.css";
+import { listarCursos } from "../../../lib/creador/cursos";
+import { listarEstudiantes } from "../../../lib/creador/estudiantes";
+import { urlPublicaCurso } from "../../../lib/creador/publicacion";
+import { getCurrentTenant } from "../../../lib/creador/tenantActual";
+import type { CursoResumen, Invitacion, TenantCreador } from "../../../lib/creador/types";
 
 export const dynamic = "force-dynamic";
 

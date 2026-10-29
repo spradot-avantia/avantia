@@ -135,20 +135,21 @@ export function FormLogin({ next, aviso }: { next: string; aviso?: { tono: "info
   );
 }
 
-export function FormSignup() {
+export function FormSignup({ next = "/inicio" }: { next?: string }) {
   const [estado, accion] = useFormState(signUpAction, ESTADO_INICIAL);
   const [pw, setPw] = useState("");
   if (estado.ok) {
     return (
       <div aria-live="polite">
         <Callout tono="success" titulo="Revisa tu correo">
-          {estado.mensaje} Cuando confirmes, vuelve a <Link className="au-inline-link" href="/login">ingresar</Link>.
+          {estado.mensaje} Cuando confirmes, volverás aquí. Si no, <Link className="au-inline-link" href={`/login?next=${encodeURIComponent(next)}`}>ingresa</Link>.
         </Callout>
       </div>
     );
   }
   return (
     <form action={accion} className="au-form" noValidate>
+      <input type="hidden" name="next" value={next} />
       <Field id="nombre" label="Tu nombre" opcional error={estado.errores?.nombre}>
         <Input id="nombre" name="nombre" autoComplete="name" defaultValue={estado.valores?.nombre} invalido={!!estado.errores?.nombre} />
       </Field>

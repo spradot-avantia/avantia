@@ -178,7 +178,7 @@ export function PasoRevisar({ ctx, validacion }: { ctx: EditorCtx; validacion: R
                 <strong>Vuelve a Inicio</strong>
                 <span>Ahí ves el estado de tu academia y tus próximos pasos.</span>
               </div>
-              <LinkButton href="/" variante="secondary">
+              <LinkButton href="/inicio" variante="secondary">
                 Ir a Inicio
               </LinkButton>
             </li>

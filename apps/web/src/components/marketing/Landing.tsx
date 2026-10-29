@@ -1,6 +1,6 @@
 // Landing pública de Avantia (Server Component). Diseño: mockup "programa fundador".
 // Client Components solo donde hay estado: BrandStage y DemoTabs. Los CTA son
-// enlaces a /postular del panel (Google primero, luego el formulario; ADR 011).
+// enlaces a /postular (cuenta y luego formulario; ADR 011 y 013) y /login.
 
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 import { Icon, type IconName } from "./icons";
 import { BrandStage } from "./BrandStage";
 import { DemoTabs } from "./DemoTabs";
-import { ApplyButton, GoogleCta, StickyBar } from "./Ctas";
+import { ApplyButton, PostularCta, StickyBar, loginHref } from "./Ctas";
 import { CONTACTO, FAQS, agendaHref } from "./content";
 import "./landing.css";
 
@@ -73,7 +73,10 @@ export default function Landing() {
       <header className="lp-top">
         <div className="lp-wrap lp-top__in">
           <Link className="lp-logo" href="#top" aria-label="avantia, inicio"><Logo mark={36} word={18} /></Link>
-          <ApplyButton size="sm">Postular</ApplyButton>
+          <div className="lp-top__act">
+            <a className="av-btn av-btn--secondary av-btn--sm" href={loginHref()}>Ingresar</a>
+            <ApplyButton size="sm">Postular</ApplyButton>
+          </div>
         </div>
       </header>
 
@@ -85,7 +88,7 @@ export default function Landing() {
               <span className="av-overline">Para expertos que ya enseñan online</span>
               <h1 id="hero-title">Tu academia online, <span style={{ color: "var(--av-blue-600)" }}>con tu marca</span></h1>
               <p className="lp-sub">Sube tus cursos, recibe los pagos de tus alumnos y entrégales una experiencia con tu marca, a tu manera.</p>
-              <GoogleCta />
+              <PostularCta />
               <Trust size={20} />
               <AgendaLink>¿Prefieres conversar antes? Agenda 20 minutos</AgendaLink>
             </div>
@@ -234,11 +237,11 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Cierre: CTA con Google */}
+        {/* Cierre */}
         <section className="lp-sec lp-final" id="final" aria-labelledby="final-title">
           <div className="lp-wrap">
             <h2 id="final-title">Tu conocimiento ya tiene alumnos, dale una academia con tu nombre</h2>
-            <GoogleCta />
+            <PostularCta />
             <Trust size={22} />
             <AgendaLink>¿Prefieres conversar antes? Agenda 20 minutos</AgendaLink>
           </div>

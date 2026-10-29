@@ -59,8 +59,10 @@ export function erroresPorCampo(error: z.ZodError): Record<string, string> {
  * Evita open redirect: solo rutas relativas internas ("/algo"). Rechaza
  * "//host", "/\host", caracteres de control y rutas de auth (bucle).
  */
-export function sanitizarNext(next: unknown, porDefecto = "/"): string {
+export function sanitizarNext(next: unknown, porDefecto = "/inicio"): string {
   if (typeof next !== "string" || next.length === 0 || next.length > 500) return porDefecto;
+  // "/" es la landing, no el inicio del panel (ADR 012).
+  if (next === "/") return porDefecto;
   if (!next.startsWith("/") || next.startsWith("//") || next.includes("\\")) return porDefecto;
   // eslint-disable-next-line no-control-regex
   if (/[\u0000-\u001f]/.test(next)) return porDefecto;

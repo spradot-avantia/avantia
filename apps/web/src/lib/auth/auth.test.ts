@@ -56,10 +56,10 @@ describe("sanitizarNext", () => {
   it("permite rutas internas", () => {
     expect(sanitizarNext("/cursos?x=1")).toBe("/cursos?x=1");
   });
-  it.each(["//evil.com", "https://evil.com", "/\\evil.com", "javascript:alert(1)", "", undefined, "/login", "/auth/confirm"])(
+  it.each(["//evil.com", "https://evil.com", "/\\evil.com", "javascript:alert(1)", "", "/", undefined, "/login", "/auth/confirm"])(
     "rechaza %s",
     (v) => {
-      expect(sanitizarNext(v)).toBe("/");
+      expect(sanitizarNext(v)).toBe("/inicio");
     },
   );
 });

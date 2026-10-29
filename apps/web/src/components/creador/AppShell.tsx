@@ -11,7 +11,7 @@ import "./auth/auth.css";
 const FIRMA = "Con la tecnología de Avantia";
 
 const ITEMS: ItemNav[] = [
-  { href: "/", label: "Inicio", exacto: true },
+  { href: "/inicio", label: "Inicio", exacto: true },
   { href: "/cursos", label: "Cursos" },
   { href: "/estudiantes", label: "Estudiantes" },
   { href: "/mi-academia", label: "Mi academia" },

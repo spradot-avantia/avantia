@@ -1,6 +1,7 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
+import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { hostEsPanel, urlPanel } from "../../../../lib/auth/panel";
+import { COOKIE_NEXT, hostEsPanel, urlPanel } from "../../../../lib/auth/panel";
 import { sanitizarNext } from "../../../../lib/auth/validacion";
 import { createSupabaseServerClient } from "../../../../lib/supabase/server";
 
@@ -39,5 +40,8 @@ export async function GET(request: NextRequest) {
   if (error) return destino(type === "recovery" ? "/olvide-contrasena?error=enlace_invalido" : "/login?error=enlace_invalido");
 
   if (type === "recovery") return destino("/restablecer-contrasena");
-  return destino(sanitizarNext(searchParams.get("next")));
+  const jar = cookies();
+  const recordado = type === "signup" ? jar.get(COOKIE_NEXT)?.value : undefined;
+  if (recordado) jar.delete(COOKIE_NEXT);
+  return destino(sanitizarNext(searchParams.get("next") ?? recordado));
 }

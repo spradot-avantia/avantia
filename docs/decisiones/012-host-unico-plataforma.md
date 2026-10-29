@@ -10,7 +10,7 @@ El ADR 003 separa landing (`avantia.app`) y panel (`app.avantia.app`) por host y
 ## Decisión
 
 - Nuevo tipo de host `plataforma` (variable `PLATFORM_HOSTS`, p. ej. `goavantia.com,www.goavantia.com`) que sirve landing y panel en el mismo dominio.
-- En ese host, `middleware.ts` reescribe `/` a `/landing` si **no hay cookie de sesión** de Supabase (solo mira que exista; sin DB ni red) y deja pasar al dashboard si la hay. El resto de rutas (`/postular`, `/login`, `/cursos`…, `/privacidad`) no chocan y se sirven tal cual. Refresca la sesión como en el panel.
+- En ese host, `middleware.ts` reescribe `/` **siempre** a `/landing`. El inicio del panel pasa de `/` a `/inicio`; el creador entra por `/login` (enlace "Ingresar" de la landing) o `/postular`. El resto de rutas (`/postular`, `/login`, `/cursos`…, `/privacidad`) no chocan y se sirven tal cual. Refresca la sesión como en el panel. En el host de panel de dos hosts, `/` redirige a `/inicio`.
 - `hostEsPanel()` es verdadero para `panel` y `plataforma`, así que los redirects a `NEXT_PUBLIC_PANEL_URL` dejan de ciclar al apuntar al mismo host.
 - Las academias siguen en otros hosts (subdominios `*.goavantia.com` o dominio propio): la comparación del host es exacta, así que no se confunden con la plataforma. Siguen sin leer la sesión del creador.
 - Los modos de dos hosts (`MARKETING_HOSTS` + `PANEL_HOST_SUFFIX`) siguen funcionando; `PLATFORM_HOSTS` vacío los deja como antes.
@@ -23,7 +23,6 @@ El ADR 003 separa landing (`avantia.app`) y panel (`app.avantia.app`) por host y
 ## Consecuencias
 
 - Reemplaza parcialmente al 003 en "sesión solo en el host del panel": la cookie ahora vive también en el host de la landing. Al aprobarse, marcar el 003 como "Reemplazada parcialmente por 012".
-- Un creador con sesión ve el panel en `/`, no la landing (puede verla en `/landing`).
-- Una cookie vencida sin limpiar lleva a `/` → dashboard → `/login`; es aceptable.
+- `/` ya no es el inicio del panel: todo redirect post-login apunta a `/inicio` (`sanitizarNext` usa `/inicio` por defecto).
 - Con la landing en el mismo origen que el panel, un XSS en la landing alcanzaría la sesión del creador: hay que mantener la landing sin HTML de terceros ni scripts no revisados.
 - Subdominios `www`, `app`, etc. ya están reservados para academias (`reservados.ts`).

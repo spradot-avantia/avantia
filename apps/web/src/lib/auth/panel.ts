@@ -1,6 +1,9 @@
 import { headers } from "next/headers";
 import { classifyHost } from "../tenant/host";
 
+/** Destino tras confirmar el correo de un signup (lo fija signUpAction). */
+export const COOKIE_NEXT = "av-next";
+
 function lista(valor: string | undefined, porDefecto: string): string[] {
   return (valor ?? porDefecto)
     .split(",")

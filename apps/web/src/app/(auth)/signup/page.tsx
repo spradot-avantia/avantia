@@ -7,14 +7,14 @@ import { getUsuarioActual } from "../../../lib/auth/usuario";
 export const metadata: Metadata = { title: "Crear cuenta | Avantia" };
 
 export default async function SignupPage() {
-  if (await getUsuarioActual()) redirect("/");
+  if (await getUsuarioActual()) redirect("/inicio");
   return (
     <>
       <h1 className="au-title">Crea tu cuenta</h1>
       <p className="au-lede">Después te pediremos el nombre de tu academia.</p>
       <FormSignup />
       <p className="au-sep" aria-hidden="true">o</p>
-      <BotonGoogle next="/" />
+      <BotonGoogle next="/inicio" />
       <p className="av-legal au-google-legal">
         Al continuar con Google aceptas los términos y la política de privacidad.
       </p>

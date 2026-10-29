@@ -18,7 +18,7 @@ const PLATFORM_HOSTS = (process.env.PLATFORM_HOSTS ?? "")
  *  - avantia.app / www.avantia.app: sitio de marketing; "/" muestra la landing
  *    (app/(marketing)/landing).
  *  - PLATFORM_HOSTS (host único, ADR 012): landing y panel en el mismo dominio;
- *    "/" muestra la landing si no hay cookie de sesión y el panel si la hay.
+ *    "/" siempre es la landing; el panel entra por /login y vive en /inicio.
  *  - app.avantia.app (o localhost): panel interno -> app/(dashboard).
  *  - cualquier otro dominio: sitio público de una academia -> app/(public),
  *    reescrito hacia el segmento real [domain] para que el route group
@@ -41,10 +41,8 @@ export async function middleware(request: NextRequest) {
   });
 
   if (kind === "plataforma") {
-    // Solo mira si existe la cookie (sin DB ni red): si está vencida, el layout
-    // del panel redirige a /login.
-    const haySesion = request.cookies.getAll().some((c) => c.name.startsWith("sb-") && c.name.includes("-auth-token"));
-    if (request.nextUrl.pathname === "/" && !haySesion) {
+    // "/" siempre es la landing; el inicio del panel vive en /inicio.
+    if (request.nextUrl.pathname === "/") {
       const url = request.nextUrl.clone();
       url.pathname = "/landing";
       return NextResponse.rewrite(url);
@@ -62,6 +60,11 @@ export async function middleware(request: NextRequest) {
   }
 
   if (kind === "panel") {
+    if (request.nextUrl.pathname === "/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/inicio";
+      return NextResponse.redirect(url);
+    }
     // Único trabajo de sesión: refrescar cookies de Supabase (sin tocar tablas).
     return refrescarSesionPanel(request);
   }

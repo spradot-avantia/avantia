@@ -35,7 +35,7 @@ Idioma: documentación, commits y UI en **español** (es-CL por defecto). Códig
 
 ## Decisiones de producto vigentes (revisión de flujos 2026-10-12)
 
-Ver `docs/Revision_Flujos_Creador_Alumno_2026-10-12.md`. Resumen: creador entra solo con Google (+ validación de correo/MFA); lecciones solo video (enlace) + texto; sin acceso por invitación; quiz de término; dashboard del creador (CR-11); identidad visual genérica con iniciales; **mobile-first** (alumno 100% móvil; creador: edición pesada en escritorio). La retención es el diferenciador: cadencia/cohortes, práctica de recuperación, presencia del creador, nudges con normas sociales, lecciones cortas, analítica y A/B por tenant. Gamificación pesada e IA adaptativa quedan fuera del MVP.
+Ver `docs/Revision_Flujos_Creador_Alumno_2026-10-12.md`. Resumen: creador entra con correo y contraseña o con Google (ADR 013, Propuesta; + validación de correo/MFA); lecciones solo video (enlace) + texto; sin acceso por invitación; quiz de término; dashboard del creador (CR-11); identidad visual genérica con iniciales; **mobile-first** (alumno 100% móvil; creador: edición pesada en escritorio). La retención es el diferenciador: cadencia/cohortes, práctica de recuperación, presencia del creador, nudges con normas sociales, lecciones cortas, analítica y A/B por tenant. Gamificación pesada e IA adaptativa quedan fuera del MVP.
 
 ## Backlog y sprints
 
