@@ -31,10 +31,6 @@ function Trust({ size }: { size: number }) {
   );
 }
 
-function Todo({ children }: { children: ReactNode }) {
-  return <span className="av-todo">{children}</span>;
-}
-
 function BulletList({ items, icon, color }: { items: ReactNode[]; icon: IconName; color: string }) {
   return (
     <ul>
@@ -66,10 +62,6 @@ function AgendaLink({ children }: { children: ReactNode }) {
 export default function Landing() {
   return (
     <div className="av-scope lp">
-      <div className="lp-draft" role="note">
-        <b>Borrador.</b> Los textos con línea punteada están pendientes o por verificar. Las pantallas son vistas de ejemplo, no capturas reales.
-      </div>
-
       <header className="lp-top">
         <div className="lp-wrap lp-top__in">
           <Link className="lp-logo" href="#top" aria-label="avantia, inicio"><Logo mark={36} word={18} /></Link>
@@ -196,25 +188,6 @@ export default function Landing() {
               <path d="M0 104 C 260 54, 540 58, 800 92 S 1240 122, 1440 70 L 1440 150 L 0 150 Z" fill="url(#ondaB)" opacity=".48" />
               <path d="M0 128 C 280 100, 560 98, 820 118 S 1260 140, 1440 108 L 1440 150 L 0 150 Z" fill="url(#ondaC)" opacity=".85" />
             </svg>
-          </div>
-        </section>
-
-        {/* Equipo */}
-        <section className="lp-sec" id="equipo" style={{ background: "var(--av-surface)" }}>
-          <div className="lp-wrap">
-            <div className="lp-head">
-              <span className="av-overline">Quiénes somos</span>
-              <h2 className="av-h2">Estamos empezando, y lo decimos con claridad</h2>
-              <p className="av-lede">Trabajamos con grupos pequeños y acompañamos a cada experto de forma directa. Lo que aprendamos con ustedes define lo que construimos después.</p>
-            </div>
-            <ul className="lp-team">
-              {[1, 2, 3].map((n) => (
-                <li className="lp-member" key={n}>
-                  <span className="lp-av" style={{ width: 68, height: 68, fontSize: 11 }}>Foto<br />pendiente</span>
-                  <div><Todo>[Nombre]</Todo><Todo>[Rol]</Todo><Todo>[LinkedIn]</Todo></div>
-                </li>
-              ))}
-            </ul>
           </div>
         </section>
 
