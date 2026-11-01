@@ -19,3 +19,7 @@ coverage/
 .vercel
 .env*
 !.env.example
+
+# material de trabajo local (no versionar)
+docs/cambios_propuestos/
+versin3landingpage/
