@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { OnboardingFlow } from "../../../components/creador/marca/OnboardingFlow";
+import { tieneAcceso } from "../../../lib/postulacion/acceso";
 import { createSupabaseServerClient } from "../../../lib/supabase/server";
 import { getCurrentTenant } from "../../../lib/creador/tenantActual";
 
@@ -15,6 +16,7 @@ export default async function OnboardingPage() {
     // Crear una academia exige sesion real (ruta /login: login con correo y contrasena).
     const { data } = await createSupabaseServerClient().auth.getUser();
     if (!data.user) redirect("/login");
+    if (!(await tieneAcceso(data.user.email))) redirect("/auth/bloqueado");
   }
 
   const dominioRaiz = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "avantia.app";

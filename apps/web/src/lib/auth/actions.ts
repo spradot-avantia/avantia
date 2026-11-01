@@ -4,7 +4,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "../supabase/server";
 import type { EstadoForm } from "./estado";
-import { MSG_SIN_INVITACION, puedeRegistrarse } from "../postulacion/acceso";
+import { MSG_SIN_INVITACION, puedeRegistrarse, tieneAcceso } from "../postulacion/acceso";
 import { crearLimitador } from "./limite";
 import { COOKIE_NEXT, urlPanel } from "./panel";
 import {
@@ -54,11 +54,17 @@ export async function signInAction(_prev: EstadoForm, fd: FormData): Promise<Est
   if (!parsed.success) return { errores: erroresPorCampo(parsed.error), valores };
   if (!limiteLogin.permitir(`${ipCliente()}|${parsed.data.email}`)) return { mensaje: MSG_LIMITE, valores };
 
-  const { error } = await createSupabaseServerClient().auth.signInWithPassword({
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
     password: parsed.data.password,
   });
   if (error) return { mensaje: mensajeErrorAuth(error, "login"), valores };
+  // Solo entran el equipo y las postulaciones aceptadas (ADR 015), aunque la cuenta exista.
+  if (!(await tieneAcceso(parsed.data.email))) {
+    await supabase.auth.signOut();
+    return { mensaje: MSG_SIN_INVITACION, valores };
+  }
   redirect(sanitizarNext(texto(fd, "next")));
 }
 

@@ -39,15 +39,17 @@ export async function GET(request: NextRequest) {
     return destino("/login?error=google");
   }
 
-  // Registro por invitación (ADR 014). Google crea la cuenta al ingresar: si es nueva
-  // (menos de 10 min) y el correo no tiene postulación aceptada, se borra y se cierra la sesión.
+  // Acceso por invitación (ADR 014/015). Google crea la cuenta al ingresar: sin postulación
+  // aceptada (ni ser staff) se cierra la sesión, y si la cuenta es nueva (menos de 10 min) se borra.
   const supabase = createSupabaseServerClient();
   const { data: auth } = await supabase.auth.getUser();
   const u = auth.user;
-  if (u && Date.now() - new Date(u.created_at).getTime() < 10 * 60_000 && !(await puedeRegistrarse(u.email))) {
+  if (u && !(await puedeRegistrarse(u.email))) {
     await supabase.auth.signOut();
-    const { error: errBorrado } = await supabaseAdmin.auth.admin.deleteUser(u.id);
-    if (errBorrado) console.error("[auth] no se pudo borrar la cuenta sin invitación", errBorrado.message);
+    if (Date.now() - new Date(u.created_at).getTime() < 10 * 60_000) {
+      const { error: errBorrado } = await supabaseAdmin.auth.admin.deleteUser(u.id);
+      if (errBorrado) console.error("[auth] no se pudo borrar la cuenta sin invitación", errBorrado.message);
+    }
     return destino("/login?error=sin_invitacion");
   }
 

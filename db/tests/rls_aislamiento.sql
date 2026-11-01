@@ -23,7 +23,13 @@ insert into auth.users (id, instance_id, aud, role, email)
 values
   ('aaaaaaaa-0000-4000-8000-00000000000a', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'a-rls@test.local'),
   ('bbbbbbbb-0000-4000-8000-00000000000b', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'b-rls@test.local'),
-  ('cccccccc-0000-4000-8000-00000000000c', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'c-rls@test.local');
+  ('cccccccc-0000-4000-8000-00000000000c', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'c-rls@test.local'),
+  ('dddddddd-0000-4000-8000-00000000000d', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'd-rls@test.local');
+
+-- crear_academia exige acceso (ADR 016): A, B y C tienen postulacion aceptada; D no.
+insert into postulaciones (email, nombre, estado)
+values ('a-rls@test.local', 'A', 'aceptada'), ('b-rls@test.local', 'B', 'aceptada'), ('c-rls@test.local', 'C', 'aceptada'),
+  ('d-rls@test.local', 'D', 'nueva');
 
 -- ---------------------------------------------------------------------------
 -- Ayudas (viven en pg_temp: desaparecen con la sesion)
@@ -103,6 +109,10 @@ begin
   perform pg_temp.espera_error('A no puede crear una segunda', $q$select crear_academia('Segunda A','rls-test-aaa2','','')$q$, 'ya_tiene_academia');
   perform pg_temp.igual('subdominio_disponible: tomado -> false', (select subdominio_disponible('rls-test-bbb'))::int, 0);
   perform pg_temp.igual('subdominio_disponible: libre -> true', (select subdominio_disponible('rls-test-libre'))::int, 1);
+
+  -- Sin acceso (ADR 016): D tiene postulacion que no esta aceptada
+  perform pg_temp.como('dddddddd-0000-4000-8000-00000000000d');
+  perform pg_temp.espera_error('D sin invitacion no puede crear', $q$select crear_academia('Academia D','rls-test-ddd','','')$q$, 'sin_invitacion');
 
   perform pg_temp.como_admin();
 end $$;

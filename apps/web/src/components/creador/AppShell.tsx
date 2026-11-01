@@ -34,7 +34,7 @@ interface Props {
  */
 export function AppShell({ tenant, mostrarAdmin, usuarioEmail, children }: Props) {
   const color = tenant?.colorPrimario ?? "#2563eb";
-  const items = mostrarAdmin ? [...ITEMS, { href: "/admin", label: "Academias (staff)", separador: true }] : ITEMS;
+  const items = mostrarAdmin ? [...ITEMS, { href: "/admin", label: "Administración", separador: true }] : ITEMS;
   const marca = (
     <TenantMark
       nombre={tenant?.nombre ?? "Mi academia"}

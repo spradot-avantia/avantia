@@ -15,3 +15,7 @@ coverage/
 *.tsbuildinfo
 # artefactos generados de revisión visual
 *.visual-check.*
+
+.vercel
+.env*
+!.env.example

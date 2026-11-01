@@ -35,6 +35,7 @@ export const MENSAJES_ALTA: Record<string, string> = {
   nombre_invalido: "Revisa el nombre, la frase y el área: alguno excede el largo permitido.",
   ya_tiene_academia: "Ya tienes una academia. Entra a tu espacio para seguir configurándola.",
   no_autenticado: "Tu sesión expiró. Inicia sesión de nuevo.",
+  sin_invitacion: "Tu cuenta aún no tiene acceso. Postula al programa fundador y te escribiremos cuando te aceptemos.",
 };
 
 export type CodigoAlta = keyof typeof MENSAJES_ALTA;
