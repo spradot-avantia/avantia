@@ -3,7 +3,7 @@
 > Fuente de verdad del trabajo pendiente. Se actualiza en cada sesión de revisión
 > y en el mismo PR que cierra un ítem. Los RQ son de `docs/producto/Requerimientos_MVP.md`.
 > Los planes por día/sprint viven en este mismo directorio (`AAAA-MM-DD_*.md`).
-> Última actualización: 2026-10-20.
+> Última actualización: 2026-10-29.
 
 Foto del avance contra el MVP completo: `Estado_MVP_2026-10-13.md`.
 
@@ -24,6 +24,8 @@ Estados: `Pendiente` · `En curso` · `Bloqueado` · `Hecho`.
 | B-10 | Revisar landing V3, `/postular` y legales en móvil real (360–390 px) y escritorio | RQ-28 | Pendiente | La captura headless no baja de ~500 px; no se verificó a 360 px |
 | B-11 | Avisar por correo a contacto@goavantia.com cuando llega una postulación | RQ-28 | Pendiente | Hoy solo `/admin/postulaciones` |
 | B-12 | Legales: cerrar los `[pendientes]` y alinear con el flujo Google (los términos hablan de contraseña; privacidad menciona teléfono y tema de cursos, que el formulario no pide; duración del programa: 30 días en términos vs "programa gratis" sin plazo en la landing) | RQ-29 | Pendiente (revisión legal) | |
+| B-13 | Aplicar `0006_staff_y_acceso_crear_academia.sql` en Supabase, definir `STAFF_EMAILS` en Vercel, ingresar una vez para sembrar el staff y aprobar los ADR 015, 016 y 017 | RQ-06 | Pendiente (Samuel) | Código en `dev`: zona `/admin` (resumen, postulaciones, creadores, academias, equipo) |
+| B-14 | Suspender/ocultar una academia desde `/admin` (columna en `tenants` + resolución del host) y cerrar el `signUp` directo con trigger en `auth.users` | RQ-06 | Pendiente | Ver ADR 016 y 017 |
 | B-07 | Móvil base: viewport, inputs ≥16 px, botones ≥44 px, sidebar colapsable, manifest PWA por tenant | Impacto_Movil | Sin confirmar | Revisar qué quedó hecho |
 
 ## H1 — academia gratis cursable desde celular
