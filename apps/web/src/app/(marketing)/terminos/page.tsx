@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { LegalPage, Todo, type SeccionLegal } from "@/components/marketing/LegalPage";
+import { LegalPage, type SeccionLegal } from "@/components/marketing/LegalPage";
 
 export const metadata: Metadata = {
   title: "Términos y condiciones | Avantia",
-  description: "Términos y condiciones de uso de Avantia y del programa fundador (borrador).",
+  description: "Términos y condiciones de uso de Avantia y del programa fundador.",
 };
 
-// Borrador V3 (2026-10-13), pendiente de revisión legal.
 const SECCIONES: SeccionLegal[] = [
   {
     id: "t1",
@@ -34,10 +33,10 @@ const SECCIONES: SeccionLegal[] = [
     cuerpo: (
       <>
         <ul>
-          <li>El programa fundador tiene cupos limitados (<Todo>[5]</Todo> en el primer grupo) y una duración de <Todo>[30]</Todo> días desde que tu academia queda activa.</li>
+          <li>El programa fundador tiene cupos limitados (5 en el primer grupo).</li>
           <li>Es gratis. No pedimos tarjeta ni hacemos cobros automáticos al terminar.</li>
           <li>A cambio, te pedimos usar la plataforma y darnos tu opinión en las conversaciones que acordemos.</li>
-          <li>Al terminar, puedes contratar un plan con el precio preferente para fundadores <Todo>[condiciones por definir]</Todo> o dejar de usar Avantia.</li>
+          <li>Al terminar, puedes contratar un plan con el precio preferente para fundadores o dejar de usar Avantia.</li>
           <li>Como el producto está en etapa temprana, algunas funciones pueden cambiar, fallar o retirarse durante el programa.</li>
           <li>Elegimos a los participantes según el ajuste con el programa. Postular no garantiza un cupo.</li>
         </ul>
@@ -52,7 +51,7 @@ const SECCIONES: SeccionLegal[] = [
         <ul>
           <li>Debes ser mayor de 18 años y entregar datos verdaderos.</li>
           <li>Eres responsable de cuidar tu contraseña y de lo que se haga desde tu cuenta.</li>
-          <li>Si detectas un uso no autorizado, avísanos a <Todo>[correo de soporte]</Todo>.</li>
+          <li>Si detectas un uso no autorizado, avísanos a <a href="mailto:soporte@goavantia.com">soporte@goavantia.com</a>.</li>
         </ul>
       </>
     ),
@@ -64,7 +63,6 @@ const SECCIONES: SeccionLegal[] = [
       <>
         <p>Los cursos, videos, textos, marcas y demás material que subas siguen siendo tuyos. Nos otorgas una licencia limitada, no exclusiva y gratuita para alojarlos, procesarlos y mostrarlos a tus alumnos, solo para prestar el servicio y mientras tengas tu cuenta activa.</p>
         <p>Declaras que tienes los derechos sobre lo que publicas y que no infringe derechos de terceros. Podemos retirar contenido que infrinja la ley o estos términos, y te avisaremos cuando sea posible.</p>
-        <p><Todo>[Pendiente: confirmar si el Creador podrá exportar sus cursos y los datos de sus alumnos al cerrar su cuenta.]</Todo></p>
       </>
     ),
   },
@@ -100,7 +98,6 @@ const SECCIONES: SeccionLegal[] = [
     cuerpo: (
       <>
         <p>Los planes pagados, sus precios y formas de pago se informarán antes de que decidas contratar. Nunca te cobraremos sin tu aceptación expresa.</p>
-        <p><Todo>[Pendiente: planes, precios, medios de pago, periodicidad de cobro y política de reembolso.]</Todo></p>
       </>
     ),
   },
@@ -118,7 +115,7 @@ const SECCIONES: SeccionLegal[] = [
     titulo: "10. Responsabilidad",
     cuerpo: (
       <>
-        <p>Avantia no responde por el contenido que publican los Creadores ni por los acuerdos entre Creadores y alumnos. En la medida que la ley lo permita, nuestra responsabilidad total frente a ti se limita a <Todo>[monto o criterio a definir con asesoría legal]</Todo>.</p>
+        <p>Avantia no responde por el contenido que publican los Creadores ni por los acuerdos entre Creadores y alumnos. En la medida que la ley lo permita, nuestra responsabilidad total frente a ti se limita a lo que establezca la ley.</p>
       </>
     ),
   },
@@ -130,7 +127,7 @@ const SECCIONES: SeccionLegal[] = [
         <ul>
           <li>Puedes cerrar tu cuenta en cualquier momento escribiéndonos o desde la configuración de tu academia.</li>
           <li>Podemos suspender o cerrar una cuenta que incumpla estos términos, avisándote el motivo cuando sea posible.</li>
-          <li>Al cerrar la cuenta, eliminaremos tu contenido en un plazo de <Todo>[30]</Todo> días, salvo lo que debamos conservar por ley.</li>
+          <li>Al cerrar la cuenta, eliminaremos tu contenido en un plazo de 30 días, salvo lo que debamos conservar por ley. Las copias de respaldo pueden tardar hasta 90 días adicionales en eliminarse.</li>
         </ul>
       </>
     ),
@@ -140,7 +137,7 @@ const SECCIONES: SeccionLegal[] = [
     titulo: "12. Cambios a estos términos",
     cuerpo: (
       <>
-        <p>Si cambiamos estos términos de forma importante, te avisaremos por correo al menos <Todo>[15]</Todo> días antes de que el cambio entre en vigencia. Si no estás de acuerdo, puedes cerrar tu cuenta antes de esa fecha.</p>
+        <p>Si cambiamos estos términos de forma importante, te avisaremos por correo al menos 15 días antes de que el cambio entre en vigencia. Si no estás de acuerdo, puedes cerrar tu cuenta antes de esa fecha.</p>
       </>
     ),
   },
@@ -149,7 +146,7 @@ const SECCIONES: SeccionLegal[] = [
     titulo: "13. Ley aplicable y contacto",
     cuerpo: (
       <>
-        <p>Estos términos se rigen por las leyes de la República de Chile. Cualquier controversia se someterá a los tribunales ordinarios de <Todo>[ciudad]</Todo>, sin perjuicio de los derechos que la ley de protección al consumidor te otorgue.</p>
+        <p>Estos términos se rigen por las leyes de la República de Chile. Cualquier controversia se someterá a los tribunales ordinarios de Santiago, sin perjuicio de los derechos que la ley de protección al consumidor te otorgue.</p>
         <p>Para cualquier consulta: <a href="mailto:contacto@goavantia.com">contacto@goavantia.com</a></p>
       </>
     ),

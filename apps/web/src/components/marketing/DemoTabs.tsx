@@ -25,9 +25,6 @@ function Browser({ url, children }: { url: React.ReactNode; children: React.Reac
   );
 }
 
-function Note() {
-  return <p className="lp-dnote">Vista de ejemplo, fiel a lo disponible. Se reemplaza por capturas reales antes de publicar.</p>;
-}
 
 function Steps({ list, cur, onPick, label }: { list: { title: string; desc: string }[]; cur: number; onPick: (i: number) => void; label: string }) {
   return (
@@ -123,7 +120,7 @@ export function DemoTabs() {
               {sc === 1 && (
                 <Browser url="Panel · Cursos">
                   <div className="lp-pui">
-                    <div className="lp-ui-h">Finanzas para independientes <span className="av-badge av-badge--verify">Verificar estructura</span></div>
+                    <div className="lp-ui-h">Finanzas para independientes</div>
                     <div className="lp-mod-row">{GRIP}<b>1 · Ordena tus ingresos</b><em>Video</em></div>
                     <div className="lp-mod-row">{GRIP}<b>2 · Tu presupuesto mensual</b><em>Texto</em></div>
                     <div className="lp-mod-row">{GRIP}<b>3 · Impuestos sin sustos</b><em>Video</em></div>
@@ -135,13 +132,12 @@ export function DemoTabs() {
                 <Browser url="Panel · Venta">
                   <div className="lp-pui">
                     <div className="lp-ui-h">Inscripciones</div>
-                    <div className="lp-ui-row"><span className="lp-ui-lbl">Precio del curso (ejemplo)</span><div className="lp-ui-field"><span>$ 49.990 CLP</span></div></div>
+                    <div className="lp-ui-row"><span className="lp-ui-lbl">Precio del curso</span><div className="lp-ui-field"><span>$ 49.990 CLP</span></div></div>
                     <div className="lp-ui-row"><span className="lp-ui-lbl">Enlace de inscripción</span><div className="lp-ui-field"><span className="lp-ellip">www.tudominio.cl/finanzas</span><span className="lp-ui-ok" style={{ color: "var(--av-blue-700)" }}>Copiar</span></div></div>
                     <div className="lp-ui-row"><span className="lp-ui-lbl">Pagos</span><div className="lp-ui-field"><span>Tus alumnos pagan dentro de tu academia</span></div></div>
                   </div>
                 </Browser>
               )}
-              <Note />
             </div>
             <Steps list={STEPS_CREATOR} cur={sc} onPick={setSc} label="Pasos del Creador" />
           </div>
@@ -152,7 +148,6 @@ export function DemoTabs() {
             <div className="lp-dstage">
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <span className="av-badge av-badge--ok"><i />Disponible</span>
-                <span className="av-badge av-badge--verify">Verificar versión móvil</span>
               </div>
               {sa === 0 && (
                 <Browser url="Bandeja de entrada">
@@ -181,11 +176,9 @@ export function DemoTabs() {
                     <div className="lp-ac-brand"><span className="lp-ac-mark">M</span>Academia Mar</div>
                     <div className="lp-line"><span>Finanzas para independientes</span><b>$ 49.990</b></div>
                     <div className="lp-ac-cta" style={{ margin: 0 }}>Pagar inscripción</div>
-                    <span className="av-badge av-badge--verify">Medios de pago por confirmar</span>
                   </div>
                 </Browser>
               )}
-              <Note />
             </div>
             <Steps list={STEPS_STUDENT} cur={sa} onPick={setSa} label="Pasos del alumno" />
           </div>

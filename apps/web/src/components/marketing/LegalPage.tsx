@@ -1,7 +1,5 @@
 // Plantilla de las páginas legales (/terminos y /privacidad). "Volver" usa /landing
 // porque estas páginas también se abren desde /postular, en el host del panel.
-// Borradores de la landing V3 pendientes de revisión legal: los datos
-// faltantes van con <Todo>.
 
 import Image from "next/image";
 import Link from "next/link";
@@ -9,10 +7,6 @@ import type { ReactNode } from "react";
 import { Icon } from "./icons";
 import "./landing.css";
 import "./legal.css";
-
-export function Todo({ children }: { children: ReactNode }) {
-  return <span className="av-todo">{children}</span>;
-}
 
 export interface SeccionLegal {
   id: string;
@@ -33,9 +27,6 @@ export function LegalPage({
 }) {
   return (
     <div className="av-scope lp lg">
-      <div className="lp-draft" role="note">
-        <b>Borrador para revisión legal.</b> Este texto no está vigente. Los datos con línea punteada están pendientes.
-      </div>
       <header className="lp-top">
         <div className="lp-wrap lp-top__in">
           <Link className="lp-logo" href="/landing" aria-label="avantia, volver a la landing">
@@ -61,7 +52,6 @@ export function LegalPage({
           <div className="lg-head">
             <p className="av-overline">Legal</p>
             <h1>{titulo}</h1>
-            <p className="lg-meta">Versión borrador · Última actualización: <Todo>[fecha]</Todo></p>
           </div>
           <div className="lg-sum">
             <b>En resumen</b>

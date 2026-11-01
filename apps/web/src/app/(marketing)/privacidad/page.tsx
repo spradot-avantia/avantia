@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { LegalPage, Todo, type SeccionLegal } from "@/components/marketing/LegalPage";
+import { LegalPage, type SeccionLegal } from "@/components/marketing/LegalPage";
 
 export const metadata: Metadata = {
   title: "Política de privacidad | Avantia",
-  description: "Cómo Avantia trata los datos de creadores, postulantes y alumnos (borrador).",
+  description: "Cómo Avantia trata los datos de creadores, postulantes y alumnos.",
 };
 
-// Borrador V3 (2026-10-13), pendiente de revisión legal.
 const SECCIONES: SeccionLegal[] = [
   {
     id: "p1",
@@ -14,7 +13,7 @@ const SECCIONES: SeccionLegal[] = [
     cuerpo: (
       <>
         <p>El responsable de los datos que nos entregas como Creador o postulante es Avantia Tecnología SpA, RUT 78.494.537-5, con domicilio en Gath y Chaves 2452, depto. 506, comuna de Providencia, Región Metropolitana de Santiago, Chile.</p>
-        <p>Tratamos los datos según la Ley 19.628 sobre protección de la vida privada y nos estamos preparando para la Ley 21.719, que la reemplaza al entrar en vigencia. <Todo>[Verificar con asesoría legal la fecha de vigencia y los ajustes necesarios.]</Todo></p>
+        <p>Tratamos los datos según la Ley 19.628 sobre protección de la vida privada y nos estamos preparando para la Ley 21.719, que la reemplaza al entrar en vigencia.</p>
       </>
     ),
   },
@@ -25,7 +24,7 @@ const SECCIONES: SeccionLegal[] = [
       <>
         <ul>
           <li><b>Cuando postulas o creas tu cuenta:</b> nombre, correo, teléfono si lo entregas, el tema de tus cursos y lo que nos cuentes en el formulario.</li>
-          <li><b>Cuando configuras tu academia:</b> nombre de la academia, logo, colores, dominio y datos de facturación <Todo>[cuando existan planes pagados]</Todo>.</li>
+          <li><b>Cuando configuras tu academia:</b> nombre de la academia, logo, colores, dominio y datos de facturación (cuando existan planes pagados).</li>
           <li><b>Cuando usas la plataforma:</b> datos técnicos como dirección IP, navegador, dispositivo y páginas visitadas, para que el servicio funcione y para mejorarlo.</li>
           <li><b>Cuando conversamos contigo:</b> notas de las sesiones del programa fundador y tus comentarios sobre el producto.</li>
         </ul>
@@ -64,10 +63,10 @@ const SECCIONES: SeccionLegal[] = [
       <>
         <p>No vendemos ni arrendamos datos personales. Solo los compartimos con proveedores que nos ayudan a operar la plataforma y que están obligados a protegerlos:</p>
         <ul>
-          <li>Alojamiento y base de datos: <Todo>[p. ej. Supabase, Vercel, Cloudflare: confirmar]</Todo></li>
-          <li>Envío de correos: <Todo>[proveedor]</Todo></li>
-          <li>Pagos: <Todo>[proveedor, cuando existan planes pagados]</Todo></li>
-          <li>Analítica: <Todo>[proveedor o ninguno]</Todo></li>
+          <li>Alojamiento de la aplicación: Vercel.</li>
+          <li>Base de datos y autenticación: Supabase.</li>
+          <li>Envío de correos: Resend.</li>
+          <li>Pagos: Mercado Pago.</li>
         </ul>
         <p>También podemos entregar datos cuando una autoridad competente lo exija conforme a la ley.</p>
       </>
@@ -78,7 +77,7 @@ const SECCIONES: SeccionLegal[] = [
     titulo: "6. Transferencias fuera de Chile",
     cuerpo: (
       <>
-        <p>Algunos de nuestros proveedores guardan datos en servidores fuera de Chile <Todo>[indicar países]</Todo>. En esos casos exigimos medidas de seguridad y confidencialidad equivalentes a las de esta política.</p>
+        <p>Algunos de nuestros proveedores guardan datos en servidores fuera de Chile. En esos casos exigimos medidas de seguridad y confidencialidad equivalentes a las de esta política.</p>
       </>
     ),
   },
@@ -90,8 +89,7 @@ const SECCIONES: SeccionLegal[] = [
         <p>Cuando tus alumnos se inscriben en tu academia, tú eres el responsable de sus datos y Avantia actúa como encargado: los tratamos solo según tus instrucciones y para que tu academia funcione.</p>
         <ul>
           <li>No usamos los datos de tus alumnos para nuestro propio marketing ni los compartimos con otros Creadores.</li>
-          <li>Tú debes informar a tus alumnos cómo usas sus datos. <Todo>[Pendiente: ofrecer una plantilla de política de privacidad para las academias.]</Todo></li>
-          <li><Todo>[Pendiente: confirmar si el Creador podrá exportar los datos de sus alumnos.]</Todo></li>
+          <li>Tú debes informar a tus alumnos cómo usas sus datos.</li>
         </ul>
       </>
     ),
@@ -102,8 +100,8 @@ const SECCIONES: SeccionLegal[] = [
     cuerpo: (
       <>
         <ul>
-          <li>Postulaciones no seleccionadas: hasta <Todo>[12 meses]</Todo>, para avisarte cuando se abra un nuevo grupo, salvo que nos pidas borrarlas antes.</li>
-          <li>Datos de tu cuenta: mientras esté activa y hasta <Todo>[30 días]</Todo> después de cerrarla.</li>
+          <li>Postulaciones no seleccionadas: hasta 12 meses, para avisarte cuando se abra un nuevo grupo, salvo que nos pidas borrarlas antes.</li>
+          <li>Datos de tu cuenta: mientras esté activa y hasta 30 días después de cerrarla (las copias de respaldo pueden tardar hasta 90 días adicionales en eliminarse).</li>
           <li>Datos de facturación: el plazo que exija la ley tributaria.</li>
         </ul>
       </>
@@ -122,7 +120,7 @@ const SECCIONES: SeccionLegal[] = [
           <li>Oponerte a que los usemos para ciertos fines, como el envío de información comercial.</li>
           <li>Recibir tus datos en un formato que puedas llevar a otro servicio (portabilidad).</li>
         </ul>
-        <p>Escríbenos a <Todo>[correo de privacidad]</Todo>. Te responderemos en un plazo máximo de <Todo>[días hábiles según la ley]</Todo>. Si no quedas conforme, puedes recurrir a la autoridad de protección de datos que corresponda.</p>
+        <p>Escríbenos a <a href="mailto:soporte@goavantia.com">soporte@goavantia.com</a> y te responderemos en un plazo máximo de 5 días hábiles. Si no quedas conforme, puedes recurrir a la autoridad de protección de datos que corresponda.</p>
       </>
     ),
   },
@@ -140,7 +138,7 @@ const SECCIONES: SeccionLegal[] = [
     titulo: "11. Cookies",
     cuerpo: (
       <>
-        <p>Usamos cookies necesarias para que el sitio funcione y <Todo>[cookies de analítica, si se usan]</Todo>. Puedes bloquearlas desde tu navegador, aunque algunas funciones podrían dejar de operar.</p>
+        <p>Usamos cookies necesarias para que el sitio funcione. Puedes bloquearlas desde tu navegador, aunque algunas funciones podrían dejar de operar.</p>
       </>
     ),
   },
@@ -159,7 +157,7 @@ const SECCIONES: SeccionLegal[] = [
     cuerpo: (
       <>
         <p>Si cambiamos esta política de forma importante, te avisaremos por correo antes de que el cambio entre en vigencia.</p>
-        <p>Para cualquier consulta sobre privacidad: <Todo>[correo de privacidad]</Todo> o <a href="mailto:contacto@goavantia.com">contacto@goavantia.com</a>. También puedes revisar nuestros <a href="/terminos">términos y condiciones</a>.</p>
+        <p>Para cualquier consulta sobre privacidad: <a href="mailto:soporte@goavantia.com">soporte@goavantia.com</a>. También puedes revisar nuestros <a href="/terminos">términos y condiciones</a>.</p>
       </>
     ),
   },
