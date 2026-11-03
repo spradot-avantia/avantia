@@ -80,13 +80,14 @@ for (const k of ["A", "B"]) {
   await client.query("insert into lecciones (id, tenant_id, curso_id, modulo_id, titulo) values ($1, $2, $3, $4, 'L')", [L[k], T[k], C[k], M[k]]);
   await client.query("insert into invitaciones (tenant_id, curso_id, email) values ($1, $2, $3)", [T[k], C[k], `x${k.toLowerCase()}@test.cl`]);
   await client.query("insert into curso_objetivos (tenant_id, curso_id, orden, texto) values ($1, $2, 1, 'obj')", [T[k], C[k]]);
-  await client.query("insert into inscripciones (tenant_id, curso_id, alumno_id) values ($1, $2, $3)", [T[k], C[k], U[`alum${k}`]]);
+  await client.query("insert into alumnos (id, tenant_id, nombre, correo, password_hash) values ($1, $2, 'Alumno', $3, 'scrypt$x')", [U[`alum${k}`], T[k], `alum${k.toLowerCase()}@test.cl`]);
+  await client.query("insert into inscripciones (tenant_id, curso_id, alumno_id, estado) values ($1, $2, $3, 'activa')", [T[k], C[k], U[`alum${k}`]]);
   await client.query("insert into progreso (tenant_id, curso_id, leccion_id, alumno_id) values ($1, $2, $3, $4)", [T[k], C[k], L[k], U[`alum${k}`]]);
   await client.query("insert into eventos (tenant_id, curso_id, alumno_id, tipo) values ($1, $2, $3, 'inscripcion')", [T[k], C[k], U[`alum${k}`]]);
 }
 
 console.log("\nCreador A solo ve su tenant:");
-const tablasTenant = ["cursos", "curso_objetivos", "modulos", "lecciones", "invitaciones", "inscripciones", "progreso", "eventos"];
+const tablasTenant = ["cursos", "curso_objetivos", "modulos", "lecciones", "invitaciones", "inscripciones", "progreso", "eventos", "alumnos"];
 for (const t of tablasTenant) {
   const filas = await como("authenticated", U.creaA, async (c) => (await c.query(`select tenant_id from ${t}`)).rows);
   check(`${t}: ve filas de A y ninguna de B`, filas.length === 1 && filas[0].tenant_id === T.A, `(vio ${filas.length})`);
@@ -94,12 +95,17 @@ for (const t of tablasTenant) {
 check("tenants: ve solo el suyo", (await como("authenticated", U.creaA, (c) => cuenta(c, "select id from tenants"))) === 1);
 check("membresias: ve solo la suya", (await como("authenticated", U.creaA, (c) => cuenta(c, "select * from membresias"))) === 1);
 
+await client.query("insert into alumnos (id, tenant_id, nombre, correo, password_hash) values ($1, $2, 'Libre', 'libre@test.cl', 'scrypt$x')", [U.libre, T.A]);
 console.log("\nCreador A no escribe en B:");
 check("insert curso con tenant B falla", await falla("authenticated", U.creaA, "insert into cursos (tenant_id, slug, titulo) values ($1, 'z', 'Z')", [T.B]));
 check("update curso de B afecta 0 filas", (await filasAfectadas("authenticated", U.creaA, "update cursos set titulo='hack' where id=$1", [C.B])) === 0);
 check("delete curso de B afecta 0 filas", (await filasAfectadas("authenticated", U.creaA, "delete from cursos where id=$1", [C.B])) === 0);
 check("update leccion de B afecta 0 filas", (await filasAfectadas("authenticated", U.creaA, "update lecciones set titulo='hack' where id=$1", [L.B])) === 0);
-check("insert inscripcion en B falla", await falla("authenticated", U.creaA, "insert into inscripciones (tenant_id, curso_id, alumno_id) values ($1,$2,$3)", [T.B, C.B, U.libre]));
+check("insert inscripcion en B falla", await falla("authenticated", U.creaA, "insert into inscripciones (tenant_id, curso_id, alumno_id) values ($1,$2,$3)", [T.B, C.B, U.alumB]));
+check("update inscripcion de B afecta 0 filas", (await filasAfectadas("authenticated", U.creaA, "update inscripciones set estado='rechazada' where tenant_id=$1", [T.B])) === 0);
+check("creador A modifica inscripciones de su tenant", (await filasAfectadas("authenticated", U.creaA, "update inscripciones set estado='activa', activada_por='creador' where tenant_id=$1", [T.A])) === 1);
+check("insert alumno en B falla", await falla("authenticated", U.creaA, "insert into alumnos (tenant_id, nombre, correo, password_hash) values ($1,'x','x@test.cl','h')", [T.B]));
+check("insert pago en B falla", await falla("authenticated", U.creaA, "insert into pagos (tenant_id, inscripcion_id, medio) values ($1, gen_random_uuid(), 'transferencia')", [T.B]));
 check("delete progreso de B afecta 0 filas", (await filasAfectadas("authenticated", U.creaA, "delete from progreso where tenant_id=$1", [T.B])) === 0);
 check("insert evento en B falla", await falla("authenticated", U.creaA, "insert into eventos (tenant_id, tipo) values ($1,'inscripcion')", [T.B]));
 check("update tenant B afecta 0 filas", (await filasAfectadas("authenticated", U.creaA, "update tenants set nombre='hack' where id=$1", [T.B])) === 0);
@@ -113,21 +119,21 @@ check("leccion de B apuntando a curso de A es rechazada", await fkFalla("insert 
 check("progreso de B con leccion de A es rechazado", await fkFalla("insert into progreso (tenant_id, curso_id, leccion_id, alumno_id) values ($1,$2,$3,$4)", [T.B, C.B, L.A, U.alumB]));
 check("inscripcion de B con curso de A es rechazada", await fkFalla("insert into inscripciones (tenant_id, curso_id, alumno_id) values ($1,$2,$3)", [T.B, C.A, U.libre]));
 
-console.log("\nAlumno:");
-check("alumA ve solo su inscripcion", (await como("authenticated", U.alumA, async (c) => (await c.query("select alumno_id from inscripciones")).rows.map((r) => r.alumno_id))).join() === U.alumA);
-check("alumA ve solo su progreso", (await como("authenticated", U.alumA, (c) => cuenta(c, "select 1 from progreso"))) === 1);
-check("alumA no ve eventos (solo creador)", (await como("authenticated", U.alumA, (c) => cuenta(c, "select 1 from eventos"))) === 0);
-check("alumA no inserta inscripciones", await falla("authenticated", U.alumA, "insert into inscripciones (tenant_id, curso_id, alumno_id) values ($1,$2,$3)", [T.A, C.A, U.alumA]));
-check("alumA no modifica su inscripcion (0 filas)", (await filasAfectadas("authenticated", U.alumA, "update inscripciones set estado='cancelada' where alumno_id=$1", [U.alumA])) === 0);
-check("alumA actualiza su propio progreso", (await filasAfectadas("authenticated", U.alumA, "update progreso set completada_at=now() where alumno_id=$1", [U.alumA])) === 1);
-check("alumA no toca progreso de alumB (0 filas)", (await filasAfectadas("authenticated", U.alumA, "update progreso set completada_at=now() where alumno_id=$1", [U.alumB])) === 0);
-check("alumA no inserta progreso a nombre de otro", await falla("authenticated", U.alumA, "insert into progreso (tenant_id,curso_id,leccion_id,alumno_id) values ($1,$2,$3,$4)", [T.A, C.A, L.A, U.alumB]));
-check("alumno sin inscripcion no inserta progreso", await falla("authenticated", U.libre, "insert into progreso (tenant_id,curso_id,leccion_id,alumno_id) values ($1,$2,$3,$4)", [T.A, C.A, L.A, U.libre]));
-check("alumA no inserta progreso en curso de B", await falla("authenticated", U.alumA, "insert into progreso (tenant_id,curso_id,leccion_id,alumno_id) values ($1,$2,$3,$4)", [T.B, C.B, L.B, U.alumA]));
-check("alumA inserta evento propio en su academia", !(await falla("authenticated", U.alumA, "insert into eventos (tenant_id,curso_id,alumno_id,tipo) values ($1,$2,$3,'leccion_abierta')", [T.A, C.A, U.alumA])));
-check("alumA no inserta evento en academia B", await falla("authenticated", U.alumA, "insert into eventos (tenant_id,alumno_id,tipo) values ($1,$2,'leccion_abierta')", [T.B, U.alumA]));
-check("alumno sin inscripcion no inserta eventos", await falla("authenticated", U.libre, "insert into eventos (tenant_id,alumno_id,tipo) values ($1,$2,'leccion_abierta')", [T.A, U.libre]));
-check("alumA no lee cursos ni lecciones (aun sin politica de alumno)", (await como("authenticated", U.alumA, (c) => cuenta(c, "select 1 from cursos union all select 1 from lecciones"))) === 0);
+console.log("\nAlumnos (ADR 018): cuenta propia por academia, sin acceso por PostgREST:");
+check("mismo correo puede ser alumno de dos academias", !(await falla("service_role", null, "insert into alumnos (tenant_id, nombre, correo, password_hash) select $1, 'Dup', correo, 'h' from alumnos where tenant_id=$2 and id=$3", [T.B, T.A, U.alumA])));
+check("correo repetido en la misma academia es rechazado", await fkFalla("insert into alumnos (tenant_id, nombre, correo, password_hash) values ($1,'x','aluma@test.cl','h')", [T.A]));
+check("creador A no lee password_hash", await falla("authenticated", U.creaA, "select password_hash from alumnos"));
+check("creador A lee nombre y correo de sus alumnos", (await como("authenticated", U.creaA, (c) => cuenta(c, "select nombre, correo from alumnos"))) === 2);
+check("anon no lee alumnos", await falla("anon", null, "select 1 from alumnos"));
+check("authenticated no lee alumno_tokens", await falla("authenticated", U.creaA, "select 1 from alumno_tokens"));
+check("anon no lee inscripciones", await falla("anon", null, "select 1 from inscripciones"));
+check("un JWT ajeno (alumA) no ve alumnos, inscripciones ni progreso", (await como("authenticated", U.alumA, (c) => cuenta(c, "select 1 from alumnos union all select 1 from inscripciones union all select 1 from progreso"))) === 0);
+check("un JWT ajeno no inserta progreso", await falla("authenticated", U.alumA, "insert into progreso (tenant_id,curso_id,leccion_id,alumno_id) values ($1,$2,$3,$4)", [T.A, C.A, L.A, U.alumA]));
+check("progreso con alumno de otra academia es rechazado (FK compuesta)", await fkFalla("insert into progreso (tenant_id,curso_id,leccion_id,alumno_id) values ($1,$2,$3,$4)", [T.B, C.B, L.B, U.alumA]));
+check("inscripcion con alumno de otra academia es rechazada (FK compuesta)", await fkFalla("insert into inscripciones (tenant_id, curso_id, alumno_id) values ($1,$2,$3)", [T.B, C.B, U.libre]));
+check("token de sesion con alumno de otra academia es rechazado", await fkFalla("insert into alumno_tokens (tenant_id, alumno_id, tipo, token_hash, expira_at) values ($1,$2,'sesion','h',now())", [T.B, U.alumA]));
+check("estado de inscripcion invalido es rechazado", await fkFalla("update inscripciones set estado='x'", []));
+check("un JWT ajeno no lee cursos ni lecciones", (await como("authenticated", U.alumA, (c) => cuenta(c, "select 1 from cursos union all select 1 from lecciones"))) === 0);
 
 console.log("\nEventos es append-only:");
 check("creador A no actualiza eventos", await falla("authenticated", U.creaA, "update eventos set tipo='curso_completado'"));
@@ -141,10 +147,13 @@ for (const t of [...tablasTenant, "tenants", "membresias"]) {
 }
 
 console.log("\nAlta de academia (RPC):");
-// crear_academia exige acceso desde 0006 (staff o postulacion aceptada): "libre" entra como staff solo para estas pruebas.
-await client.query("insert into staff (email, rol) values ('libre@test.cl', 'admin')");
 check("crear_academia sin sesion falla", await falla("authenticated", null, "select crear_academia('Nueva', 'nueva-acad')"));
 check("crear_academia: segundo alta del mismo usuario falla", await falla("authenticated", U.creaA, "select crear_academia('Otra', 'otra-acad')"));
+check("crear_academia sin acceso (ni staff ni postulacion aceptada) falla con sin_invitacion", await como("authenticated", U.libre, async (c) => {
+  try { await c.query("select crear_academia('Libre', 'libre-acad')"); return false; } catch (e) { return /sin_invitacion/.test(e.message); }
+}));
+// crear_academia exige acceso desde 0006 (staff o postulacion aceptada): "libre" entra como staff solo para el resto de estas pruebas.
+await client.query("insert into staff (email, rol) values ('libre@test.cl', 'admin')");
 check("crear_academia: usuario nuevo crea su academia y ve solo esa", await como("authenticated", U.libre, async (c) => {
   await c.query("select crear_academia('Libre', 'libre-acad')");
   return (await cuenta(c, "select 1 from tenants")) === 1;
@@ -169,7 +178,7 @@ await client.query("update postulaciones set estado='aceptada' where user_id=$1"
 check("no edita la suya una vez revisada (0 filas)", (await filasAfectadas("authenticated", U.alumB, "update postulaciones set nombre='B3' where user_id=$1", [U.alumB])) === 0);
 check("anon no ve postulaciones", (await como("anon", null, (c) => cuenta(c, "select 1 from postulaciones")).catch(() => 0)) === 0);
 
-console.log("\nPagina de la academia (0007, ADR 018):");
+console.log("\nPagina de la academia (0008, ADR 021):");
 for (const k of ["A", "B"]) {
   await client.query("insert into paginas_academia (tenant_id, template, titulo) values ($1, 'programa', $2)", [T[k], `Titulo ${k}`]);
 }
