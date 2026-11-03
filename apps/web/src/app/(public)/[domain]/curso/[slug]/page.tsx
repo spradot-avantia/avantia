@@ -1,6 +1,9 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { resolveTenantByHostname } from "../../../../../lib/tenant/resolve";
 import { supabaseAdmin } from "../../../../../lib/supabase/admin";
+import { MarcaSitio } from "../../../../../components/sitio/partes";
+import "../../../../../components/sitio/sitio.css";
 
 function formatPrecio(centavos: number) {
   return new Intl.NumberFormat("es-AR", {
@@ -36,6 +39,16 @@ export default async function CursoVentaPage({
 
   return (
     <section>
+      {/* El layout ya no pone encabezado (ADR 018): la ficha muestra la marca de la academia. */}
+      <div className="st">
+        <header className="st-barra">
+          <Link href="/" style={{ textDecoration: "none" }}>
+            <MarcaSitio
+              academia={{ nombre: tenant.nombre, frase: null, colorPrimario: tenant.theme.colorPrimario, logoUrl: tenant.theme.logoUrl, logoModo: "logo_y_nombre" }}
+            />
+          </Link>
+        </header>
+      </div>
       <h1 style={{ color: tenant.theme.colorPrimario }}>{curso.titulo}</h1>
       {curso.descripcion && <p>{curso.descripcion}</p>}
       <p>

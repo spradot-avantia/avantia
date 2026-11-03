@@ -141,6 +141,8 @@ for (const t of [...tablasTenant, "tenants", "membresias"]) {
 }
 
 console.log("\nAlta de academia (RPC):");
+// crear_academia exige acceso desde 0006 (staff o postulacion aceptada): "libre" entra como staff solo para estas pruebas.
+await client.query("insert into staff (email, rol) values ('libre@test.cl', 'admin')");
 check("crear_academia sin sesion falla", await falla("authenticated", null, "select crear_academia('Nueva', 'nueva-acad')"));
 check("crear_academia: segundo alta del mismo usuario falla", await falla("authenticated", U.creaA, "select crear_academia('Otra', 'otra-acad')"));
 check("crear_academia: usuario nuevo crea su academia y ve solo esa", await como("authenticated", U.libre, async (c) => {
@@ -149,6 +151,7 @@ check("crear_academia: usuario nuevo crea su academia y ve solo esa", await como
 }));
 check("crear_academia: subdominio reservado falla", await falla("authenticated", U.libre, "select crear_academia('Admin', 'admin')"));
 
+await client.query("delete from staff where email = 'libre@test.cl'");
 console.log("\nPostulaciones (tabla de plataforma, aislada por usuario):");
 await client.query("insert into postulaciones (user_id, nombre) values ($1, 'Postulante B')", [U.alumB]);
 check("postulante inserta la suya y el correo sale de auth.users", await como("authenticated", U.libre, async (c) => {
@@ -165,6 +168,21 @@ check("no cambia su estado", await falla("authenticated", U.alumB, "update postu
 await client.query("update postulaciones set estado='aceptada' where user_id=$1", [U.alumB]);
 check("no edita la suya una vez revisada (0 filas)", (await filasAfectadas("authenticated", U.alumB, "update postulaciones set nombre='B3' where user_id=$1", [U.alumB])) === 0);
 check("anon no ve postulaciones", (await como("anon", null, (c) => cuenta(c, "select 1 from postulaciones")).catch(() => 0)) === 0);
+
+console.log("\nPagina de la academia (0007, ADR 018):");
+for (const k of ["A", "B"]) {
+  await client.query("insert into paginas_academia (tenant_id, template, titulo) values ($1, 'programa', $2)", [T[k], `Titulo ${k}`]);
+}
+check("creador A ve solo su pagina", (await como("authenticated", U.creaA, async (c) => (await c.query("select tenant_id from paginas_academia")).rows.map((r) => r.tenant_id))).join() === T.A);
+check("creador A no edita la pagina de B (0 filas)", (await filasAfectadas("authenticated", U.creaA, "update paginas_academia set titulo='hack' where tenant_id=$1", [T.B])) === 0);
+check("creador A no borra la pagina de B (0 filas)", (await filasAfectadas("authenticated", U.creaA, "delete from paginas_academia where tenant_id=$1", [T.B])) === 0);
+check("creador A no crea pagina para B", await falla("authenticated", U.creaA, "insert into paginas_academia (tenant_id) values ($1) on conflict do nothing", [T.B]));
+check("creador A edita su pagina", (await filasAfectadas("authenticated", U.creaA, "update paginas_academia set titulo='Nuevo' where tenant_id=$1", [T.A])) === 1);
+check("alumno de A no ve la pagina en borrador", (await como("authenticated", U.alumA, (c) => cuenta(c, "select 1 from paginas_academia"))) === 0);
+check("anon no ve paginas", (await como("anon", null, (c) => cuenta(c, "select 1 from paginas_academia")).catch(() => 0)) === 0);
+check("template invalido es rechazado", await falla("authenticated", U.creaA, "update paginas_academia set template='otro' where tenant_id=$1", [T.A]));
+check("testimonios deben ser un arreglo", await falla("authenticated", U.creaA, "update paginas_academia set testimonios='{}'::jsonb where tenant_id=$1", [T.A]));
+check("token de dominio con formato invalido es rechazado", await falla("authenticated", U.creaA, "update paginas_academia set dominio_token='x' where tenant_id=$1", [T.A]));
 
 console.log(`\n${pass} ok, ${fallos.length} fallos`);
 await client.end();

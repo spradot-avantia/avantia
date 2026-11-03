@@ -1,17 +1,41 @@
-import { PageHeader, SinAcademia } from "../../../components/creador";
+import { EmptyState, PageHeader, SinAcademia } from "../../../components/creador";
 import { MarcaForm } from "../../../components/creador/marca/MarcaForm";
-import { getCurrentTenant } from "../../../lib/creador/tenantActual";
+import { DominioCard } from "../../../components/creador/pagina/DominioCard";
+import { SeccionPagina } from "../../../components/creador/pagina/SeccionPagina";
+import { cargarPaginaCreador } from "../../../lib/creador/paginaData";
 import "../../../components/creador/marca/marca.css";
+import "../../../components/creador/pagina/pagina.css";
 
 export const dynamic = "force-dynamic";
 
-// Mi academia > Marca (pantallas 02 y 04).
+// Mi academia: página de la academia + dominio (diseño 02, ADR 018) y Marca (pantallas 02 y 04).
 export default async function MiAcademiaPage() {
-  const tenant = await getCurrentTenant();
-  if (!tenant) return <SinAcademia />;
+  const carga = await cargarPaginaCreador();
+  if (carga.estado === "sin_academia") return <SinAcademia />;
+  if (carga.estado === "error") {
+    return (
+      <EmptyState
+        titulo="No pudimos abrir Mi academia"
+        descripcion="Hubo un problema al cargar tu academia. Tus datos siguen guardados. Inténtalo de nuevo en unos minutos."
+      />
+    );
+  }
+  const { tenant, pagina, direccion, direccionBase, dominioRaiz } = carga.datos;
   return (
     <>
       <PageHeader titulo="Mi academia" descripcion="Tu marca y cómo la verán tus estudiantes." />
+
+      <div className="pg-cols pg-bloque">
+        <SeccionPagina pagina={pagina} color={tenant.colorPrimario} direccion={direccion} />
+        <DominioCard
+          direccionBase={direccionBase}
+          dominioRaiz={dominioRaiz}
+          dominioConectado={tenant.customDomain}
+          solicitado={pagina.dominioSolicitado}
+          token={pagina.dominioToken}
+        />
+      </div>
+
       <div className="mk-grid">
         <MarcaForm tenant={tenant} />
         <div className="mk-aside">

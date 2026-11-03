@@ -83,7 +83,10 @@ export function mensajeErrorAuth(
   error: { code?: string; status?: number; message?: string } | null | undefined,
   contexto: "login" | "otro" = "otro",
 ): string {
-  if (!error) return MSG_GENERICO;
+  if (!error) {
+    console.error(`[auth:${contexto}] error genérico sin detalle de Supabase`);
+    return MSG_GENERICO;
+  }
   const code = error.code ?? "";
   if (code === "over_request_rate_limit" || code === "over_email_send_rate_limit" || error.status === 429) return MSG_LIMITE;
   if (contexto === "login") {
@@ -96,5 +99,11 @@ export function mensajeErrorAuth(
     return `Esa contraseña es muy fácil de adivinar. Usa al menos ${LARGO_MIN_CONTRASENA} caracteres y evita palabras comunes.`;
   if (code === "session_not_found" || code === "not_authenticated" || error.status === 401)
     return "Tu enlace venció. Pide uno nuevo desde “Olvidé mi contraseña”.";
+  // Solo se registra en la terminal del servidor; el usuario sigue viendo el mensaje genérico.
+  console.error(`[auth:${contexto}] error no reconocido`, {
+    status: error.status,
+    code: error.code,
+    message: error.message,
+  });
   return MSG_GENERICO;
 }

@@ -9,6 +9,7 @@
 //   - app/api/tenants/domain/route.ts  alta de dominio propio (filtra por tenant)
 //   - app/(public)/[domain]/curso/[slug]/page.tsx  sitio publico del tenant (filtra por tenant_id)
 //   - app/(dashboard)/admin/page.tsx   panel interno de Avantia
+//   - lib/sitio/paginaPublica.ts       sitio publico de la academia: solo lo publicado, filtra por tenant_id (ADR 018)
 //   - lib/creador/tenantActual.ts      SOLO rama DEMO provisional (RQ-01); se elimina con el login real
 // Prohibido: Server Actions de alta/auth (lib/creador/actionsAlta.ts, lib/auth/**)
 // y cualquier archivo "use client".
@@ -23,6 +24,7 @@ const LISTA_BLANCA = new Set([
   "app/api/tenants/domain/route.ts",
   "app/(public)/[domain]/curso/[slug]/page.tsx",
   "app/(dashboard)/admin/page.tsx",
+  "lib/sitio/paginaPublica.ts",
   "lib/creador/tenantActual.ts",
   "lib/supabase/admin.ts",
 ]);

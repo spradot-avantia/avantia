@@ -8,6 +8,8 @@ import { TenantProvider } from "../../../lib/tenantContext";
 // Es la pieza que reemplaza el fetch en el cliente que hacía tenantContext.tsx
 // en la versión SPA: acá el HTML ya sale con el tenant resuelto, sin delay
 // ni loading state — esa es la ganancia de SEO frente a Node + React puro.
+// El encabezado de la academia lo pone cada página: la página de inicio usa
+// el del template elegido (ADR 018).
 export default async function PublicLayout({
   children,
   params,
@@ -24,13 +26,6 @@ export default async function PublicLayout({
   return (
     <TenantProvider tenant={tenant}>
       <div style={{ ["--color-primario" as string]: tenant.theme.colorPrimario }}>
-        <header>
-          {tenant.theme.logoUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={tenant.theme.logoUrl} alt={tenant.nombre} />
-          )}
-          <span>{tenant.nombre}</span>
-        </header>
         <main>{children}</main>
       </div>
     </TenantProvider>

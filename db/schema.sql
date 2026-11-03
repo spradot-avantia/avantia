@@ -943,3 +943,9 @@ $$;
 
 revoke execute on function crear_academia(text, text, text, text) from public, anon;
 grant execute on function crear_academia(text, text, text, text) to authenticated;
+
+
+
+-- ===========================================================================
+-- 0007_pagina_academia (ADR 018)
+-- ===========================================================================

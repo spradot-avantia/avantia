@@ -5,6 +5,8 @@
 // (ver tenantActual.ts). Todas devuelven Resultado serializable.
 import { revalidatePath } from "next/cache";
 import * as academia from "./academia";
+import * as pagina from "./pagina";
+import type { CambiosContenido, ClaveTemplate, PaginaAcademia } from "./paginaReglas";
 import * as cursos from "./cursos";
 import * as estructura from "./estructura";
 import * as estudiantes from "./estudiantes";
@@ -48,6 +50,41 @@ export async function subirLogoAction(formData: FormData): Promise<Resultado<Ten
 }
 export async function quitarLogoAction(): Promise<Resultado<TenantCreador>> {
   return seguro(() => academia.quitarLogo(), ["/"]);
+}
+
+// ---- Pagina publica de la academia (ADR 018) -----------------------------
+const RUTAS_PAGINA = ["/mi-academia"];
+
+export async function guardarPaginaAction(cambios: CambiosContenido): Promise<Resultado<PaginaAcademia>> {
+  return seguro(() => pagina.guardarContenido(cambios));
+}
+export async function elegirTemplateAction(template: ClaveTemplate): Promise<Resultado<PaginaAcademia>> {
+  return seguro(() => pagina.elegirTemplate(template), RUTAS_PAGINA);
+}
+export async function publicarPaginaAction(): Promise<Resultado<PaginaAcademia>> {
+  // "/" revalida el sitio publico de la academia (mismo proyecto, ADR 002).
+  return seguro(() => pagina.publicarPagina(), [...RUTAS_PAGINA, "/"]);
+}
+export async function agregarTestimonioAction(input: { nombre: string; texto: string; autorizado: boolean }): Promise<Resultado<PaginaAcademia>> {
+  return seguro(() => pagina.agregarTestimonio(input));
+}
+export async function quitarTestimonioAction(indice: number): Promise<Resultado<PaginaAcademia>> {
+  return seguro(() => pagina.quitarTestimonio(indice));
+}
+/** FormData con el campo "foto" (File). */
+export async function subirFotoPortadaAction(formData: FormData): Promise<Resultado<PaginaAcademia>> {
+  const f = formData.get("foto");
+  if (!(f instanceof File) || f.size === 0) return { ok: false, error: "Selecciona una foto." };
+  return seguro(() => pagina.subirFotoPortada(f));
+}
+export async function quitarFotoPortadaAction(): Promise<Resultado<PaginaAcademia>> {
+  return seguro(() => pagina.quitarFotoPortada());
+}
+export async function solicitarDominioAction(dominio: string): Promise<Resultado<PaginaAcademia>> {
+  return seguro(() => pagina.solicitarDominio(dominio), RUTAS_PAGINA);
+}
+export async function cancelarSolicitudDominioAction(): Promise<Resultado<PaginaAcademia>> {
+  return seguro(() => pagina.cancelarSolicitudDominio(), RUTAS_PAGINA);
 }
 
 // ---- Cursos ---------------------------------------------------------------
