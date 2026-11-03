@@ -1,7 +1,7 @@
 # 015 — Acceso solo para postulaciones aceptadas y equipo
 
 - **Fecha:** 2026-10-29
-- **Estado:** Propuesta (implementada en `dev`, espera la aprobación de Samuel)
+- **Estado:** Aceptada (2026-11-01, aprobada por Samuel; la parte de base de datos quedó en la migración `0006`, aplicada ese día)
 
 ## Contexto
 

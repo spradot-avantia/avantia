@@ -215,3 +215,14 @@ delay de loading que tenía la versión SPA.
 - El frontend (Client Components) nunca debe usar `lib/supabase/admin.ts`:
   toda operación con service role vive exclusivamente en Server Components y
   route handlers.
+
+## 6. Lado del alumno en el sitio de la academia (ADR 018, Aceptada)
+
+- **Cuentas:** `alumnos(tenant_id, correo, password_hash, …)`, único por academia; no usan `auth.users`. Contraseña con scrypt (`lib/alumno/password.ts`).
+- **Sesión:** cookie `av_alumno` httpOnly emitida solo en el host de la academia, validada contra `alumno_tokens` (hash SHA-256) y el `tenant_id` del host. Es independiente de la sesión del panel (ADR 003).
+- **Acceso a datos:** `lib/alumno/*` es el único código del sitio público que usa `supabaseAdmin`; todas sus queries filtran por el tenant del host. El creador ve `alumnos`, `inscripciones` y `pagos` con su sesión y RLS (sin `password_hash`, por grants de columnas).
+- **Inscripción:** `pendiente → activa | rechazada | vencida`. Las invitaciones del creador activan solo con correo confirmado; el resto espera la activación del creador (pago manual en `pagos`) o, a futuro, la pasarela.
+- **Rutas del alumno** (`app/(public)/[domain]`): `/`, `/curso/[slug]`, `/registro`, `/ingresar`, `/recuperar`, `/restablecer`, `/confirmar`, `/mis-cursos`, `/progreso`, `/aprender/[cursoId]` y `/aprender/[cursoId]/[leccionId]`, `/aprender/[cursoId]/completado`.
+- **XP y niveles:** derivados del progreso (`lib/alumno/xp.ts`), sin tabla propia. La liberación por fecha (ADR 004) se valida en el servidor (`lib/alumno/liberacion.ts`).
+- **Redirecciones en el sitio de la academia:** no usar `redirect()` dentro de Server Actions (Next resuelve el destino sin la reescritura host → `[domain]` del middleware y entrega 404). Las acciones devuelven `irA` y `FormAccion`/`useIrA` navegan con `window.location.assign`. Tampoco llamar `revalidatePath` en esas acciones: re-pinta la página y desmonta el formulario antes de navegar.
+- **Pruebas E2E:** `apps/web/e2e` (Playwright). `npm run dev` y `npm run test:e2e`; `E2E_TENANT` (por defecto `prueba`) y `E2E_PORT`. Para muchos ingresos desde una IP: `ALUMNO_LIMITE_FACTOR=50` al levantar el servidor (multiplica los limitadores de registro, ingreso y correos).
