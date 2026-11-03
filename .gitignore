@@ -23,3 +23,11 @@ coverage/
 # material de trabajo local (no versionar)
 docs/cambios_propuestos/
 versin3landingpage/
+
+# Playwright
+test-results/
+playwright-report/
+
+# Local, no se sube
+.mcp.json
+docs/2026-11-03 Creador y Alumno/

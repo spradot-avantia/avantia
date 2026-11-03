@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { BarraAlumno } from "../../../components/alumno/BarraAlumno";
 import { PlantillaSitio } from "../../../components/sitio/PlantillaSitio";
 import { MarcaSitio } from "../../../components/sitio/partes";
+import { getAlumnoActual } from "../../../lib/alumno/sesion";
 import { getSitioAcademia } from "../../../lib/sitio/paginaPublica";
 import { construirDatosSitio, resumenCurso } from "../../../lib/sitio/tipos";
 import { resolveTenantByHostname } from "../../../lib/tenant/resolve";
@@ -31,14 +33,21 @@ export default async function SitioAcademiaPage({ params }: { params: { domain: 
   const sitio = await cargar(params.domain);
   if (!sitio) notFound();
 
+  const alumno = await getAlumnoActual();
   const pub = sitio.publicado;
   if (pub?.template) {
     const d = construirDatosSitio({ contenido: pub, template: pub.template, academia: sitio.academia, cursos: sitio.cursos, modo: "publico" });
-    return <PlantillaSitio d={d} />;
+    return (
+      <>
+        <BarraAlumno alumno={alumno} />
+        <PlantillaSitio d={d} />
+      </>
+    );
   }
 
   return (
     <div className="st">
+      <BarraAlumno alumno={alumno} />
       <div className="st-programa">
         <header className="st-barra">
           <MarcaSitio academia={sitio.academia} />

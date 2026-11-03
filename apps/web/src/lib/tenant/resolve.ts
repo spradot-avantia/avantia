@@ -17,6 +17,8 @@ function mapRowToTenant(data: {
   subdomain: string;
   nombre: string;
   logo_url: string | null;
+  logo_modo: string | null;
+  frase: string | null;
   color_primario: string | null;
 }): Tenant {
   return {
@@ -25,15 +27,17 @@ function mapRowToTenant(data: {
     customDomain: data.custom_domain,
     subdomain: data.subdomain,
     nombre: data.nombre,
+    frase: data.frase,
     theme: {
       logoUrl: data.logo_url,
+      logoModo: data.logo_modo === "solo_logo" ? "solo_logo" : "logo_y_nombre",
       colorPrimario: data.color_primario ?? "#000000",
     },
   };
 }
 
 const TENANT_COLUMNS =
-  "id, slug, custom_domain, subdomain, nombre, logo_url, color_primario";
+  "id, slug, custom_domain, subdomain, nombre, frase, logo_url, logo_modo, color_primario";
 
 export async function resolveTenantByHostname(
   hostname: string

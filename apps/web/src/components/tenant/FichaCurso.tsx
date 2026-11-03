@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { leccionLista } from "../../lib/creador/reglasPublicacion";
 import type { CursoCompleto, Leccion, TenantCreador } from "../../lib/creador/types";
 import { urlEmbebible } from "../../lib/creador/validacion";
@@ -20,7 +21,7 @@ function plural(n: number, uno: string, varios: string) {
   return `${n} ${n === 1 ? uno : varios}`;
 }
 
-function ContenidoLeccion({ l }: { l: Leccion }) {
+export function ContenidoLeccion({ l }: { l: Leccion }) {
   if (!leccionLista(l)) return <p className="fc-lec__vacio">Esta lección aún no tiene contenido.</p>;
   if (l.tipo === "texto") return <MarkdownMinimo texto={l.contenidoTexto ?? ""} />;
   if (l.tipo === "video") {
@@ -57,10 +58,14 @@ interface Props {
   preview?: boolean;
   /** Destino del boton de inscripcion cuando no es vista previa. */
   ctaHref?: string;
+  /** Reemplaza el boton de inscripcion (sitio publico: segun sesion e inscripcion). */
+  cta?: ReactNode;
+  /** El sitio publico ya trae su propia cabecera con la marca. */
+  sinCabecera?: boolean;
 }
 
 /** Ficha de curso tal como la ve un estudiante. Se adapta al ancho de su contenedor. */
-export function FichaCurso({ tenant, curso, preview = false, ctaHref }: Props) {
+export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPropio, sinCabecera = false }: Props) {
   const totalLecciones = curso.modulos.reduce((n, m) => n + m.lecciones.length, 0);
   const modalidad =
     curso.modalidad === "con_fechas" && curso.fechaInicio
@@ -71,9 +76,11 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref }: Props) {
 
   return (
     <article className="fc" style={{ ["--fc-brand" as string]: tenant.colorPrimario }}>
-      <header className="fc-top">
-        <TenantMark nombre={tenant.nombre} logoUrl={tenant.logoUrl} logoModo={tenant.logoModo} color={tenant.colorPrimario} />
-      </header>
+      {!sinCabecera && (
+        <header className="fc-top">
+          <TenantMark nombre={tenant.nombre} logoUrl={tenant.logoUrl} logoModo={tenant.logoModo} color={tenant.colorPrimario} />
+        </header>
+      )}
 
       <section className="fc-hero">
         <p className="fc-meta">
@@ -86,7 +93,9 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref }: Props) {
         <h2 className="fc-title">{curso.titulo}</h2>
         {curso.descripcion && <p className="fc-desc">{curso.descripcion}</p>}
         {curso.publico && <p className="fc-publico">{curso.publico}</p>}
-        {preview || !ctaHref ? (
+        {ctaPropio ? (
+          ctaPropio
+        ) : preview || !ctaHref ? (
           <button type="button" className="fc-cta" disabled aria-disabled="true">
             {cta}
           </button>

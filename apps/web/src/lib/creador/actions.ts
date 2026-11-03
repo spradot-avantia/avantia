@@ -10,6 +10,7 @@ import type { CambiosContenido, ClaveTemplate, PaginaAcademia } from "./paginaRe
 import * as cursos from "./cursos";
 import * as estructura from "./estructura";
 import * as estudiantes from "./estudiantes";
+import * as inscripciones from "./inscripciones";
 import * as publicacion from "./publicacion";
 import type {
   CampoCurso,
@@ -52,7 +53,7 @@ export async function quitarLogoAction(): Promise<Resultado<TenantCreador>> {
   return seguro(() => academia.quitarLogo(), ["/"]);
 }
 
-// ---- Pagina publica de la academia (ADR 018) -----------------------------
+// ---- Pagina publica de la academia (ADR 021) -----------------------------
 const RUTAS_PAGINA = ["/mi-academia"];
 
 export async function guardarPaginaAction(cambios: CambiosContenido): Promise<Resultado<PaginaAcademia>> {
@@ -144,4 +145,10 @@ export async function registrarEstudiantesAction(cursoId: string, texto: string)
 }
 export async function quitarEstudianteAction(invitacionId: string): Promise<Resultado> {
   return seguro(() => estudiantes.quitarEstudiante(invitacionId), ["/estudiantes"]);
+}
+export async function activarInscripcionAction(inscripcionId: string, medio: string, confirmaPago: boolean): Promise<Resultado> {
+  return seguro(() => inscripciones.activarInscripcion(inscripcionId, medio, confirmaPago), ["/", "/estudiantes"]);
+}
+export async function rechazarInscripcionAction(inscripcionId: string): Promise<Resultado> {
+  return seguro(() => inscripciones.rechazarInscripcion(inscripcionId), ["/", "/estudiantes"]);
 }

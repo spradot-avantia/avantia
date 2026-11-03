@@ -7,9 +7,18 @@
 //   - lib/tenant/resolve.ts            resolver host -> tenant (cruza tenants por diseno)
 //   - app/api/tenants/resolve/route.ts resolucion de host para el middleware
 //   - app/api/tenants/domain/route.ts  alta de dominio propio (filtra por tenant)
-//   - app/(public)/[domain]/curso/[slug]/page.tsx  sitio publico del tenant (filtra por tenant_id)
-//   - app/(dashboard)/admin/page.tsx   panel interno de Avantia
-//   - lib/sitio/paginaPublica.ts       sitio publico de la academia: solo lo publicado, filtra por tenant_id (ADR 018)
+//   - app/(admin)/admin/ (prefijo)     zona interna de Avantia (ADR 017): el layout exige esStaff() (deniega por
+//                                      defecto) y trabaja sobre TODAS las academias por diseno. Un archivo "use client"
+//                                      ahi sigue prohibido
+//   - lib/admin/actions.ts             acciones de /admin: cada una verifica esStaff() por si misma (una Server Action
+//                                      se puede invocar sin pasar por el layout); solo reciben ids/correos del equipo
+//   - lib/staff.ts                     tabla `staff` (plataforma, sin tenant_id, cerrada a clientes; ADR 016)
+//   - lib/postulacion/acceso.ts        verifica postulacion aceptada (tabla de plataforma sin tenant_id; ADR 011/014/015)
+//   - lib/postulacion/actions.ts       postular (publico a proposito, ADR 014: honeypot y limites) y revisar (esStaff)
+//   - app/(auth)/auth/callback/route.ts  borra la cuenta recien creada por Google si el correo no tiene invitacion (ADR 014/015)
+//   - lib/sitio/paginaPublica.ts       sitio publico de la academia: solo lo publicado, filtra por tenant_id (ADR 021)
+//   - lib/alumno/{sesion,cuentas,inscripciones,catalogo,progreso,eventos}.ts  cuentas y datos del alumno por academia;
+//     la sesion del alumno no es de Supabase Auth, asi que no hay RLS posible: TODA query filtra por el tenant del host (ADR 018)
 //   - lib/creador/tenantActual.ts      SOLO rama DEMO provisional (RQ-01); se elimina con el login real
 // Prohibido: Server Actions de alta/auth (lib/creador/actionsAlta.ts, lib/auth/**)
 // y cualquier archivo "use client".
@@ -22,9 +31,19 @@ const LISTA_BLANCA = new Set([
   "lib/tenant/resolve.ts",
   "app/api/tenants/resolve/route.ts",
   "app/api/tenants/domain/route.ts",
-  "app/(public)/[domain]/curso/[slug]/page.tsx",
-  "app/(dashboard)/admin/page.tsx",
+  "app/(admin)/admin/", // prefijo: ver nota arriba
+  "lib/admin/actions.ts",
+  "lib/staff.ts",
+  "lib/postulacion/acceso.ts",
+  "lib/postulacion/actions.ts",
+  "app/(auth)/auth/callback/route.ts",
   "lib/sitio/paginaPublica.ts",
+  "lib/alumno/sesion.ts",
+  "lib/alumno/cuentas.ts",
+  "lib/alumno/inscripciones.ts",
+  "lib/alumno/catalogo.ts",
+  "lib/alumno/progreso.ts",
+  "lib/alumno/eventos.ts",
   "lib/creador/tenantActual.ts",
   "lib/supabase/admin.ts",
 ]);
@@ -46,7 +65,8 @@ for (const f of archivos(RAIZ)) {
   const txt = readFileSync(f, "utf8");
   if (!PATRON.test(txt)) continue;
   const cliente = /^\s*["']use client["']/m.test(txt.slice(0, 200));
-  if (cliente || !LISTA_BLANCA.has(rel)) malos.push({ rel, cliente });
+  const permitido = LISTA_BLANCA.has(rel) || [...LISTA_BLANCA].some((e) => e.endsWith("/") && rel.startsWith(e));
+  if (cliente || !permitido) malos.push({ rel, cliente });
 }
 
 if (malos.length) {
