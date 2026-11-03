@@ -1,4 +1,4 @@
-/* Sitio público de la academia: templates Programa, Maestro y Consultor (ADR 018).
+/* Sitio público de la academia: templates Programa, Maestro y Consultor (ADR 021).
    Prefijo .st-. Mobile-first. Usa container queries (no media queries) para que
    la vista previa del editor se vea igual que el sitio en su ancho real.
    El color de cada academia llega inline (botones con texto de contraste AA). */

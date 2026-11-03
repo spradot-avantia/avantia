@@ -1,4 +1,4 @@
-// Lectura del sitio público de una academia (ADR 018). Corre solo en el
+// Lectura del sitio público de una academia (ADR 021). Corre solo en el
 // servidor, sin sesión del visitante: usa service role y por eso está en la
 // lista blanca de scripts/check-admin-imports.mjs. TODA consulta filtra por
 // tenant_id y solo lee lo publicado (columna `publicado`, cursos publicados).

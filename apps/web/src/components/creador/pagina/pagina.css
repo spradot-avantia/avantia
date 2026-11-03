@@ -1,5 +1,5 @@
 /* Página de la academia en el Espacio del Creador: sección de Mi academia,
-   encuesta, editor y dominio (ADR 018). Prefijo .pg-. Solo tokens --av-*.
+   encuesta, editor y dominio (ADR 021). Prefijo .pg-. Solo tokens --av-*.
    --cr-brand (color de la academia) lo define AppShell. Mobile-first. */
 
 .pg-bloque {

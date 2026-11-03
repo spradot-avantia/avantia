@@ -1,5 +1,5 @@
--- 0007_pagina_academia.sql
--- Pagina publica de la academia (ADR 018): template elegido, contenido en
+-- 0008_pagina_academia.sql
+-- Pagina publica de la academia (ADR 021): template elegido, contenido en
 -- borrador, foto de portada, testimonios reales y la version publicada que ve
 -- el sitio publico. Ademas, la solicitud de dominio propio (concierge, RQ-30).
 -- Una fila por academia (tenant_id es la clave primaria).

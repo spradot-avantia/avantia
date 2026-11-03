@@ -1,7 +1,7 @@
 "use client";
 
 // Tarjeta "Dominio": dirección incluida y conexión de un dominio propio.
-// Concierge (RQ-30, ADR 018): el creador agrega los registros DNS y el equipo
+// Concierge (RQ-30, ADR 021): el creador agrega los registros DNS y el equipo
 // de Avantia verifica y conecta el dominio; aquí no hay verificación automática.
 import { useRouter } from "next/navigation";
 import { useState, useTransition, type FormEvent } from "react";

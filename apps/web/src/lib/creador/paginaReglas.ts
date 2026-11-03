@@ -1,4 +1,4 @@
-// Reglas de la página pública de la academia (ADR 018). Módulo PURO (sin
+// Reglas de la página pública de la academia (ADR 021). Módulo PURO (sin
 // imports de servidor): lo usan el editor en el cliente, las Server Actions y
 // el sitio público, y se prueba con vitest.
 import { z } from "zod";

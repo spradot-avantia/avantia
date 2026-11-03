@@ -2,7 +2,7 @@
 
 // Editor de la página de la academia (diseño 2.2): portada, acción principal,
 // cursos, sobre ti y testimonios, con vista previa en vivo. El borrador se
-// guarda solo; "Publicar" copia el borrador al sitio público (ADR 018).
+// guarda solo; "Publicar" copia el borrador al sitio público (ADR 021).
 import Link from "next/link";
 import { useRef, useState, useTransition, type ChangeEvent } from "react";
 import {

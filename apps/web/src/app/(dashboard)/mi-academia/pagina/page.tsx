@@ -5,7 +5,7 @@ import { cargarPaginaCreador } from "../../../../lib/creador/paginaData";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Página de tu academia" };
 
-// Editor de la página de la academia (diseño 2.2, ADR 018).
+// Editor de la página de la academia (diseño 2.2, ADR 021).
 export default async function EditarPaginaPage() {
   const carga = await cargarPaginaCreador();
   if (carga.estado === "sin_academia") return <SinAcademia />;

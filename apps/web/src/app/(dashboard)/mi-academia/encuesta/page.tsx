@@ -6,7 +6,7 @@ import { cargarPaginaCreador, cursosPublicados } from "../../../../lib/creador/p
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Diseña tu academia" };
 
-// Encuesta de 5 preguntas que recomienda un template (diseño 2.1, ADR 018).
+// Encuesta de 5 preguntas que recomienda un template (diseño 2.1, ADR 021).
 export default async function EncuestaPage() {
   const carga = await cargarPaginaCreador();
   if (carga.estado === "sin_academia") return <SinAcademia />;

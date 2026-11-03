@@ -8,7 +8,7 @@ import "../../../components/creador/pagina/pagina.css";
 
 export const dynamic = "force-dynamic";
 
-// Mi academia: página de la academia + dominio (diseño 02, ADR 018) y Marca (pantallas 02 y 04).
+// Mi academia: página de la academia + dominio (diseño 02, ADR 021) y Marca (pantallas 02 y 04).
 export default async function MiAcademiaPage() {
   const carga = await cargarPaginaCreador();
   if (carga.estado === "sin_academia") return <SinAcademia />;

@@ -1,4 +1,4 @@
-// Repo de la página pública de la academia (ADR 018). Filtra siempre por
+// Repo de la página pública de la academia (ADR 021). Filtra siempre por
 // tenant.id (además de RLS). El tenant sale de la sesión (tenantActual.ts).
 import { randomBytes } from "node:crypto";
 import {
@@ -159,7 +159,7 @@ export async function quitarTestimonio(indice: number): Promise<Resultado<Pagina
 
 // ---------------------------------------------------------------- Foto de portada
 
-/** Sube la foto a Storage ({tenant_id}/portada-<ts>.<ext}, bucket `logos`, ADR 018). */
+/** Sube la foto a Storage ({tenant_id}/portada-<ts>.<ext}, bucket `logos`, ADR 021). */
 export async function subirFotoPortada(archivo: File): Promise<Resultado<PaginaAcademia>> {
   const { tenant, db } = await requireCreadorContext();
   const bytes = new Uint8Array(await archivo.arrayBuffer());

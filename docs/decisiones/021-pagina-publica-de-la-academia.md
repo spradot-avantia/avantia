@@ -1,4 +1,4 @@
-# 018 — Página pública de la academia: templates, borrador y publicación
+# 021 — Página pública de la academia: templates, borrador y publicación
 
 - **Fecha:** 2026-11-03
 - **Estado:** Propuesta (espera la aprobación de Samuel)
@@ -9,7 +9,7 @@ El diseño "02 · Página de la academia y dominio" agrega, desde Mi academia: u
 
 ## Decisión
 
-- **Tabla `paginas_academia`**, una fila por academia (`tenant_id` es la clave primaria), con RLS por tenant en las cuatro operaciones (migración `0007`). Guarda el **borrador** (template, título, bajada, foto, acción principal, cursos ocultos, nombre y trayectoria, testimonios) y una copia **`publicado`** (jsonb) que se escribe al presionar "Publicar". El sitio público solo lee `publicado`.
+- **Tabla `paginas_academia`**, una fila por academia (`tenant_id` es la clave primaria), con RLS por tenant en las cuatro operaciones (migración `0008`). Guarda el **borrador** (template, título, bajada, foto, acción principal, cursos ocultos, nombre y trayectoria, testimonios) y una copia **`publicado`** (jsonb) que se escribe al presionar "Publicar". El sitio público solo lee `publicado`.
 - **Contenido de ejemplo:** no se guarda. Un campo vacío muestra el ejemplo del template (marcado en naranjo) solo en la vista previa del creador; no se puede publicar mientras falten título, bajada, nombre, trayectoria o queden los testimonios de ejemplo.
 - **Testimonios:** solo reales, con casilla de autorización (se guarda `autorizado_at`); máximo 6.
 - **Cursos:** se muestran los publicados; el creador oculta los que no quiere (`cursos_ocultos`), así un curso nuevo aparece sin pasos extra.

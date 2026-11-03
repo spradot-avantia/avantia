@@ -9,7 +9,7 @@ import { TenantProvider } from "../../../lib/tenantContext";
 // en la versión SPA: acá el HTML ya sale con el tenant resuelto, sin delay
 // ni loading state — esa es la ganancia de SEO frente a Node + React puro.
 // El encabezado de la academia lo pone cada página: la página de inicio usa
-// el del template elegido (ADR 018).
+// el del template elegido (ADR 021).
 export default async function PublicLayout({
   children,
   params,
