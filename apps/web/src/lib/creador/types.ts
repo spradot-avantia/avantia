@@ -1,6 +1,7 @@
 // Tipos del dominio del Espacio del Creador (camelCase en la app; columnas
 // snake_case en la base, ver db/migrations/0001_espacio_creador.sql).
 
+import type { PreguntaQuiz } from "./quiz";
 export type LogoModo = "logo_y_nombre" | "solo_logo";
 export type EstadoCurso = "borrador" | "publicado";
 export type Modalidad = "a_su_ritmo" | "con_fechas";
@@ -64,6 +65,8 @@ export interface Modulo {
   titulo: string;
   orden: number;
   lecciones: Leccion[];
+  /** Quiz de repaso del módulo (ADR 022); vacío o ausente si no tiene. */
+  quiz?: PreguntaQuiz[];
 }
 
 export interface Curso {

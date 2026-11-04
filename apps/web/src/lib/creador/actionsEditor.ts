@@ -4,6 +4,8 @@
 // se toca). Ninguna recibe tenant_id: sale de la sesion (tenantActual.ts).
 import { getCurso } from "./cursos";
 import { crearModulo } from "./estructura";
+import type { PreguntaQuiz } from "./quiz";
+import { guardarQuiz } from "./quizzes";
 import type { CursoCompleto, Resultado } from "./types";
 
 const SUGERIDA = ["Contexto", "Casos reales", "Aplicación"];
@@ -40,4 +42,10 @@ export async function aplicarEstructuraSugeridaAction(cursoId: string): Promise<
     const c = await getCurso(cursoId);
     return c ? { ok: true, data: c } : { ok: false, error: "Curso no encontrado." };
   });
+}
+
+
+/** Guarda el quiz de repaso de un módulo (ADR 022). Reemplaza sus preguntas. */
+export async function guardarQuizAction(moduloId: string, preguntas: PreguntaQuiz[]): Promise<Resultado<PreguntaQuiz[]>> {
+  return seguro(() => guardarQuiz(moduloId, preguntas));
 }

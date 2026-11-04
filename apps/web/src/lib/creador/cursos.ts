@@ -1,5 +1,6 @@
 // Repo de cursos. Toda query filtra por tenant.id (ademas de RLS).
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { preguntasPorModulo } from "./quizzes";
 import { requireCreadorContext } from "./tenantActual";
 import type {
   CampoCurso,
@@ -84,7 +85,7 @@ export async function getCurso(cursoId: string): Promise<CursoCompleto | null> {
   const { tenant, db } = await requireCreadorContext();
   const { data: c } = await db.from("cursos").select(COLS_CURSO).eq("tenant_id", tenant.id).eq("id", cursoId).maybeSingle();
   if (!c) return null;
-  const [obj, mods, lecs] = await Promise.all([
+  const [obj, mods, lecs, quiz] = await Promise.all([
     db.from("curso_objetivos").select("texto, orden").eq("tenant_id", tenant.id).eq("curso_id", cursoId).order("orden"),
     db.from("modulos").select("id, curso_id, titulo, orden").eq("tenant_id", tenant.id).eq("curso_id", cursoId).order("orden"),
     db
@@ -93,6 +94,7 @@ export async function getCurso(cursoId: string): Promise<CursoCompleto | null> {
       .eq("tenant_id", tenant.id)
       .eq("curso_id", cursoId)
       .order("orden"),
+      preguntasPorModulo(db, tenant.id, cursoId),
   ]);
   const lecciones = (lecs.data ?? []).map(mapLeccion);
   const modulos: Modulo[] = (mods.data ?? []).map((m) => ({
@@ -101,6 +103,7 @@ export async function getCurso(cursoId: string): Promise<CursoCompleto | null> {
     titulo: m.titulo,
     orden: m.orden,
     lecciones: lecciones.filter((l) => l.moduloId === m.id),
+    quiz: quiz.get(m.id) ?? [],
   }));
   return { ...mapCurso(c), objetivos: (obj.data ?? []).map((o) => o.texto), modulos };
 }

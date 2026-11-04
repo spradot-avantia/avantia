@@ -1218,3 +1218,8 @@ create policy paginas_academia_delete_por_tenant on paginas_academia
 revoke all on paginas_academia from anon, authenticated;
 grant select, insert, update, delete on paginas_academia to authenticated;
 grant select, insert, update, delete on paginas_academia to service_role;
+
+
+-- ===========================================================================
+-- 0009_quiz_repaso (ADR 022)
+-- ===========================================================================

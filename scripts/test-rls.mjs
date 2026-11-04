@@ -193,6 +193,27 @@ check("template invalido es rechazado", await falla("authenticated", U.creaA, "u
 check("testimonios deben ser un arreglo", await falla("authenticated", U.creaA, "update paginas_academia set testimonios='{}'::jsonb where tenant_id=$1", [T.A]));
 check("token de dominio con formato invalido es rechazado", await falla("authenticated", U.creaA, "update paginas_academia set dominio_token='x' where tenant_id=$1", [T.A]));
 
+console.log("\nQuiz de repaso (0009, ADR 022):");
+const Q = { A: "50000000-0000-0000-0000-00000000000a", B: "50000000-0000-0000-0000-00000000000b" };
+for (const k of ["A", "B"]) {
+  await client.query("insert into quiz_preguntas (id, tenant_id, curso_id, modulo_id, texto, opciones, correcta) values ($1, $2, $3, $4, 'P', '[\"Si\", \"No\"]'::jsonb, 0)", [Q[k], T[k], C[k], M[k]]);
+}
+check("creador A ve solo sus preguntas", (await como("authenticated", U.creaA, async (c) => (await c.query("select tenant_id from quiz_preguntas")).rows.map((r) => r.tenant_id))).join() === T.A);
+check("creador A no edita preguntas de B (0 filas)", (await filasAfectadas("authenticated", U.creaA, "update quiz_preguntas set texto='hack' where id=$1", [Q.B])) === 0);
+check("creador A no borra preguntas de B (0 filas)", (await filasAfectadas("authenticated", U.creaA, "delete from quiz_preguntas where id=$1", [Q.B])) === 0);
+check("creador A no crea preguntas en B", await falla("authenticated", U.creaA, "insert into quiz_preguntas (id, tenant_id, curso_id, modulo_id, opciones) values (gen_random_uuid(), $1, $2, $3, '[\"a\", \"b\"]'::jsonb)", [T.B, C.B, M.B]));
+check("creador A edita su pregunta", (await filasAfectadas("authenticated", U.creaA, "update quiz_preguntas set texto='Nueva' where id=$1", [Q.A])) === 1);
+check("alumno no lee preguntas (traerian la respuesta)", (await como("authenticated", U.alumA, (c) => cuenta(c, "select 1 from quiz_preguntas"))) === 0);
+check("anon no lee preguntas", (await como("anon", null, (c) => cuenta(c, "select 1 from quiz_preguntas")).catch(() => 0)) === 0);
+check("pregunta de B con modulo de A es rechazada (FK de tenant)", await fkFalla("insert into quiz_preguntas (id, tenant_id, curso_id, modulo_id, opciones) values (gen_random_uuid(), $1, $2, $3, '[\"a\", \"b\"]'::jsonb)", [T.B, C.B, M.A]));
+check("menos de 2 opciones es rechazado", await falla("authenticated", U.creaA, "update quiz_preguntas set opciones='[\"a\"]'::jsonb where id=$1", [Q.A]));
+check("mas de 4 opciones es rechazado", await falla("authenticated", U.creaA, "update quiz_preguntas set opciones='[\"a\",\"b\",\"c\",\"d\",\"e\"]'::jsonb where id=$1", [Q.A]));
+check("correcta fuera de rango es rechazada", await falla("authenticated", U.creaA, "update quiz_preguntas set correcta=7 where id=$1", [Q.A]));
+check("borrar el modulo borra sus preguntas", (await como("authenticated", U.creaA, async (c) => {
+  await c.query("delete from modulos where id=$1", [M.A]);
+  return cuenta(c, "select 1 from quiz_preguntas");
+})) === 0);
+
 console.log(`\n${pass} ok, ${fallos.length} fallos`);
 await client.end();
 if (fallos.length) { console.log("Fallos:\n - " + fallos.join("\n - ")); process.exit(1); }

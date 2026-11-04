@@ -12,6 +12,7 @@ import {
   renombrarModuloAction,
 } from "../../../lib/creador/actions";
 import { aplicarEstructuraSugeridaAction } from "../../../lib/creador/actionsEditor";
+import { estadoQuiz } from "../../../lib/creador/quiz";
 import { leccionLista } from "../../../lib/creador/reglasPublicacion";
 import type { Leccion, Modulo, TipoLeccion } from "../../../lib/creador/types";
 import {
@@ -26,7 +27,9 @@ import { Button } from "../Button";
 import { Callout } from "../Callout";
 import { Field, Input, Textarea } from "../Field";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { EditorQuiz } from "./EditorQuiz";
 import type { EditorCtx } from "./contexto";
+import "./quiz.css";
 
 const TIPOS: ReadonlyArray<{ id: TipoLeccion; label: string }> = [
   { id: "video", label: "Video" },
@@ -53,6 +56,7 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
   const [trabajando, setTrabajando] = useState(false);
   const [tocUrl, setTocUrl] = useState<Record<string, boolean>>({});
   const [verTexto, setVerTexto] = useState<Record<string, boolean>>({});
+  const [quizDe, setQuizDe] = useState<string | null>(null);
 
   useEffect(() => {
     if (!foco) return;
@@ -223,6 +227,21 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
   };
 
   const vacio = curso.modulos.length === 0;
+  
+  const moduloQuiz = quizDe ? curso.modulos.find((m) => m.id === quizDe) : undefined;
+  if (moduloQuiz) {
+    return (
+      <EditorQuiz
+        ctx={ctx}
+        modulo={moduloQuiz}
+        numero={curso.modulos.findIndex((m) => m.id === moduloQuiz.id) + 1}
+        onVolver={() => {
+          setQuizDe(null);
+          setFoco(`ed-quiz-${moduloQuiz.id}`);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="ed-form">
@@ -415,6 +434,8 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
                 })}
               </ul>
 
+              <FilaQuiz moduloId={m.id} preguntas={m.quiz} onAbrir={() => setQuizDe(m.id)} />
+
               <Button id={`ed-add-leccion-${m.id}`} variante="secondary" onClick={() => agregarLeccion(m)} disabled={trabajando}>
                 + Agregar lección
               </Button>
@@ -510,6 +531,30 @@ function Acciones({
       <button type="button" className="ed-icono ed-icono--peligro" aria-label={`Eliminar ${nombre}`} onClick={onEliminar}>
         <span aria-hidden="true">✕</span>
       </button>
+    </div>
+  );
+}
+
+
+/** Fila "Quiz de repaso" de un módulo (diseño 3.2): estado y acceso al editor del quiz. */
+function FilaQuiz({ moduloId, preguntas, onAbrir }: { moduloId: string; preguntas: Modulo["quiz"]; onAbrir: () => void }) {
+  const q = estadoQuiz(preguntas);
+  const cls = q.completo ? " qz-fila-mod--lista" : q.total > 0 ? " qz-fila-mod--falta" : "";
+  return (
+    <div className={`qz-fila-mod${cls}`}>
+      <div className="qz-fila-mod__t">
+        <b>{q.total ? `Quiz de repaso · ${q.total} ${q.total === 1 ? "pregunta" : "preguntas"}` : "Quiz de repaso"}</b>
+        <span className="qz-ayuda">
+          {q.completo
+            ? "Listo · da puntos y la insignia «Módulo dominado»"
+            : q.total
+              ? `Falta completar: ${q.problema}`
+              : "Opcional · recomendado para que repasen lo que fallan"}
+        </span>
+      </div>
+      <Button id={`ed-quiz-${moduloId}`} variante={q.total ? "secondary" : "primary"} onClick={onAbrir}>
+        {q.total ? "Editar quiz" : "Agregar quiz"}
+      </Button>
     </div>
   );
 }

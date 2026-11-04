@@ -1,4 +1,5 @@
 // Reglas de publicacion (puras). Ver pantalla 09 y Reconciliacion fila 16.
+import { estadoQuiz } from "./quiz";
 import type { Bloqueo, CursoCompleto, Leccion, ResultadoValidacionPublicacion } from "./types";
 import { DESCRIPCION_MAX, DESCRIPCION_MIN, TITULO_MAX, TITULO_MIN, validarFechas, validarUrlLeccion } from "./validacion";
 
@@ -39,6 +40,11 @@ export function validarPublicacion(
         if (!leccionLista(l)) {
           bloqueos.push({ mensaje: `La lección "${l.titulo || "sin título"}" no tiene contenido listo.`, paso: "estructura" });
         }
+        // Un quiz empezado debe quedar completo (3 a 5 preguntas listas) o eliminarse (ADR 022).
+        const q = estadoQuiz(m.quiz);
+        if (q.total > 0 && !q.completo) {
+          bloqueos.push({ mensaje: `El quiz del módulo "${m.titulo || "sin nombre"}" no está listo: ${q.problema} O elimínalo.`, paso: "estructura" });
+        }
       }
     }
   }
@@ -50,6 +56,12 @@ export function validarPublicacion(
 
   if (!curso.publico?.trim()) {
     recomendaciones.push({ mensaje: "Cuenta para quién es el curso: ayuda a que se inscriban las personas correctas.", paso: "esencial" });
+  }
+  if (curso.modulos.length > 0 && !curso.modulos.some((m) => estadoQuiz(m.quiz).completo)) {
+    recomendaciones.push({
+      mensaje: "Agrega un quiz de repaso en al menos un módulo: así tus estudiantes repasan lo que fallan.",
+      paso: "estructura",
+    });
   }
   if (curso.objetivos.length === 1) {
     recomendaciones.push({ mensaje: "Un segundo objetivo hace más concreto lo que se llevan.", paso: "objetivo" });
