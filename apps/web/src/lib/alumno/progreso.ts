@@ -4,6 +4,7 @@ import { cargarCurso, leccionesEnOrden, type CursoParaAlumno } from "./catalogo"
 import { registrarEvento } from "./eventos";
 import { inscripcionDe } from "./inscripciones";
 import { hoyEnZona, leccionLiberada } from "./liberacion";
+import { estadoQuizzes, xpDeQuiz } from "./quiz";
 import { calcularXp, porcentaje, type DesgloseXp } from "./xp";
 
 export async function leccionesCompletadas(tenantId: string, alumnoId: string, cursoId: string): Promise<Set<string>> {
@@ -157,7 +158,10 @@ export async function resumenDelAlumno(
       })),
     };
     const hechas = new Set((prog ?? []).filter((p) => p.curso_id === c.id && p.completada_at).map((p) => p.leccion_id as string));
-    const desglose = calcularXp(estructura, hechas);
+    const base = calcularXp(estructura, hechas);
+    // El quiz de repaso suma XP aparte de las lecciones (ADR 023).
+    const xpQuiz = xpDeQuiz((await estadoQuizzes(tenantId, alumnoId, c.id)).values());
+    const desglose = { ...base, xp: base.xp + xpQuiz };
     const orden = estructura.modulos.flatMap((m) => m.lecciones.map((l) => l.id));
     const ultimo = (prog ?? [])
       .filter((p) => p.curso_id === c.id)

@@ -1,5 +1,6 @@
 // Publicacion de cursos. Las reglas puras viven en reglasPublicacion.ts.
-import { getCurso } from "./cursos";
+import { getCurso, slugLibre } from "./cursos";
+import { slugify } from "./validacion";
 import { validarPublicacion } from "./reglasPublicacion";
 import { requireCreadorContext } from "./tenantActual";
 import type { Resultado, ResultadoValidacionPublicacion, TenantCreador } from "./types";
@@ -35,12 +36,16 @@ export async function publicarCurso(cursoId: string): Promise<Resultado<{ url: s
   if (!curso) return { ok: false, error: "Curso no encontrado." };
   const v = validarPublicacion(curso);
   if (!v.puedePublicar) return { ok: false, error: `Faltan ${v.bloqueos.length} cosas para publicar: ${v.bloqueos[0].mensaje}` };
+  // El enlace se fija en la primera publicación: antes de eso sigue al título (el borrador nace
+  // como «curso-sin-titulo»). Una vez publicado no cambia, para no romper enlaces compartidos.
+  let slug = curso.slug;
+  if (!curso.publishedAt) slug = await slugLibre(db, tenant.id, slugify(curso.titulo) || "curso", curso.id);
   const { error } = await db
     .from("cursos")
-    .update({ estado: "publicado", published_at: curso.publishedAt ?? new Date().toISOString() })
+    .update({ estado: "publicado", slug, published_at: curso.publishedAt ?? new Date().toISOString() })
     .eq("tenant_id", tenant.id).eq("id", cursoId);
   if (error) return { ok: false, error: "No pudimos publicar. Tu borrador sigue guardado: reintenta." };
-  return { ok: true, data: { url: urlPublicaCurso(tenant, curso.slug), slug: curso.slug } };
+  return { ok: true, data: { url: urlPublicaCurso(tenant, slug), slug } };
 }
 
 export async function despublicarCurso(cursoId: string): Promise<Resultado> {

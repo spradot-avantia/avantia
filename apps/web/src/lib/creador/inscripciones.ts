@@ -1,5 +1,6 @@
 // Inscripciones de alumnos vistas por el creador (diseño 04 · Estudiantes).
 // Cliente con RLS del creador (nunca service role) + filtro explícito por tenant.
+import { XP_ACIERTO, XP_RESPONDER } from "../alumno/quizReglas";
 import { calcularXp, porcentaje } from "../alumno/xp";
 import { MEDIOS_PAGO } from "./mediosPago";
 import { requireCreadorContext } from "./tenantActual";
@@ -38,12 +39,14 @@ export async function listarInscripciones(): Promise<FilaInscripcion[]> {
     .order("created_at", { ascending: false });
   if (!insc?.length) return [];
 
-  const [alumnos, cursos, mods, lecs, prog] = await Promise.all([
+  const [alumnos, cursos, mods, lecs, prog, quizResp] = await Promise.all([
     db.from("alumnos").select("id, nombre, correo, ultimo_ingreso_at").eq("tenant_id", tenant.id),
     db.from("cursos").select("id, titulo, precio_centavos").eq("tenant_id", tenant.id),
     db.from("modulos").select("id, curso_id").eq("tenant_id", tenant.id),
     db.from("lecciones").select("id, curso_id, modulo_id").eq("tenant_id", tenant.id),
     db.from("progreso").select("alumno_id, curso_id, leccion_id, completada_at, ultimo_acceso_at").eq("tenant_id", tenant.id),
+    // Si la migración 0011 aún no está, el error se ignora y el XP del quiz queda en 0.
+    db.from("quiz_respuestas").select("alumno_id, curso_id, pregunta_id, acierto, primer_intento").eq("tenant_id", tenant.id),
   ]);
   const porAlumno = new Map((alumnos.data ?? []).map((a) => [a.id as string, a]));
   const porCurso = new Map((cursos.data ?? []).map((c) => [c.id as string, c]));
@@ -60,6 +63,8 @@ export async function listarInscripciones(): Promise<FilaInscripcion[]> {
     const propios = (prog.data ?? []).filter((p) => p.alumno_id === i.alumno_id && p.curso_id === i.curso_id);
     const hechas = new Set(propios.filter((p) => p.completada_at).map((p) => p.leccion_id as string));
     const d = calcularXp(estructura, hechas);
+    const rq = (quizResp.data ?? []).filter((r) => r.alumno_id === i.alumno_id && r.curso_id === i.curso_id);
+    const xpQuiz = new Set(rq.map((r) => r.pregunta_id)).size * XP_RESPONDER + rq.filter((r) => r.primer_intento && r.acierto).length * XP_ACIERTO;
     const ultimaProg = propios.map((p) => String(p.ultimo_acceso_at)).sort().pop() ?? null;
     const ultima = [ultimaProg, a?.ultimo_ingreso_at ?? null].filter(Boolean).sort().pop() ?? null;
     return {
@@ -77,7 +82,7 @@ export async function listarInscripciones(): Promise<FilaInscripcion[]> {
       avance: porcentaje(d.lecciones, d.totalLecciones),
       completadas: d.lecciones,
       totalLecciones: d.totalLecciones,
-      xp: d.xp,
+      xp: d.xp + xpQuiz,
       ultimaActividad: ultima,
       sinActividad: i.estado === "activa" && (!ultima || new Date(ultima).getTime() < limite),
     };

@@ -214,6 +214,25 @@ check("borrar el modulo borra sus preguntas", (await como("authenticated", U.cre
   return cuenta(c, "select 1 from quiz_preguntas");
 })) === 0);
 
+console.log("\nRespuestas del quiz (0011, ADR 023):");
+const R = { A: "60000000-0000-0000-0000-00000000000a", B: "60000000-0000-0000-0000-00000000000b" };
+await client.query("insert into quiz_preguntas (id, tenant_id, curso_id, modulo_id, texto, opciones, correcta) values ($1, $2, $3, $4, 'P', '[\"Si\", \"No\"]'::jsonb, 0) on conflict do nothing", [Q.A, T.A, C.A, M.A]);
+for (const k of ["A", "B"]) {
+  await client.query("insert into quiz_respuestas (id, tenant_id, curso_id, modulo_id, alumno_id, pregunta_id, opcion, acierto, primer_intento) values ($1, $2, $3, $4, $5, $6, 0, true, true)", [R[k], T[k], C[k], M[k], U[`alum${k}`], Q[k]]);
+}
+check("creador A ve solo respuestas de su academia", (await como("authenticated", U.creaA, async (c) => (await c.query("select tenant_id from quiz_respuestas")).rows.map((r) => r.tenant_id))).join() === T.A);
+check("alumno no lee respuestas por la API (solo el servidor)", (await como("authenticated", U.alumA, (c) => cuenta(c, "select 1 from quiz_respuestas"))) === 0);
+check("anon no lee respuestas", (await como("anon", null, (c) => cuenta(c, "select 1 from quiz_respuestas")).catch(() => 0)) === 0);
+check("creador A no inserta respuestas", await falla("authenticated", U.creaA, "insert into quiz_respuestas (tenant_id, curso_id, modulo_id, alumno_id, pregunta_id, opcion, acierto) values ($1,$2,$3,$4,$5,0,true)", [T.A, C.A, M.A, U.alumA, Q.A]));
+check("alumno no inserta respuestas (se saltaria la correccion)", await falla("authenticated", U.alumA, "insert into quiz_respuestas (tenant_id, curso_id, modulo_id, alumno_id, pregunta_id, opcion, acierto) values ($1,$2,$3,$4,$5,0,true)", [T.A, C.A, M.A, U.alumA, Q.A]));
+check("creador A no edita ni borra respuestas de B", await falla("authenticated", U.creaA, "update quiz_respuestas set acierto=false where id=$1", [R.B]) && await falla("authenticated", U.creaA, "delete from quiz_respuestas where id=$1", [R.B]));
+check("respuesta con alumno de otra academia es rechazada (FK de tenant)", await fkFalla("insert into quiz_respuestas (tenant_id, curso_id, modulo_id, alumno_id, pregunta_id, opcion, acierto) values ($1,$2,$3,$4,$5,0,true)", [T.A, C.A, M.A, U.alumB, Q.A]));
+check("opcion fuera de rango es rechazada", await fkFalla("insert into quiz_respuestas (tenant_id, curso_id, modulo_id, alumno_id, pregunta_id, opcion, acierto) values ($1,$2,$3,$4,$5,9,true)", [T.A, C.A, M.A, U.alumA, Q.A]));
+check("borrar la pregunta borra sus respuestas", (await como("authenticated", U.creaA, async (c) => {
+  await c.query("delete from quiz_preguntas where id=$1", [Q.A]);
+  return cuenta(c, "select 1 from quiz_respuestas");
+})) === 0);
+
 console.log(`\n${pass} ok, ${fallos.length} fallos`);
 await client.end();
 if (fallos.length) { console.log("Fallos:\n - " + fallos.join("\n - ")); process.exit(1); }

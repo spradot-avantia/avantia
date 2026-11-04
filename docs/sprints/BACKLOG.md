@@ -3,7 +3,7 @@
 > Fuente de verdad del trabajo pendiente. Se actualiza en cada sesión de revisión
 > y en el mismo PR que cierra un ítem. Los RQ son de `docs/producto/Requerimientos_MVP.md`.
 > Los planes por día/sprint viven en este mismo directorio (`AAAA-MM-DD_*.md`).
-> Última actualización: 2026-11-04.
+> Última actualización: 2026-11-04. «Solicitar acceso» (F7) hecho: cursos por invitación admiten solicitud pendiente.
 
 Foto del avance contra el MVP completo: `Estado_MVP_2026-10-13.md`.
 
@@ -26,12 +26,13 @@ Estados: `Pendiente` · `En curso` · `Bloqueado` · `Hecho`.
 | B-13 | Definir `STAFF_EMAILS` en Vercel, ingresar una vez para sembrar el staff y aprobar el ADR 017 | RQ-06 | Pendiente (Samuel) | 2026-11-01: `0006` aplicada en Supabase y ADR 015 y 016 aceptados. Código en `dev`: zona `/admin` (resumen, postulaciones, creadores, academias, equipo) |
 | B-15 | Migración `0010` (la `0009` es el quiz, ADR 022): revocar `execute` a `anon` en `auth_tenant_id()` y `rls_auto_enable()`, fijar `search_path` en `set_updated_at()` y activar protección de contraseñas filtradas en Auth | RQ-04 | Pendiente | Avisos de `get_advisors` (seguridad) del 2026-11-01; revisar cada función antes de revocar |
 | B-14 | Suspender/ocultar una academia desde `/admin` (columna en `tenants` + resolución del host) y cerrar el `signUp` directo con trigger en `auth.users` | RQ-06 | Pendiente | Ver ADR 016 y 017 |
-| B-17 | Quiz de repaso, repetición espaciada, insignia «Módulo dominado» y barra de dominio del estudiante (diseño `05` 5.6/5.7 y `04` 4.3) | RQ-17 | En curso | 2026-11-03: lado del creador listo (diseño `03` 3.3/3.4, ADR 022 Propuesta, migración `0009`): editor del quiz por módulo, vista previa y reglas de publicación. `0009` (y la `0008`) aplicadas en Supabase el 2026-11-04. Falta el lado del estudiante (responder, XP, insignia, repaso) y los resultados del creador (4.3) |
+ | 2026-11-03: lado del creador listo (diseño `03` 3.3/3.4, ADR 022 Propuesta, migración `0009`): editor del quiz por módulo, vista previa y reglas de publicación. `0009` (y la `0008`) aplicadas en Supabase el 2026-11-04. 2026-11-04: lado del estudiante en `dev` (ADR 023 Aceptada el 2026-11-04; migración `0011_quiz_respuestas` aplicada en Supabase el mismo día; el XP del quiz ya se suma en la vista del creador; prueba RLS de la tabla agregada, 100 ok): responder con corrección en el servidor, XP (+5 por responder, +5 por acierto al primer intento) e insignia «Módulo dominado». Falta repaso espaciado, barra de dominio y los resultados del creador (4.3) |
 | B-18 | Correo de invitación desde la plataforma (diseño `04` 4.2) y avisos al creador de inscripciones por activar | RQ-23 | Pendiente | El ADR 007 lo dejó fuera del MVP; el diseño lo incluye. Hoy el creador comparte el enlace del curso. Hay plantilla base en `lib/alumno/correos.ts` |
 | B-19 | Revisión legal de los textos del alumno (`/terminos` y `/privacidad` dentro del sitio de la academia, [ADR 019](../decisiones/019-legales-del-alumno-en-el-sitio-de-la-academia.md)) y correo de contacto por academia | RQ-29 | **Pendiente: revisión legal URGENTE** (antes de abrir a alumnos reales) | Texto base implementado 2026-11-03 y ADR 019 Aceptada; asume Ley 21.719 vigente desde dic-2026. Mejorarlo tras la revisión (devoluciones, contacto por academia, anexo de encargo). Ver B-12 |
 | B-20 | Limitador de intentos del alumno compartido entre instancias (hoy en memoria) | NF-23 | Pendiente | |
 | B-22 | Pasarela Mercado Pago por academia ([ADR 020](../decisiones/020-pasarela-de-pago-mercado-pago.md), Propuesta) | RQ-19/20/21 | En pausa hasta nuevo aviso de Samuel (2026-11-03); además Q7 y Q10 | Incluye editor de precio del curso y pantalla «Cobros» |
 | B-21 | «Contactos» de empresas (diseño `04` 4.1) y pantalla 5.3 con estado de pago detallado | RQ-14 | Pendiente | Hoy la inscripción pendiente se explica en «Mis cursos» |
+| B-23 | Hallazgos de la prueba E2E en producción y auditoría UX/UI: ver [2026-11-04_Prueba_E2E_Produccion](2026-11-04_Prueba_E2E_Produccion.md) | RQ-13..16 | En curso | 2026-11-04: corregidos en `dev` F1, F2, F4, F5, F6 y la auditoría del alumno y del inicio del creador (sin commit aún). Falta verificar en producción tras desplegar y revisar a 360–390 px en móvil real |
 | B-07 | Móvil base: viewport, inputs ≥16 px, botones ≥44 px, sidebar colapsable, manifest PWA por tenant | Impacto_Movil | Sin confirmar | Revisar qué quedó hecho |
 
 ## H1 — academia gratis cursable desde celular

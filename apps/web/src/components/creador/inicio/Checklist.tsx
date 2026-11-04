@@ -28,7 +28,7 @@ export function Checklist({ pasos }: { pasos: PasoChecklist[] }) {
             <span className="ci-step__dot" aria-hidden="true">{p.hecho ? "✓" : i + 1}</span>
             <div className="ci-step__body">
               <span className="ci-step__title">{p.titulo}</span>
-              <span className="ci-muted">{p.hecho ? "Hecho" : p.detalle}</span>
+              {!p.hecho && <span className="ci-muted">{p.detalle}</span>}
             </div>
             <span className="ci-step__side">
               {p.hecho ? (

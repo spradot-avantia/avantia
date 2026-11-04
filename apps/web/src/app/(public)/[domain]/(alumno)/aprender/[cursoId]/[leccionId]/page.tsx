@@ -3,6 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FormAccion } from "../../../../../../../components/alumno/FormAccion";
 import { ContenidoLeccion } from "../../../../../../../components/tenant/FichaCurso";
+import { ToastXp } from "../../../../../../../components/alumno/ToastXp";
+import { nombreModulo } from "../../../../../../../lib/alumno/formato";
+import { estadoQuizzes } from "../../../../../../../lib/alumno/quiz";
 import { Barra } from "../../../../../../../components/alumno/Piezas";
 import { completarLeccionAction } from "../../../../../../../lib/alumno/actions";
 import { leccionesEnOrden } from "../../../../../../../lib/alumno/catalogo";
@@ -42,6 +45,10 @@ export default async function LeccionPage({
   if (liberada && !hecha) await marcarAcceso(tenant.id, alumno.id, curso.id, leccion.id);
 
   const pct = porcentaje(completadas.size, orden.length);
+  const quizzes = await estadoQuizzes(tenant.id, alumno.id, curso.id);
+  const modActual = curso.modulos.find((m) => m.id === leccion.moduloId);
+  const quizActual = modActual ? quizzes.get(modActual.id) : undefined;
+  const esUltimaDelModulo = !!modActual && modActual.lecciones[modActual.lecciones.length - 1]?.id === leccion.id;
   const ganaste = Number(searchParams.ganaste);
 
   return (
@@ -50,15 +57,16 @@ export default async function LeccionPage({
         <p className="al-crumbs">
           <Link href="/mis-cursos">Mis cursos</Link> › {curso.titulo}
         </p>
+        <div className="al-prog-movil">
+          <Barra etiqueta={`Lección ${idx + 1} de ${orden.length}`} pct={pct} detalle={`${pct} %`} />
+        </div>
         <p className="al-muted">
           Módulo {leccion.moduloNum} · Lección {leccion.num} · {TIPO[leccion.tipo]}
         </p>
         <h1>{leccion.titulo}</h1>
 
         {Number.isFinite(ganaste) && ganaste > 0 && (
-          <p className="al-toast" role="status">
-            +{ganaste} XP
-          </p>
+          <ToastXp xp={ganaste} />
         )}
         {searchParams.error && (
           <p className="al-alert al-alert--error" role="alert">
@@ -104,6 +112,21 @@ export default async function LeccionPage({
             ))}
         </div>
         {hecha && <p className="al-badge al-badge--ok">✓ Completada</p>}
+        {hecha && esUltimaDelModulo && quizActual && (
+          <div className="al-card al-quizcta">
+            <p className="al-quizcta__t">Repasa el módulo con un quiz de {quizActual.total} preguntas</p>
+            <p className="al-muted">
+              {quizActual.respondidas >= quizActual.total
+                ? quizActual.dominado
+                  ? "🏅 Módulo dominado"
+                  : `Lo respondiste: ${quizActual.aciertosPrimerIntento} de ${quizActual.total} al primer intento.`
+                : "Gana XP y la insignia «Módulo dominado» con 80 % de aciertos."}
+            </p>
+            <Link href={`/aprender/${curso.id}/quiz/${curso.modulos.find((m) => m.id === leccion.moduloId)?.id}`} className="al-btn al-btn--sec">
+              {quizActual.respondidas >= quizActual.total ? "Repetir el quiz" : "Hacer el quiz"}
+            </Link>
+          </div>
+        )}
       </article>
 
       <aside className="al-player__side al-card al-temario" aria-label="Contenido del curso">
@@ -111,7 +134,7 @@ export default async function LeccionPage({
         {curso.modulos.map((m, mi) => (
           <div key={m.id}>
             <p className="al-mod">
-              Módulo {mi + 1} · {m.titulo}
+              Módulo {mi + 1} · {nombreModulo(m.titulo)}
             </p>
             <ol>
               {m.lecciones.map((l) => {
@@ -140,6 +163,16 @@ export default async function LeccionPage({
                   </li>
                 );
               })}
+              {quizzes.get(m.id) && (
+                <li>
+                  <Link href={`/aprender/${curso.id}/quiz/${m.id}`}>
+                    <span className={`al-dot${quizzes.get(m.id)?.dominado ? " al-dot--ok" : ""}`} aria-hidden="true">
+                      {quizzes.get(m.id)?.dominado ? "✓" : ""}
+                    </span>
+                    <span>Quiz de repaso</span>
+                  </Link>
+                </li>
+              )}
             </ol>
           </div>
         ))}

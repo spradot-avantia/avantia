@@ -173,7 +173,10 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
   };
 
   const aplicarTipo = (l: Leccion, tipo: TipoLeccion) => {
-    auto.cancelar(`lec:${l.id}:`); // el contenido anterior se descarta
+    // El contenido anterior se descarta, pero no el título: si se cambia el formato justo
+    // después de escribirlo, cancelar todo el prefijo `lec:<id>:` perdía el título pendiente.
+    auto.cancelar(`lec:${l.id}:url`);
+    auto.cancelar(`lec:${l.id}:texto`);
     mapLec(l.id, (x) => ({ ...x, tipo, contenidoUrl: null, contenidoTexto: null }));
     setTocUrl((t) => ({ ...t, [l.id]: false }));
     void auto.encolar(`lec:${l.id}:tipo`, () => actualizarLeccionAction(l.id, { tipo }));

@@ -48,8 +48,9 @@ export default async function CursoPage({ params, searchParams }: { params: { do
       <FormAccion action={inscribirseAction}>
         <input type="hidden" name="curso" value={curso.slug} />
         {campana && <input type="hidden" name="campana" value={campana} />}
+        {curso.acceso === "invitados" && <input type="hidden" name="solicitud" value="1" />}
         <button type="submit" className="fc-cta">
-          {curso.acceso === "invitados" ? "Entrar al curso" : "Inscribirme"}
+          {curso.acceso === "invitados" ? "Solicitar acceso" : "Inscribirme"}
         </button>
       </FormAccion>
     );

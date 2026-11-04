@@ -1,3 +1,4 @@
+import { nombreModulo, sinTituloRepetido } from "../../lib/alumno/formato";
 import type { ReactNode } from "react";
 import { leccionLista } from "../../lib/creador/reglasPublicacion";
 import type { CursoCompleto, Leccion, TenantCreador } from "../../lib/creador/types";
@@ -23,7 +24,7 @@ function plural(n: number, uno: string, varios: string) {
 
 export function ContenidoLeccion({ l }: { l: Leccion }) {
   if (!leccionLista(l)) return <p className="fc-lec__vacio">Esta lección aún no tiene contenido.</p>;
-  if (l.tipo === "texto") return <MarkdownMinimo texto={l.contenidoTexto ?? ""} />;
+  if (l.tipo === "texto") return <MarkdownMinimo texto={sinTituloRepetido(l.contenidoTexto ?? "", l.titulo)} />;
   if (l.tipo === "video") {
     const src = l.contenidoUrl ? urlEmbebible(l.contenidoUrl) : null;
     return src ? (
@@ -125,7 +126,7 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
             <p className="fc-mod__n">
               Módulo {i + 1} · {plural(m.lecciones.length, "lección", "lecciones")}
             </p>
-            <h4 className="fc-mod__t">{m.titulo}</h4>
+            <h4 className="fc-mod__t">{nombreModulo(m.titulo)}</h4>
             <ul className="fc-lecs">
               {m.lecciones.map((l) =>
                 preview ? (

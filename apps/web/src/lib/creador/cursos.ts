@@ -110,9 +110,9 @@ export async function getCurso(cursoId: string): Promise<CursoCompleto | null> {
 
 const ESTRUCTURA_SUGERIDA = ["Contexto", "Casos reales", "Aplicación"];
 
-async function slugLibre(db: SupabaseClient, tenantId: string, base: string): Promise<string> {
-  const { data } = await db.from("cursos").select("slug").eq("tenant_id", tenantId).like("slug", `${base}%`);
-  const usados = new Set((data ?? []).map((r) => r.slug as string));
+export async function slugLibre(db: SupabaseClient, tenantId: string, base: string, excluirId?: string): Promise<string> {
+  const { data } = await db.from("cursos").select("slug, id").eq("tenant_id", tenantId).like("slug", `${base}%`);
+  const usados = new Set((data ?? []).filter((r) => r.id !== excluirId).map((r) => r.slug as string));
   if (!usados.has(base)) return base;
   for (let n = 2; n < 1000; n++) if (!usados.has(`${base}-${n}`)) return `${base}-${n}`;
   return `${base}-${Date.now()}`;

@@ -109,7 +109,7 @@
 }
 .fc-mod__t {
   font-size: var(--av-fs-lg);
-  font-weight: var(--av-fw-semibold);
+  font-weight: var(--av-fw-medium);
   margin: 0 0 var(--av-space-2);
 }
 .fc-lecs {

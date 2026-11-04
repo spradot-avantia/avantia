@@ -24,7 +24,15 @@ export default async function EstudiantesPage({ searchParams }: { searchParams: 
       .sort((a, b) => Number(b.estado === "publicado") - Number(a.estado === "publicado"))
       .map((c) => ({ id: c.id, titulo: c.titulo, estado: c.estado, acceso: c.acceso, url: urlPublicaCurso(tenant, c.slug) }));
     const titulos = new Map(cursos.map((c) => [c.id, c.titulo]));
-    filas = inv.map((i) => ({ id: i.id, email: i.email, cursoTitulo: titulos.get(i.cursoId) ?? "Curso", estado: i.estado }));
+    // Una invitación cuyo correo ya tiene inscripción activa en ese curso cuenta como "ya entró"
+    // (la invitación misma queda «pendiente» en la base hasta que se marque como aceptada).
+    const yaEntro = new Set(insc.filter((x) => x.estado === "activa").map((x) => `${x.cursoId}:${x.correo.toLowerCase()}`));
+    filas = inv.map((i) => ({
+      id: i.id,
+      email: i.email,
+      cursoTitulo: titulos.get(i.cursoId) ?? "Curso",
+      estado: i.estado === "pendiente" && yaEntro.has(`${i.cursoId}:${i.email.toLowerCase()}`) ? "aceptada" : i.estado,
+    }));
     inscripciones = insc;
   } catch (e) {
     console.error("[estudiantes] no se pudo cargar", e);

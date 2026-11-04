@@ -31,3 +31,6 @@ playwright-report/
 # Local, no se sube
 .mcp.json
 docs/2026-11-03 Creador y Alumno/
+
+# configuración personal de Claude Code
+.claude/settings.local.json

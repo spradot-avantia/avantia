@@ -4,6 +4,8 @@ interface Props {
   publicados: number;
   borradores: number;
   estudiantes: number;
+  /** Promedio de avance de inscripciones activas (0–100), o null si no hay. */
+  avancePromedio: number | null;
 }
 
 function Kpi({ valor, label, nota }: { valor: string | number; label: string; nota: string }) {
@@ -17,7 +19,7 @@ function Kpi({ valor, label, nota }: { valor: string | number; label: string; no
 }
 
 /** KPIs: solo los calculables hoy; el resto, estado vacio honesto. */
-export function Kpis({ publicados, borradores, estudiantes }: Props) {
+export function Kpis({ publicados, borradores, estudiantes, avancePromedio }: Props) {
   return (
     <section aria-label="Resumen" className="ci-grid ci-grid--kpi">
       <Kpi
@@ -30,18 +32,11 @@ export function Kpis({ publicados, borradores, estudiantes }: Props) {
         label="Estudiantes registrados"
         nota={estudiantes > 0 ? "En todos tus cursos" : "Aún no registras estudiantes"}
       />
-      <div className="ci-card">
-        <span className="ci-kpi__label">Avance de estudiantes</span>
-        <span className="ci-card__title">Sin datos todavía</span>
-        <span className="ci-muted">
-          {estudiantes > 0 ? "Se medirá cuando conectemos la experiencia del estudiante." : "Aparecerá cuando tengas estudiantes."}
-        </span>
-      </div>
-      <div className="ci-card ci-card--soon" aria-disabled="true">
-        <span className="ci-kpi__label">Próximas sesiones en vivo</span>
-        <span className="ci-card__title">Próximamente</span>
-        <span className="ci-muted">Programar encuentros por videollamada aún no está disponible.</span>
-      </div>
+      <Kpi
+        valor={avancePromedio === null ? "—" : `${avancePromedio} %`}
+        label="Avance de estudiantes"
+        nota={avancePromedio === null ? (estudiantes > 0 ? "Aparecerá cuando alguien empiece un curso." : "Aparecerá cuando tengas estudiantes.") : "Promedio de inscripciones activas"}
+      />
     </section>
   );
 }

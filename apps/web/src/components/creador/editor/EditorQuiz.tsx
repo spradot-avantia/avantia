@@ -307,18 +307,10 @@ export function EditorQuiz({ ctx, modulo, numero, onVolver }: { ctx: EditorCtx; 
                 <b>Insignia «Módulo dominado»</b>
                 <span>Con 80 % o más de aciertos en este quiz.</span>
               </li>
-              <li>
-                <b>Repaso espaciado</b>
-                <span>Las preguntas falladas vuelven al día siguiente, a los 3 días y a los 7.</span>
-              </li>
-              <li>
-                <b>Barra de dominio</b>
-                <span>Cuenta los aciertos del curso, aparte del avance.</span>
-              </li>
             </ul>
           </section>
-          <Callout tono="info" titulo="Se activa con la experiencia del estudiante">
-            Puedes armar el quiz ahora. La XP y las insignias empiezan a contar cuando tus estudiantes puedan responderlo en el curso.
+          <Callout tono="info" titulo="Es opcional para tus estudiantes">
+            Verán una invitación a repasar al terminar el módulo. Pueden repetirlo, pero el XP y la insignia cuentan solo desde el primer intento.
           </Callout>
         </aside>
       </div>

@@ -7,11 +7,12 @@ export type TipoEventoAlumno =
   | "inscripcion_creada"
   | "inscripcion_activada"
   | "leccion_completada"
-  | "curso_completado";
+  | "curso_completado"
+  | "intento_quiz";
 
 export async function registrarEvento(
   tenantId: string,
-  e: { tipo: TipoEventoAlumno; alumnoId: string; cursoId?: string | null; entidadTipo?: "curso" | "leccion"; entidadId?: string },
+  e: { tipo: TipoEventoAlumno; alumnoId: string; cursoId?: string | null; entidadTipo?: "curso" | "leccion" | "quiz"; entidadId?: string },
 ): Promise<void> {
   try {
     await supabaseAdmin.from("eventos").insert({

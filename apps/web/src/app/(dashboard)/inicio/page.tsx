@@ -7,6 +7,7 @@ import { Kpis } from "../../../components/creador/inicio/Kpis";
 import "../../../components/creador/inicio/inicio.css";
 import { listarCursos } from "../../../lib/creador/cursos";
 import { listarEstudiantes } from "../../../lib/creador/estudiantes";
+import { listarInscripciones } from "../../../lib/creador/inscripciones";
 import { urlPublicaCurso } from "../../../lib/creador/publicacion";
 import { getCurrentTenant } from "../../../lib/creador/tenantActual";
 import type { CursoResumen, Invitacion, TenantCreador } from "../../../lib/creador/types";
@@ -15,9 +16,9 @@ export const dynamic = "force-dynamic";
 
 async function cargar() {
   const tenant = await getCurrentTenant();
-  if (!tenant) return { tenant: null as TenantCreador | null, cursos: [] as CursoResumen[], inv: [] as Invitacion[] };
-  const [cursos, inv] = await Promise.all([listarCursos(), listarEstudiantes()]);
-  return { tenant, cursos, inv };
+  if (!tenant) return { tenant: null as TenantCreador | null, cursos: [] as CursoResumen[], inv: [] as Invitacion[], inscripciones: [] as Awaited<ReturnType<typeof listarInscripciones>> };
+  const [cursos, inv, inscripciones] = await Promise.all([listarCursos(), listarEstudiantes(), listarInscripciones().catch(() => [])]);
+  return { tenant, cursos, inv, inscripciones };
 }
 
 export default async function InicioPage() {
@@ -28,7 +29,9 @@ export default async function InicioPage() {
     console.error("[inicio] no se pudo cargar", e);
     return <EmptyState titulo="No pudimos cargar tu inicio" descripcion="Revisa tu conexión e inténtalo de nuevo en unos minutos." />;
   }
-  const { tenant, cursos, inv } = datos;
+  const { tenant, cursos, inv, inscripciones } = datos;
+  const activas = inscripciones.filter((i) => i.estado === "activa");
+  const avancePromedio = activas.length ? Math.round(activas.reduce((t, i) => t + i.avance, 0) / activas.length) : null;
   if (!tenant) return <SinAcademia />;
 
   const publicados = cursos.filter((c) => c.estado === "publicado");
@@ -134,6 +137,32 @@ export default async function InicioPage() {
     <div className="ci-stack">
       <PageHeader titulo={titulo} descripcion={descripcion} />
 
+      <section className="ci-card" aria-labelledby="ci-sig-t">
+        <span className="ci-overline">Siguiente paso</span>
+        <h2 className="ci-card__title" id="ci-sig-t">
+          {siguiente.titulo}
+        </h2>
+        <p className="ci-card__text">{siguiente.texto}</p>
+        <div className="ci-actions">{siguiente.acciones}</div>
+      </section>
+
+      {hechos < pasos.length && <Checklist pasos={pasos} />}
+
+      {cursosUrl.length > 0 && (
+        <section className="ci-stack" style={{ gap: "var(--av-space-3)" }} aria-labelledby="ci-cursos-t">
+          <div className="ci-check__head">
+            <h2 className="ci-card__title" id="ci-cursos-t">
+              Tus cursos
+            </h2>
+            <LinkButton href="/cursos" variante="ghost">
+              Ver todos
+            </LinkButton>
+          </div>
+          <ListaCursos cursos={cursosUrl} compacto />
+        </section>
+      )}
+
+      <Kpis publicados={publicados.length} borradores={borradores.length} estudiantes={estudiantes} avancePromedio={avancePromedio} />
       {!tenant.logoUrl && (
         <section className="ci-card ci-card--accent" aria-labelledby="ci-logo-t">
           <h2 className="ci-card__title" id="ci-logo-t">
@@ -150,32 +179,6 @@ export default async function InicioPage() {
         </section>
       )}
 
-      <section className="ci-card" aria-labelledby="ci-sig-t">
-        <span className="ci-overline">Siguiente paso</span>
-        <h2 className="ci-card__title" id="ci-sig-t">
-          {siguiente.titulo}
-        </h2>
-        <p className="ci-card__text">{siguiente.texto}</p>
-        <div className="ci-actions">{siguiente.acciones}</div>
-      </section>
-
-      <Checklist pasos={pasos} />
-
-      {cursosUrl.length > 0 && (
-        <section className="ci-stack" style={{ gap: "var(--av-space-3)" }} aria-labelledby="ci-cursos-t">
-          <div className="ci-check__head">
-            <h2 className="ci-card__title" id="ci-cursos-t">
-              Tus cursos
-            </h2>
-            <LinkButton href="/cursos" variante="ghost">
-              Ver todos
-            </LinkButton>
-          </div>
-          <ListaCursos cursos={cursosUrl} compacto />
-        </section>
-      )}
-
-      <Kpis publicados={publicados.length} borradores={borradores.length} estudiantes={estudiantes} />
       {hechos === pasos.length && (
         <Callout tono="success" titulo="Completaste los 4 pasos">
           Tu piloto está en marcha.

@@ -93,13 +93,14 @@
   font: inherit;
   font-size: var(--av-fs-sm);
 }
-@media (min-width: 900px) {
+/* La lista de 6 pasos cabe en una línea desde ~1100px; antes envolvía a dos filas. */
+@media (min-width: 1100px) {
   .ed-pasos__movil {
     display: none;
   }
   .ed-pasos__lista {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--av-space-2);
     list-style: none;
   }

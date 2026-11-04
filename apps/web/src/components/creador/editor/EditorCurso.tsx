@@ -43,12 +43,19 @@ export function EditorCurso({ cursoInicial, pasoInicial, urlPublica }: Props) {
   const [tocado, setTocado] = useState<Record<string, boolean>>({});
   const [anuncio, setAnuncio] = useState("");
   const [aviso, setAviso] = useState<string | null>(null);
+  // Un paso solo se marca ✓ cuando ya se visitó: Modalidad y Acceso traen valores por defecto
+  // y aparecían "hechos" sin que nadie los hubiera revisado.
+  const [visitados, setVisitados] = useState<Set<PasoEditor>>(() => new Set([pasoInicial]));
   const tituloPaso = useRef<HTMLHeadingElement>(null);
   const primeraVez = useRef(true);
 
   const cursoId = cursoInicial.id;
   const idx = Math.max(0, IDS.indexOf(paso));
   const meta = PASOS_EDITOR[idx];
+
+  useEffect(() => {
+    setVisitados((v) => (v.has(paso) ? v : new Set(v).add(paso)));
+  }, [paso]);
 
   const validacion = useMemo(() => validarPublicacion(limpiar(curso)), [curso]);
 
@@ -171,7 +178,7 @@ export function EditorCurso({ cursoInicial, pasoInicial, urlPublica }: Props) {
   })();
 
   const hecho = (id: PasoEditor) =>
-    id === "revisar" ? publicado : !validacion.bloqueos.some((b) => b.paso === id);
+    id === "revisar" ? publicado : visitados.has(id) && !validacion.bloqueos.some((b) => b.paso === id);
 
   return (
     <div className="av-scope ed">

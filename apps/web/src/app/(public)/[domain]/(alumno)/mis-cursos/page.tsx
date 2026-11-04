@@ -67,7 +67,8 @@ export default async function MisCursosPage() {
                     Tu cuenta ya está lista. <strong>{tenant.nombre}</strong> debe activar tu inscripción para que puedas empezar.
                   </p>
                   <p className="al-muted">
-                    Hoy la academia confirma el pago a mano. Cuando lo haga, este curso se abrirá aquí mismo; no necesitas hacer nada más.
+                    La academia revisa cada solicitud (y, si el curso tiene costo, confirma el pago a mano). Cuando la active, este curso se abrirá aquí
+                    mismo; no necesitas hacer nada más.
                   </p>
                 </>
               )}

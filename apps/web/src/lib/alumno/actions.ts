@@ -15,6 +15,7 @@ import {
 import { requireTenantPublico } from "./contexto";
 import { solicitarInscripcion } from "./inscripciones";
 import { completarLeccion } from "./progreso";
+import { responderPregunta, type ResultadoResponder } from "./quiz";
 import { cerrarSesion, getAlumnoActual } from "./sesion";
 import { limpiarCampana, sanitizarNextAlumno } from "./validacion";
 
@@ -76,7 +77,11 @@ export async function inscribirseAction(_: EstadoForm, fd: FormData): Promise<Es
   if (!alumno) return destino(`/ingresar?next=${encodeURIComponent(`/curso/${slug}`)}`);
   const curso = await cargarCurso(tenant.id, { slug });
   if (!curso) return destino("/");
-  const r = await solicitarInscripcion(tenant.id, alumno, curso, { origen: "pagina", campana: limpiarCampana(txt(fd, "campana")) });
+  const r = await solicitarInscripcion(tenant.id, alumno, curso, {
+    origen: "pagina",
+    campana: limpiarCampana(txt(fd, "campana")),
+    solicitud: txt(fd, "solicitud") === "1",
+  });
   return r.ok ? destino("/mis-cursos") : { ok: false, error: r.error };
 }
 
@@ -92,4 +97,12 @@ export async function completarLeccionAction(_: EstadoForm, fd: FormData): Promi
   if (r.cursoCompleto) return destino(`${base}/completado`);
   if (r.siguienteId) return destino(`${base}/${encodeURIComponent(r.siguienteId)}?ganaste=${r.xpGanada}`);
   return destino(`${base}/${encodeURIComponent(leccionId)}`);
+}
+
+/** Corrige una respuesta del quiz. El tenant sale del host y el alumno de la sesión. */
+export async function responderQuizAction(cursoId: string, moduloId: string, preguntaId: string, opcion: number): Promise<ResultadoResponder> {
+  const tenant = await requireTenantPublico();
+  const alumno = await getAlumnoActual();
+  if (!alumno) return { ok: false, error: "Tu sesión expiró. Ingresa de nuevo." };
+  return responderPregunta(tenant.id, alumno.id, String(cursoId), String(moduloId), String(preguntaId), Number(opcion));
 }

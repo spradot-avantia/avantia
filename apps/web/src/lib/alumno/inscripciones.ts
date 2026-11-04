@@ -103,7 +103,7 @@ export async function solicitarInscripcion(
   tenantId: string,
   alumno: { id: string; correo: string; verificado: boolean },
   curso: CursoParaInscribir,
-  origen: { origen: OrigenInscripcion; campana: string | null },
+  origen: { origen: OrigenInscripcion; campana: string | null; solicitud?: boolean },
 ): Promise<ResultadoInscripcion> {
   if (curso.estado !== "publicado") return { ok: false, error: "Este curso aún no está disponible." };
 
@@ -114,10 +114,14 @@ export async function solicitarInscripcion(
     if (alumno.verificado) await aplicarInvitaciones(tenantId, alumno.id, alumno.correo);
     const tras = await inscripcionDe(tenantId, alumno.id, curso.id);
     if (tras) return { ok: true, inscripcion: tras, creada: true };
-    return {
-      ok: false,
-      error: "Este curso es solo para personas invitadas. Pídele a la academia que te invite con este mismo correo.",
-    };
+    // Sin invitación: solo si el alumno pidió acceso explícitamente. Queda pendiente
+    // y el creador decide (la misma bandeja que las inscripciones por pago manual).
+    if (!origen.solicitud) {
+      return {
+        ok: false,
+        error: "Este curso es solo para personas invitadas. Pide acceso a la academia desde la ficha del curso.",
+      };
+    }
   }
 
   const { data, error } = await supabaseAdmin

@@ -13,27 +13,30 @@ export function Cabecera({ tenant, alumno }: { tenant: Tenant; alumno: AlumnoSes
         <Link href="/" className="al-brand" aria-label={`${tenant.nombre}: inicio`}>
           <TenantMark nombre={tenant.nombre} logoUrl={tenant.theme.logoUrl} logoModo={tenant.theme.logoModo} color={tenant.theme.colorPrimario} />
         </Link>
-        <nav className="al-nav" aria-label="Principal">
-          {alumno ? (
-            <>
+        {alumno ? (
+          <>
+            {/* En móvil las secciones van en una barra inferior (más cerca del pulgar) y el encabezado queda en una línea. */}
+            <nav className="al-tabs" aria-label="Secciones">
               <Link href="/mis-cursos">Mis cursos</Link>
               <Link href="/progreso">Mi progreso</Link>
+            </nav>
+            <div className="al-nav al-nav--cuenta">
               <span className="al-user" title={alumno.correo}>
                 {alumno.nombre.split(" ")[0]}
               </span>
               <FormAccion action={salirAction}>
                 <button type="submit">Salir</button>
               </FormAccion>
-            </>
-          ) : (
-            <>
-              <Link href="/ingresar">Ingresar</Link>
-              <Link href="/registro" className="al-nav__cta">
-                Crear cuenta
-              </Link>
-            </>
-          )}
-        </nav>
+            </div>
+          </>
+        ) : (
+          <nav className="al-nav" aria-label="Principal">
+            <Link href="/ingresar">Ingresar</Link>
+            <Link href="/registro" className="al-nav__cta">
+              Crear cuenta
+            </Link>
+          </nav>
+        )}
       </div>
     </header>
   );
