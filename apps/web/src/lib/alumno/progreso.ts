@@ -4,7 +4,9 @@ import { cargarCurso, leccionesEnOrden, type CursoParaAlumno } from "./catalogo"
 import { registrarEvento } from "./eventos";
 import { inscripcionDe } from "./inscripciones";
 import { hoyEnZona, leccionLiberada } from "./liberacion";
+import { calcularDominio, type Dominio } from "./dominioReglas";
 import { estadoQuizzes, xpDeQuiz } from "./quiz";
+import { enRepasoPorCurso } from "./repaso";
 import { calcularXp, porcentaje, type DesgloseXp } from "./xp";
 
 export async function leccionesCompletadas(tenantId: string, alumnoId: string, cursoId: string): Promise<Set<string>> {
@@ -125,6 +127,8 @@ export interface ResumenCursoAlumno {
   /** Lección a la que "Continuar" lleva. */
   continuarId: string | null;
   totalModulos: number;
+  /** Lo que domina de los quizzes del curso (ADR 025); null sin quiz o sin respuestas. */
+  dominio: Dominio | null;
 }
 
 /** Resumen de todos los cursos del alumno (Mis cursos y Mi progreso). */
@@ -147,6 +151,7 @@ export async function resumenDelAlumno(
       .in("curso_id", ids),
   ]);
 
+  const enRepaso = inscripciones.some((i) => i.estado === "activa") ? await enRepasoPorCurso(tenantId, alumnoId) : new Map<string, number>();
   const out: ResumenCursoAlumno[] = [];
   for (const c of cursos ?? []) {
     const insc = inscripciones.find((i) => i.cursoId === c.id);
@@ -160,7 +165,13 @@ export async function resumenDelAlumno(
     const hechas = new Set((prog ?? []).filter((p) => p.curso_id === c.id && p.completada_at).map((p) => p.leccion_id as string));
     const base = calcularXp(estructura, hechas);
     // El quiz de repaso suma XP aparte de las lecciones (ADR 023).
-    const xpQuiz = xpDeQuiz((await estadoQuizzes(tenantId, alumnoId, c.id)).values());
+    const estados = Array.from((await estadoQuizzes(tenantId, alumnoId, c.id)).values());
+    const xpQuiz = xpDeQuiz(estados);
+    const dominio = calcularDominio(
+      estados.reduce((n, e) => n + e.total, 0),
+      estados.reduce((n, e) => n + e.respondidas, 0),
+      enRepaso.get(c.id) ?? 0,
+    );
     const desglose = { ...base, xp: base.xp + xpQuiz };
     const orden = estructura.modulos.flatMap((m) => m.lecciones.map((l) => l.id));
     const ultimo = (prog ?? [])
@@ -179,6 +190,7 @@ export async function resumenDelAlumno(
       desglose,
       continuarId,
       totalModulos: modulos.length,
+      dominio,
     });
   }
   return out;

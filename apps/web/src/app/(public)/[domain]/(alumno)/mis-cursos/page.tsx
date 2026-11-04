@@ -72,6 +72,9 @@ export default async function MisCursosPage() {
                     pct={c.avance}
                     detalle={`${c.completadas} de ${c.totalLecciones} lecciones`}
                   />
+                  {c.dominio && (
+                    <Barra etiqueta="Lo que dominas" pct={c.dominio.pct} detalle={`${c.dominio.dominadas} de ${c.dominio.total} preguntas`} />
+                  )}
                   {c.continuarId ? (
                     <Link href={`/aprender/${c.cursoId}/${c.continuarId}`} className="al-btn">
                       {c.completadas === 0 ? "Empezar el curso" : c.completadas === c.totalLecciones ? "Repasar el curso" : "Continuar donde quedé"}

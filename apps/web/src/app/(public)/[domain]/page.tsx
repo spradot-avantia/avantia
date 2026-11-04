@@ -38,15 +38,15 @@ export default async function SitioAcademiaPage({ params }: { params: { domain: 
   if (pub?.template) {
     const d = construirDatosSitio({ contenido: pub, template: pub.template, academia: sitio.academia, cursos: sitio.cursos, modo: "publico" });
     return (
-      <>
+      <main>
         <BarraAlumno alumno={alumno} />
         <PlantillaSitio d={d} />
-      </>
+      </main>
     );
   }
 
   return (
-    <div className="st">
+    <main className="st">
       <BarraAlumno alumno={alumno} />
       <div className="st-programa">
         <header className="st-barra">
@@ -82,6 +82,6 @@ export default async function SitioAcademiaPage({ params }: { params: { domain: 
           )}
         </section>
       </div>
-    </div>
+    </main>
   );
 }

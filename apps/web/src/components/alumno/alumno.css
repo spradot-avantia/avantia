@@ -746,3 +746,11 @@
   background: #fdecea;
   border-color: #b3261e;
 }
+
+/* Enlaces dentro de texto: se distinguen por subrayado y no solo por color (WCAG 1.4.1). */
+.al-crumbs a,
+.al-foot a,
+.al-muted a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

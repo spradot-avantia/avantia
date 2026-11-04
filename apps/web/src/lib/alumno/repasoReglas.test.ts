@@ -52,3 +52,13 @@ describe("preguntasDeRepaso", () => {
     expect(preguntasDeRepaso(rs, hoy("2026-11-03"))).toHaveLength(20);
   });
 });
+
+import { preguntasEnRepaso } from "./repasoReglas";
+
+describe("preguntasEnRepaso", () => {
+  it("incluye falladas no aprendidas aunque aún no venzan, y excluye aprendidas", () => {
+    const aprendida = [r(false, "2026-11-01"), r(true, "2026-11-02"), r(true, "2026-11-05"), r(true, "2026-11-12")].map((x) => ({ ...x, preguntaId: "a" }));
+    const reciente = [{ ...r(false, "2026-11-12"), preguntaId: "b" }];
+    expect(Array.from(preguntasEnRepaso([...aprendida, ...reciente]))).toEqual(["b"]);
+  });
+});

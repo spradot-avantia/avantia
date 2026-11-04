@@ -46,4 +46,8 @@ F1 título perdido ✔ · F2 enlace sigue al título hasta la primera publicaci�
 9. **Inicio del creador:** el bloque «Sube el logo» (azul) y «Siguiente paso» compiten; los 4 pasos «Hecho» repiten «Hecho» dos veces por fila; «Próximas sesiones en vivo» ocupa espacio sin función. Ordenar por prioridad y ocultar lo completado.
 10. **Editor de curso:** los 6 pasos envuelven en dos filas; el editor de quiz es largo (explicación de XP antes que las preguntas en móvil). Priorizar preguntas.
 
-Pendiente de verificar con un dispositivo real: contraste AA, targets ≥ 44 px, foco visible y `prefers-reduced-motion`.
+**Verificación con iPhone 13 emulado (Playwright + axe-core, 2026-11-05):** foco visible OK (outline de 3 px); contraste de texto OK (0 violaciones de `color-contrast`); targets táctiles OK (solo el enlace «Saltar al contenido», que aparece al enfocarlo); `prefers-reduced-motion` respetado (la única transición está bajo `no-preference`). Fallas encontradas y corregidas en `dev`: `<main>` anidado (el layout de la academia envolvía al del alumno) y enlaces dentro de texto distinguidos solo por color (2,48:1 < 3:1) → subrayado. Falta una prueba en un dispositivo físico (lector de pantalla, tamaño de texto del sistema).
+
+## Prueba de «Solicitar acceso» en producción (2026-11-05)
+
+Alumna 2 (`samuelpradoet+alumno2@gmail.com`, sin invitación) en el curso por invitación: la ficha muestra «Solicitar acceso» → queda «Pendiente de activación» en Mis cursos y «Ver mi inscripción (pendiente)» en la ficha → el creador la ve en Estudiantes › Por activar (1) y la activa con «Sin costo» → Mis cursos pasa a «Inscripción activa · Empezar el curso». Flujo completo ✔. Detalle de copy por pulir: en la bandeja del creador el texto habla de «coordinar el pago» y el origen dice «Tu página»; para solicitudes de cursos por invitación convendría «Pidió acceso».

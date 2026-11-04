@@ -1,7 +1,7 @@
 export default function CheckoutPage() {
   return (
-    <section>
+    <main>
       <h1>Checkout</h1>
-    </section>
+    </main>
   );
 }

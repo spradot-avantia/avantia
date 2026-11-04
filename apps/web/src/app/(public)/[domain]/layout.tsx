@@ -26,7 +26,7 @@ export default async function PublicLayout({
   return (
     <TenantProvider tenant={tenant}>
       <div style={{ ["--color-primario" as string]: tenant.theme.colorPrimario }}>
-        <main>{children}</main>
+        {children}
       </div>
     </TenantProvider>
   );

@@ -2,7 +2,7 @@
 // Lectura acotada: la función SQL solo mira preguntas falladas del alumno y sus últimas N respuestas.
 import { supabaseAdmin } from "../supabase/admin";
 import { quizzesCompletos, type PreguntaParaAlumno } from "./quiz";
-import { MAX_REPASO_DIARIO, preguntasDeRepaso } from "./repasoReglas";
+import { MAX_REPASO_DIARIO, preguntasDeRepaso, preguntasEnRepaso } from "./repasoReglas";
 
 export interface PreguntaRepaso extends PreguntaParaAlumno {
   cursoId: string;
@@ -41,6 +41,23 @@ export async function repasoDeHoy(tenantId: string, alumnoId: string, cursosActi
     const { cursoId, moduloId } = ubicacion.get(id)!;
     const p = quizzes.get(cursoId)?.get(moduloId)?.find((x) => x.id === id);
     if (p) out.push({ id: p.id, tipo: p.tipo, texto: p.texto, opciones: p.opciones, cursoId, moduloId });
+  }
+  return out;
+}
+
+/**
+ * Cuántas preguntas de cada curso siguen en repaso (falladas y aún no aprendidas). Resta del
+ * dominio (ADR 025). Misma lectura acotada que el repaso; tolera que la migración 0012 no exista.
+ */
+export async function enRepasoPorCurso(tenantId: string, alumnoId: string): Promise<Map<string, number>> {
+  const out = new Map<string, number>();
+  const { data, error } = await supabaseAdmin.rpc("quiz_respuestas_para_repaso", { p_tenant: tenantId, p_alumno: alumnoId, p_ventana: 8 });
+  if (error || !data?.length) return out;
+  const filas = data as FilaRepaso[];
+  const curso = new Map(filas.map((r) => [r.pregunta_id, r.curso_id]));
+  for (const id of Array.from(preguntasEnRepaso(filas.map((r) => ({ preguntaId: r.pregunta_id, acierto: r.acierto, creadaEn: r.created_at }))))) {
+    const c = curso.get(id)!;
+    out.set(c, (out.get(c) ?? 0) + 1);
   }
   return out;
 }

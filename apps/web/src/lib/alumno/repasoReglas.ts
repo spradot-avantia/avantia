@@ -28,13 +28,12 @@ interface Estado {
   aprendida: boolean;
 }
 
-/** IDs de las preguntas que vencen hoy o antes (ordenadas por antigüedad del vencimiento). */
-export function preguntasDeRepaso(respuestas: RespuestaRepaso[], ahora: Date = new Date(), max: number = MAX_REPASO_DIARIO): string[] {
-  const hoy = diaCalendario(ahora);
+/** Etapa de cada pregunta que alguna vez se falló, según sus respuestas (ventana reciente). */
+function evaluar(respuestas: RespuestaRepaso[]): Map<string, Estado> {
   const porPregunta = new Map<string, RespuestaRepaso[]>();
   for (const r of respuestas) porPregunta.set(r.preguntaId, [...(porPregunta.get(r.preguntaId) ?? []), r]);
 
-  const vencidas: { id: string; vence: string }[] = [];
+  const out = new Map<string, Estado>();
   for (const [id, rs] of Array.from(porPregunta)) {
     let e: Estado = { etapa: 0, vence: "", aprendida: false };
     for (const r of [...rs].sort((a, b) => a.creadaEn.localeCompare(b.creadaEn))) {
@@ -49,6 +48,23 @@ export function preguntasDeRepaso(respuestas: RespuestaRepaso[], ahora: Date = n
         }
       }
     }
+    out.set(id, e);
+  }
+  return out;
+}
+
+/** Preguntas que están en repaso (falladas y aún no «aprendidas»), venzan hoy o no. Base del dominio (ADR 025). */
+export function preguntasEnRepaso(respuestas: RespuestaRepaso[]): Set<string> {
+  const ids = new Set<string>();
+  for (const [id, e] of Array.from(evaluar(respuestas))) if (e.etapa > 0 && !e.aprendida) ids.add(id);
+  return ids;
+}
+
+/** IDs de las preguntas que vencen hoy o antes (ordenadas por antigüedad del vencimiento). */
+export function preguntasDeRepaso(respuestas: RespuestaRepaso[], ahora: Date = new Date(), max: number = MAX_REPASO_DIARIO): string[] {
+  const hoy = diaCalendario(ahora);
+  const vencidas: { id: string; vence: string }[] = [];
+  for (const [id, e] of Array.from(evaluar(respuestas))) {
     if (e.etapa > 0 && !e.aprendida && e.vence <= hoy) vencidas.push({ id, vence: e.vence });
   }
   return vencidas

@@ -65,6 +65,9 @@ export default async function ProgresoPage() {
             <article key={c.cursoId} className="al-card">
               <h3>{c.titulo}</h3>
               <Barra etiqueta="Avance" pct={c.avance} detalle={`${c.completadas} de ${c.totalLecciones} lecciones`} />
+              {c.dominio && (
+                <Barra etiqueta="Lo que dominas" pct={c.dominio.pct} detalle={`${c.dominio.dominadas} de ${c.dominio.total} preguntas`} />
+              )}
               <p className="al-muted">
                 {c.desglose.xp} XP en este curso · {c.desglose.modulosCompletos} de {c.totalModulos}{" "}
                 {c.totalModulos === 1 ? "módulo completo" : "módulos completos"}
