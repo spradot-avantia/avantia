@@ -1,11 +1,13 @@
 import { EmptyState, LinkButton, PageHeader, SinAcademia } from "../../../components/creador";
 import { InscripcionesAlumnos } from "../../../components/creador/estudiantes/InscripcionesAlumnos";
 import { ListaEstudiantes, type FilaEstudiante } from "../../../components/creador/estudiantes/ListaEstudiantes";
+import { ResultadosQuiz } from "../../../components/creador/estudiantes/ResultadosQuiz";
 import { RegistrarEstudiantes, type CursoOpcion } from "../../../components/creador/estudiantes/RegistrarEstudiantes";
 import "../../../components/creador/inicio/inicio.css";
 import { listarCursos } from "../../../lib/creador/cursos";
 import { listarEstudiantes } from "../../../lib/creador/estudiantes";
 import { listarInscripciones, type FilaInscripcion } from "../../../lib/creador/inscripciones";
+import { resultadosDelQuiz, type ResultadoModulo } from "../../../lib/creador/resultadosQuiz";
 import { urlPublicaCurso } from "../../../lib/creador/publicacion";
 import { getCurrentTenant } from "../../../lib/creador/tenantActual";
 
@@ -15,6 +17,8 @@ export default async function EstudiantesPage({ searchParams }: { searchParams: 
   let opciones: CursoOpcion[];
   let filas: FilaEstudiante[];
   let inscripciones: FilaInscripcion[];
+  let quiz: ResultadoModulo[] = [];
+  let titulosCurso = new Map<string, string>();
   try {
     const tenant = await getCurrentTenant();
     if (!tenant) return <SinAcademia />;
@@ -34,6 +38,8 @@ export default async function EstudiantesPage({ searchParams }: { searchParams: 
       estado: i.estado === "pendiente" && yaEntro.has(`${i.cursoId}:${i.email.toLowerCase()}`) ? "aceptada" : i.estado,
     }));
     inscripciones = insc;
+    titulosCurso = titulos;
+    quiz = await resultadosDelQuiz().catch(() => []);
   } catch (e) {
     console.error("[estudiantes] no se pudo cargar", e);
     return (
@@ -58,6 +64,7 @@ export default async function EstudiantesPage({ searchParams }: { searchParams: 
       ) : (
         <>
           <InscripcionesAlumnos inscripciones={inscripciones} vistaInicial={searchParams.ver === "por-activar" ? "por-activar" : undefined} />
+          <ResultadosQuiz resultados={quiz} titulosCurso={titulosCurso} />
           <RegistrarEstudiantes cursos={opciones} cursoInicial={inicial} />
           <section className="ci-stack" style={{ gap: "var(--av-space-3)" }} aria-labelledby="ci-reg-t">
             <h2 className="ci-card__title" id="ci-reg-t">
