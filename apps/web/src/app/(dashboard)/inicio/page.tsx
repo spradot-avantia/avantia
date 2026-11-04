@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 async function cargar() {
   const tenant = await getCurrentTenant();
   if (!tenant) return { tenant: null as TenantCreador | null, cursos: [] as CursoResumen[], inv: [] as Invitacion[], inscripciones: [] as Awaited<ReturnType<typeof listarInscripciones>> };
-  const [cursos, inv, inscripciones] = await Promise.all([listarCursos(), listarEstudiantes(), listarInscripciones().catch(() => [])]);
+  const [cursos, inv, inscripciones] = await Promise.all([listarCursos(), listarEstudiantes(), listarInscripciones({ conQuiz: false }).catch(() => [])]);
   return { tenant, cursos, inv, inscripciones };
 }
 

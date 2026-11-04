@@ -246,6 +246,18 @@ check("alumno autenticado no ejecuta la funcion", await falla("authenticated", U
 check("anon no ejecuta la funcion", await falla("anon", null, "select * from quiz_respuestas_para_repaso($1, $2, 8)", [T.A, U.alumA]));
 check("indices del repaso existen", (await client.query("select 1 from pg_indexes where indexname in ('quiz_respuestas_tenant_alumno_pregunta_fecha_idx','quiz_respuestas_tenant_alumno_falladas_idx')")).rows.length === 2);
 
+console.log("\nDominio por estudiante para el creador (0013, ADR 026):");
+const resumen = async (rol, uid, t, alumnos) => como(rol, uid, async (c) => (await c.query("select * from quiz_resumen_por_alumno($1, $2::uuid[])", [t, alumnos])).rows);
+const lote = async (rol, uid, t, alumnos) => como(rol, uid, async (c) => (await c.query("select * from quiz_respuestas_para_repaso_lote($1, $2::uuid[], 8)", [t, alumnos])).rows);
+const rA = await resumen("authenticated", U.creaA, T.A, [U.alumA]);
+check("creador A obtiene el resumen agregado de su alumno (1 curso, 1 pregunta)", rA.length === 1 && rA[0].respondidas === 1);
+check("creador A con tenant ajeno recibe 0 filas (RLS)", (await resumen("authenticated", U.creaA, T.B, [U.alumB])).length === 0);
+check("creador B no ve respuestas del alumno de A", (await resumen("authenticated", U.creaB, T.A, [U.alumA])).length === 0);
+check("alumno autenticado sin academia recibe 0 filas", (await resumen("authenticated", U.alumA, T.A, [U.alumA])).length === 0);
+check("lote: creador A ve la ventana acotada (8 de 11)", (await lote("authenticated", U.creaA, T.A, [U.alumA])).length === 8);
+check("lote: creador B no ve filas de A", (await lote("authenticated", U.creaB, T.A, [U.alumA])).length === 0);
+check("anon no ejecuta las funciones del creador", (await falla("anon", null, "select * from quiz_resumen_por_alumno($1, $2::uuid[])", [T.A, [U.alumA]])) && (await falla("anon", null, "select * from quiz_respuestas_para_repaso_lote($1, $2::uuid[], 8)", [T.A, [U.alumA]])));
+
 console.log(`\n${pass} ok, ${fallos.length} fallos`);
 await client.end();
 if (fallos.length) { console.log("Fallos:\n - " + fallos.join("\n - ")); process.exit(1); }

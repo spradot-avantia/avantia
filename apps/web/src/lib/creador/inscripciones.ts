@@ -1,7 +1,8 @@
 // Inscripciones de alumnos vistas por el creador (diseño 04 · Estudiantes).
 // Cliente con RLS del creador (nunca service role) + filtro explícito por tenant.
-import { XP_ACIERTO, XP_RESPONDER } from "../alumno/quizReglas";
+import type { Dominio } from "../alumno/dominioReglas";
 import { calcularXp, porcentaje } from "../alumno/xp";
+import { claveAlumnoCurso, resumenQuizPorAlumno, type ResumenQuizAlumno } from "./dominioAlumnos";
 import { MEDIOS_PAGO } from "./mediosPago";
 import { requireCreadorContext } from "./tenantActual";
 import type { Resultado } from "./types";
@@ -23,6 +24,8 @@ export interface FilaInscripcion {
   completadas: number;
   totalLecciones: number;
   xp: number;
+  /** Lo que domina de los quizzes del curso (ADR 026); null sin quiz, sin respuestas o sin migración 0013. */
+  dominio: Dominio | null;
   ultimaActividad: string | null;
   /** Activa y sin entrar hace 7 días o más. */
   sinActividad: boolean;
@@ -30,7 +33,9 @@ export interface FilaInscripcion {
 
 const DIAS_SIN_ACTIVIDAD = 7;
 
-export async function listarInscripciones(): Promise<FilaInscripcion[]> {
+/** `conQuiz: false` omite el XP y el dominio del quiz (p. ej. el Inicio, que solo usa el avance). */
+export async function listarInscripciones(opciones: { conQuiz?: boolean } = {}): Promise<FilaInscripcion[]> {
+  const conQuiz = opciones.conQuiz ?? true;
   const { tenant, db } = await requireCreadorContext();
   const { data: insc } = await db
     .from("inscripciones")
@@ -39,15 +44,21 @@ export async function listarInscripciones(): Promise<FilaInscripcion[]> {
     .order("created_at", { ascending: false });
   if (!insc?.length) return [];
 
-  const [alumnos, cursos, mods, lecs, prog, quizResp] = await Promise.all([
+  const [alumnos, cursos, mods, lecs, prog] = await Promise.all([
     db.from("alumnos").select("id, nombre, correo, ultimo_ingreso_at").eq("tenant_id", tenant.id),
     db.from("cursos").select("id, titulo, precio_centavos").eq("tenant_id", tenant.id),
     db.from("modulos").select("id, curso_id").eq("tenant_id", tenant.id),
     db.from("lecciones").select("id, curso_id, modulo_id").eq("tenant_id", tenant.id),
     db.from("progreso").select("alumno_id, curso_id, leccion_id, completada_at, ultimo_acceso_at").eq("tenant_id", tenant.id),
-    // Si la migración 0011 aún no está, el error se ignora y el XP del quiz queda en 0.
-    db.from("quiz_respuestas").select("alumno_id, curso_id, pregunta_id, acierto, primer_intento").eq("tenant_id", tenant.id),
   ]);
+  // XP y dominio del quiz: agregados en la base y solo de inscripciones activas (tope en dominioAlumnos).
+  const quiz = conQuiz
+    ? await resumenQuizPorAlumno(
+        db,
+        tenant.id,
+        insc.filter((i) => i.estado === "activa").map((i) => ({ alumnoId: i.alumno_id, cursoId: i.curso_id })),
+      )
+    : new Map<string, ResumenQuizAlumno>();
   const porAlumno = new Map((alumnos.data ?? []).map((a) => [a.id as string, a]));
   const porCurso = new Map((cursos.data ?? []).map((c) => [c.id as string, c]));
   const limite = Date.now() - DIAS_SIN_ACTIVIDAD * 86400000;
@@ -63,8 +74,7 @@ export async function listarInscripciones(): Promise<FilaInscripcion[]> {
     const propios = (prog.data ?? []).filter((p) => p.alumno_id === i.alumno_id && p.curso_id === i.curso_id);
     const hechas = new Set(propios.filter((p) => p.completada_at).map((p) => p.leccion_id as string));
     const d = calcularXp(estructura, hechas);
-    const rq = (quizResp.data ?? []).filter((r) => r.alumno_id === i.alumno_id && r.curso_id === i.curso_id);
-    const xpQuiz = new Set(rq.map((r) => r.pregunta_id)).size * XP_RESPONDER + rq.filter((r) => r.primer_intento && r.acierto).length * XP_ACIERTO;
+    const q = quiz.get(claveAlumnoCurso(i.alumno_id, i.curso_id));
     const ultimaProg = propios.map((p) => String(p.ultimo_acceso_at)).sort().pop() ?? null;
     const ultima = [ultimaProg, a?.ultimo_ingreso_at ?? null].filter(Boolean).sort().pop() ?? null;
     return {
@@ -82,7 +92,8 @@ export async function listarInscripciones(): Promise<FilaInscripcion[]> {
       avance: porcentaje(d.lecciones, d.totalLecciones),
       completadas: d.lecciones,
       totalLecciones: d.totalLecciones,
-      xp: d.xp + xpQuiz,
+      xp: d.xp + (q?.xpQuiz ?? 0),
+      dominio: q?.dominio ?? null,
       ultimaActividad: ultima,
       sinActividad: i.estado === "activa" && (!ultima || new Date(ultima).getTime() < limite),
     };

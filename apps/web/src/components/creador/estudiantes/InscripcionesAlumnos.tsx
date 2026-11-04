@@ -162,6 +162,11 @@ export function TablaAlumnos({ filas }: { filas: FilaInscripcion[] }) {
                 <span>
                   Avance <strong>{f.avance} %</strong> ({f.completadas}/{f.totalLecciones})
                 </span>
+                {f.dominio && (
+                  <span title="Preguntas de los quizzes que domina: acertadas al primer intento o aprendidas en el repaso.">
+                    Dominio <strong>{f.dominio.pct} %</strong> ({f.dominio.dominadas}/{f.dominio.total})
+                  </span>
+                )}
                 <span>
                   <strong>{f.xp}</strong> XP
                 </span>
