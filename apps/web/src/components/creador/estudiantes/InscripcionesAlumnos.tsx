@@ -57,7 +57,7 @@ export function PorActivar({ filas }: { filas: FilaInscripcion[] }) {
   return (
     <div className="ci-stack" style={{ gap: "var(--av-space-3)" }}>
       <Callout tono="info">
-        Estas personas ya crearon su cuenta. Revisa su solicitud y, si el curso tiene costo, coordina el pago con ellas; luego activa su inscripción. Cuando conectes la pasarela de pago, este paso será automático.
+        Estas personas ya crearon su cuenta. Revisa su solicitud y, si el curso tiene costo, coordina el pago con la persona; luego activa su inscripción. Cuando conectes la pasarela de pago, este paso será automático.
       </Callout>
       {error && (
         <p role="alert" className="cr-field__error">
