@@ -43,12 +43,14 @@ export async function guardarQuiz(moduloId: string, preguntas: PreguntaQuiz[]): 
   if (!m) return { ok: false, error: "Módulo no encontrado." };
 
   const ids = p.data.map((q) => q.id);
-  // Borra las que ya no están (si no queda ninguna, borra todas las del módulo).
-  let borrar = db.from("quiz_preguntas").delete().eq("tenant_id", tenant.id).eq("modulo_id", moduloId);
-  if (ids.length) borrar = borrar.not("id", "in", `(${ids.join(",")})`);
-  const b = await borrar;
-  if (b.error) return { ok: false, error: "No pudimos guardar el quiz. Inténtalo de nuevo." };
 
+  // Un id existente solo puede pertenecer a este módulo (no se mueven preguntas entre módulos).
+  if (ids.length) {
+    const { data: previas } = await db.from("quiz_preguntas").select("id, modulo_id").eq("tenant_id", tenant.id).in("id", ids);
+    if ((previas ?? []).some((r) => r.modulo_id !== moduloId)) return { ok: false, error: "Revisa las preguntas." };
+  }
+
+  // Primero se guarda (upsert) y después se borran las que se quitaron: si algo falla, no se pierde nada.
   if (p.data.length) {
     const filas = p.data.map((q, i) => ({
       id: q.id,
@@ -68,6 +70,13 @@ export async function guardarQuiz(moduloId: string, preguntas: PreguntaQuiz[]): 
       return { ok: false, error: "No pudimos guardar el quiz. Inténtalo de nuevo." };
     }
   }
+
+  // Borra las que ya no están (si no queda ninguna, borra todas las del módulo).
+  let borrar = db.from("quiz_preguntas").delete().eq("tenant_id", tenant.id).eq("modulo_id", moduloId);
+  if (ids.length) borrar = borrar.not("id", "in", `(${ids.join(",")})`);
+  const b = await borrar;
+  if (b.error) return { ok: false, error: "No pudimos guardar el quiz. Inténtalo de nuevo." };
+
   const { data } = await db.from("quiz_preguntas").select(COLS).eq("tenant_id", tenant.id).eq("modulo_id", moduloId).order("orden");
   return { ok: true, data: (data ?? []).map(mapPregunta) };
 }
