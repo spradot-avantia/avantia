@@ -6,11 +6,16 @@ import { responderQuizAction } from "../../lib/alumno/actions";
 import type { PreguntaParaAlumno } from "../../lib/alumno/quiz";
 import "./alumno.css";
 
+type PreguntaPlayer = PreguntaParaAlumno & { cursoId?: string; moduloId?: string };
+
 interface Props {
-  cursoId: string;
-  moduloId: string;
+  /** Por defecto, los de cada pregunta (el repaso mezcla cursos y módulos). */
+  cursoId?: string;
+  moduloId?: string;
   moduloTitulo: string;
-  preguntas: PreguntaParaAlumno[];
+  /** "repaso": preguntas falladas que vuelven (sin XP ni insignia). */
+  modo?: "quiz" | "repaso";
+  preguntas: PreguntaPlayer[];
   /** Ruta a la que vuelve al terminar (siguiente lección o cierre). */
   volverA: string;
   umbral: number;
@@ -25,7 +30,9 @@ interface Corregida {
 }
 
 /** Quiz de repaso: una pregunta por vez; se corrige en el servidor al responder. */
-export function QuizPlayer({ cursoId, moduloId, moduloTitulo, preguntas, volverA, umbral }: Props) {
+export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", preguntas, volverA, umbral }: Props) {
+  const repaso = modo === "repaso";
+  const rotulo = repaso ? "Repaso de hoy" : `Quiz de repaso · ${moduloTitulo}`;
   const [i, setI] = useState(0);
   const [elegida, setElegida] = useState<number | null>(null);
   const [res, setRes] = useState<Corregida | null>(null);
@@ -43,7 +50,7 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, preguntas, volverA
     if (elegida === null || !p) return;
     setError(null);
     start(async () => {
-      const r = await responderQuizAction(cursoId, moduloId, p.id, elegida);
+      const r = await responderQuizAction(p.cursoId ?? cursoId ?? "", p.moduloId ?? moduloId ?? "", p.id, elegida);
       if (!r.ok) return setError(r.error);
       setRes({ acierto: r.acierto, correcta: r.correcta, explicacion: r.explicacion, elegida, xp: r.xpGanada });
       if (r.acierto) setAciertos((a) => a + 1);
@@ -69,17 +76,19 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, preguntas, volverA
 
   if (fin) {
     const pct = Math.round((aciertos / preguntas.length) * 100);
-    const dominado = intento === 0 && aciertos / preguntas.length >= umbral;
+    const dominado = !repaso && intento === 0 && aciertos / preguntas.length >= umbral;
     return (
       <div className="al-quiz" role="status">
-        <p className="al-muted">Quiz de repaso · {moduloTitulo}</p>
+        <p className="al-muted">{rotulo}</p>
         <h1 ref={titulo} tabIndex={-1}>
           {aciertos} de {preguntas.length} correctas
         </h1>
         <div className="al-bar" aria-hidden="true">
           <span style={{ width: `${pct}%` }} />
         </div>
-        {dominado ? (
+        {repaso ? (
+          <p className="al-muted">Las que fallaste vuelven en unos días: repasar poco y seguido es lo que hace que se recuerde. Esto no suma XP.</p>
+        ) : dominado ? (
           <p className="al-badge al-badge--ok">🏅 Módulo dominado</p>
         ) : (
           <p className="al-muted">
@@ -90,11 +99,13 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, preguntas, volverA
         )}
         {xpTotal > 0 && <p className="al-toast">+{xpTotal} XP</p>}
         <div className="al-pager">
-          <button type="button" className="al-btn al-btn--sec" onClick={repetir}>
-            Repetir quiz
-          </button>
+          {!repaso && (
+            <button type="button" className="al-btn al-btn--sec" onClick={repetir}>
+              Repetir quiz
+            </button>
+          )}
           <Link href={volverA} className="al-btn">
-            Continuar
+            {repaso ? "Listo" : "Continuar"}
           </Link>
         </div>
       </div>
@@ -104,7 +115,7 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, preguntas, volverA
   return (
     <div className="al-quiz">
       <p className="al-muted">
-        Quiz de repaso · {moduloTitulo} · Pregunta {i + 1} de {preguntas.length}
+        {rotulo} · Pregunta {i + 1} de {preguntas.length}
       </p>
       <div className="al-bar" aria-hidden="true">
         <span style={{ width: `${(i / preguntas.length) * 100}%` }} />

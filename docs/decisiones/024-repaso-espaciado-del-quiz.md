@@ -1,7 +1,7 @@
 # 024 — Repaso espaciado de las preguntas falladas
 
 - **Fecha:** 2026-11-04
-- **Estado:** Propuesta (espera la aprobación de Samuel; extiende la [023](023-quiz-del-estudiante.md))
+- **Estado:** Aceptada (aprobada por Samuel el 2026-11-04 con la condición de acotar la consulta al escalar; extiende la [023](023-quiz-del-estudiante.md))
 
 ## Contexto
 
@@ -9,7 +9,7 @@ La retención es el diferenciador del producto: práctica de recuperación y cad
 
 ## Decisión
 
-- **Sin tabla nueva ni migración.** El calendario de repaso se **deriva** de `quiz_respuestas` (ya tiene `created_at`, `acierto` y `pregunta_id` por alumno). Cada respuesta de repaso es una fila más, con `primer_intento = false`.
+- **Sin tabla nueva.** Migración `0012` solo con índices y una función de lectura. El calendario de repaso se **deriva** de `quiz_respuestas` (ya tiene `created_at`, `acierto` y `pregunta_id` por alumno). Cada respuesta de repaso es una fila más, con `primer_intento = false`.
 - **Reglas** (por alumno y pregunta, a partir de una falla):
   1. Una pregunta entra al repaso cuando su **última** respuesta es incorrecta; vence 1 día después de esa respuesta.
   2. Acierto en el repaso: sube de etapa y vence a los **3 días**; otro acierto, a los **7 días**; un tercer acierto la da por **aprendida** y sale del repaso.
@@ -19,6 +19,18 @@ La retención es el diferenciador del producto: práctica de recuperación y cad
 - **XP:** el repaso **no** da XP ni cuenta para «Módulo dominado» (que sigue siendo solo primer intento): evita jugar el sistema repitiendo para sumar.
 - **Server-side, mismas reglas de seguridad:** `tenant_id` del host, alumno de la sesión, inscripción activa, pregunta del curso; el estudiante nunca recibe `correcta` antes de responder.
 - **Fuera de esta versión:** recordatorios por correo/WhatsApp («tienes 3 preguntas para repasar»), que son un nudge aparte y dependen de la decisión de canal; barra de dominio (decisión propia).
+
+## Escala (condición de la aprobación)
+
+La consulta se acota por construcción, no depende de cuánto crezcan las respuestas:
+
+- **Siempre por `tenant_id` + `alumno_id`** (prefijo de índices): nunca toca otros alumnos ni academias.
+- **Solo preguntas que el alumno alguna vez falló** (índice parcial `where not acierto`); las acertadas a la primera no entran.
+- **Ventana por pregunta:** solo las últimas **8** respuestas (máximo 20), con índice `(tenant_id, alumno_id, pregunta_id, created_at desc)`. Para decidir la etapa basta la última falla y los aciertos posteriores (máximo 3 hasta «aprendida»). Si repetir el quiz generara muchas filas, no cambia el costo.
+- **Función SQL `quiz_respuestas_para_repaso`** que devuelve esas filas; ejecutable solo por el servidor. El calendario se calcula en la aplicación con reglas puras.
+- **Tope de salida:** el mini-quiz muestra a lo más 20 preguntas por día; el resto queda para el día siguiente.
+- Límite conocido: si una ventana de 8 respuestas empieza con un acierto cuya falla quedó fuera, la pregunta se considera aprendida (se repasa de menos, nunca de más).
+- Si aun así el volumen lo exigiera, se reevalúa la tabla materializada (abajo).
 
 ## Alternativas descartadas
 

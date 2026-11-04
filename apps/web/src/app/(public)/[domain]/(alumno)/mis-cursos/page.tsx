@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { Barra, EstadoBadge } from "../../../../../components/alumno/Piezas";
 import { getTenantPublico } from "../../../../../lib/alumno/contexto";
 import { aplicarInvitaciones, inscripcionesDe } from "../../../../../lib/alumno/inscripciones";
+import { repasoDeHoy } from "../../../../../lib/alumno/repaso";
 import { resumenDelAlumno } from "../../../../../lib/alumno/progreso";
 import { getAlumnoActual } from "../../../../../lib/alumno/sesion";
 
@@ -24,12 +25,31 @@ export default async function MisCursosPage() {
     inscripciones.map((i) => ({ cursoId: i.cursoId, estado: i.estado })),
   );
 
+  const repaso = await repasoDeHoy(
+    tenant.id,
+    alumno.id,
+    inscripciones.filter((i) => i.estado === "activa").map((i) => i.cursoId),
+  ).catch(() => []);
+
   return (
     <>
       <section className="al-stack">
         <p className="al-muted">Hola, {alumno.nombre.split(" ")[0]}</p>
         <h1>Mis cursos</h1>
       </section>
+
+      {repaso.length > 0 && (
+        <section className="al-card" aria-labelledby="al-repaso-t">
+          <h2 id="al-repaso-t">Repaso de hoy</h2>
+          <p className="al-muted">
+            {repaso.length === 1 ? "1 pregunta que fallaste vuelve" : `${repaso.length} preguntas que fallaste vuelven`} hoy. Son un par de minutos y ayudan a
+            recordarlo.
+          </p>
+          <Link href="/repaso" className="al-btn" style={{ alignSelf: "flex-start" }}>
+            Repasar ahora
+          </Link>
+        </section>
+      )}
 
       {resumen.length === 0 ? (
         <section className="al-card">

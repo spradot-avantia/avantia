@@ -30,7 +30,7 @@ interface RespuestaFila {
 }
 
 /** Preguntas del curso por módulo; solo los quizzes completos (3 a 5 preguntas listas). */
-async function quizzesCompletos(tenantId: string, cursoId: string): Promise<Map<string, PreguntaQuiz[]>> {
+export async function quizzesCompletos(tenantId: string, cursoId: string): Promise<Map<string, PreguntaQuiz[]>> {
   const { data } = await supabaseAdmin
     .from("quiz_preguntas")
     .select("id, modulo_id, orden, tipo, texto, opciones, correcta, explicacion")

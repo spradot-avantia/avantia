@@ -233,6 +233,19 @@ check("borrar la pregunta borra sus respuestas", (await como("authenticated", U.
   return cuenta(c, "select 1 from quiz_respuestas");
 })) === 0);
 
+console.log("\nRepaso espaciado (0012, ADR 024):");
+for (let i = 0; i < 10; i++) {
+  await client.query("insert into quiz_respuestas (tenant_id, curso_id, modulo_id, alumno_id, pregunta_id, opcion, acierto, created_at) values ($1,$2,$3,$4,$5,1,false, now() - ($6 || ' minutes')::interval)", [T.A, C.A, M.A, U.alumA, Q.A, String(i)]);
+}
+const repasoFilas = async (t, a, v) => (await client.query("select * from quiz_respuestas_para_repaso($1, $2, $3)", [t, a, v])).rows.length;
+check("la ventana acota las respuestas por pregunta (8 de 11)", (await repasoFilas(T.A, U.alumA, 8)) === 8);
+check("una ventana grande se corta en 20 (aqui hay solo 11)", (await repasoFilas(T.A, U.alumA, 500)) === 11);
+check("otro alumno/academia no ve filas ajenas", (await repasoFilas(T.A, U.alumB, 8)) === 0 && (await repasoFilas(T.B, U.alumA, 8)) === 0);
+check("preguntas solo acertadas no entran al repaso", (await repasoFilas(T.B, U.alumB, 8)) === 0);
+check("alumno autenticado no ejecuta la funcion", await falla("authenticated", U.alumA, "select * from quiz_respuestas_para_repaso($1, $2, 8)", [T.A, U.alumA]));
+check("anon no ejecuta la funcion", await falla("anon", null, "select * from quiz_respuestas_para_repaso($1, $2, 8)", [T.A, U.alumA]));
+check("indices del repaso existen", (await client.query("select 1 from pg_indexes where indexname in ('quiz_respuestas_tenant_alumno_pregunta_fecha_idx','quiz_respuestas_tenant_alumno_falladas_idx')")).rows.length === 2);
+
 console.log(`\n${pass} ok, ${fallos.length} fallos`);
 await client.end();
 if (fallos.length) { console.log("Fallos:\n - " + fallos.join("\n - ")); process.exit(1); }
