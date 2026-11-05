@@ -84,11 +84,16 @@ export function construirDatosSitio(opts: {
       }
     : SIN_EJEMPLO;
   const ocultos = new Set(c.cursosOcultos);
+  // En la vista previa, si la academia ya tiene cursos, el ejemplo parte de su primer curso
+  // (así no se mezcla un texto ajeno con los cursos reales). Sigue marcado como ejemplo.
+  const primero = vista ? opts.cursos.find((x) => !ocultos.has(x.id)) : undefined;
+  const tituloEj = primero?.titulo ?? ej.titulo;
+  const bajadaEj = primero?.descripcion ? recortar(primero.descripcion, 140) : ej.bajada;
   return {
     template,
     academia,
-    titulo: c.titulo ?? (vista ? ej.titulo : academia.nombre),
-    bajada: c.bajada ?? (vista ? ej.bajada : academia.frase ?? ""),
+    titulo: c.titulo ?? (vista ? tituloEj : academia.nombre),
+    bajada: c.bajada ?? (vista ? bajadaEj : academia.frase ?? ""),
     fotoUrl: c.fotoUrl,
     accion: c.accion,
     bioNombre: c.bioNombre ?? (vista ? ej.bioNombre : ""),
@@ -99,6 +104,11 @@ export function construirDatosSitio(opts: {
     ejemplo: marcas,
     modo,
   };
+}
+
+function recortar(texto: string, max: number): string {
+  const t = texto.trim().replace(/\s+/g, " ");
+  return t.length <= max ? t : `${t.slice(0, max - 1).trimEnd()}…`;
 }
 
 /** Precio para mostrar: 0 -> "Gratis"; si no, moneda del tenant (CLP por defecto). */

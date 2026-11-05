@@ -19,17 +19,25 @@ export function PreviewMarca({ nombre, frase, logoUrl, logoModo, color }: Props)
   const estilo = { ["--cr-brand" as string]: color, ["--cr-on-brand" as string]: textoSobre(color) };
   return (
     <section className="mk-prev" aria-labelledby="mk-prev-h" style={estilo}>
-      <h3 className="mk-ov" id="mk-prev-h">
+      <h3 className="mk-prev__t" id="mk-prev-h">
         Así se verá
       </h3>
       <div className="mk-prev__fila">
         <figure className="mk-prev__caja">
-          <div className="mk-prev__lado">
-            <TenantMark nombre={nom} logoUrl={logoUrl} logoModo={modo} color={color} />
-            <span className="mk-prev__item mk-prev__item--on" />
-            <span className="mk-prev__item" />
+          <div className="mk-prev__panel" aria-hidden="true">
+            <div className="mk-prev__lado">
+              <TenantMark nombre={nom} logoUrl={logoUrl} logoModo={modo} color={color} />
+              <span className="mk-prev__item mk-prev__item--on">Inicio</span>
+              <span className="mk-prev__item">Cursos</span>
+              <span className="mk-prev__item">Estudiantes</span>
+            </div>
+            <div className="mk-prev__main">
+              <span className="mk-prev__banda">Hoy en tu academia</span>
+              <span className="mk-prev__tarjeta" />
+              <span className="mk-prev__tarjeta mk-prev__tarjeta--corta" />
+            </div>
           </div>
-          <figcaption className="mk-ayuda mk-prev__pie">Menú lateral</figcaption>
+          <figcaption className="mk-ayuda mk-prev__pie">Tu panel</figcaption>
         </figure>
         <figure className="mk-prev__caja mk-prev__caja--est">
           <div className="mk-prev__cab">
