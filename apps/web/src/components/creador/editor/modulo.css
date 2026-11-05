@@ -91,6 +91,10 @@
   font-size: var(--av-fs-sm);
   color: var(--av-muted);
 }
+.md-migas li {
+  display: flex;
+  align-items: center;
+}
 .md-migas li + li::before {
   content: "›";
   margin-right: var(--av-space-2);

@@ -5,6 +5,7 @@
 // cliente, se programa con debounce y se serializa en una sola cola.
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
+import { nombreModulo } from "../../../lib/alumno/formato";
 import { actualizarModuloAction, obtenerCursoAction } from "../../../lib/creador/actionsEditor";
 import type { CursoCompleto, Modulo } from "../../../lib/creador/types";
 import {
@@ -178,14 +179,14 @@ export function EditorModulo({ cursoInicial, moduloId, urlPublica }: Props) {
               {curso.titulo.trim() || "Curso sin título"}
             </a>
           </li>
-          <li aria-current="page">{modulo.titulo.trim() || "Módulo sin nombre"}</li>
+          <li aria-current="page">{nombreModulo(modulo.titulo.trim()) || "Módulo sin nombre"}</li>
         </ol>
       </nav>
 
       <header className="ed-head">
         <div className="ed-head__body">
           <h1 className="ed-head__title" tabIndex={-1} ref={tituloRef}>
-            Módulo {indice + 1}: {modulo.titulo.trim() || "sin nombre"}
+            Módulo {indice + 1}: {nombreModulo(modulo.titulo.trim()) || "sin nombre"}
           </h1>
           <div className="ed-head__meta">
             <span className="md-resumen">{resumenModulo(modulo)}</span>
