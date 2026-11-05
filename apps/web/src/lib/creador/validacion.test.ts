@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   aparienciaSchema,
+  descripcionLeccion,
+  descripcionModulo,
+  duracionMin,
+  objetivosModulo,
   inspeccionarLogo,
   parsearCorreos,
   sanitizarSvg,
@@ -154,8 +158,11 @@ function cursoBase(over: Partial<CursoCompleto> = {}): CursoCompleto {
         cursoId: "c",
         titulo: "M1",
         orden: 0,
+        descripcion: null,
+        objetivos: [],
+        duracionMin: null,
         lecciones: [
-          { id: "l", moduloId: "m", cursoId: "c", titulo: "L1", tipo: "texto", contenidoUrl: null, contenidoTexto: "hola", storagePath: null, contenidoTipo: null, orden: 0 },
+          { id: "l", moduloId: "m", cursoId: "c", titulo: "L1", tipo: "texto", contenidoUrl: null, contenidoTexto: "hola", storagePath: null, contenidoTipo: null, descripcion: null, duracionMin: null, orden: 0 },
         ],
       },
     ],
@@ -189,5 +196,55 @@ describe("apariencia de la academia (ADR 027)", () => {
     expect(aparienciaSchema.safeParse({ tipografia: "clasico'; drop table tenants;--" }).success).toBe(false);
     const r = aparienciaSchema.safeParse({ forma: "x" });
     expect(!r.success && r.error.issues[0]?.message).toBe("Elige una de las formas disponibles.");
+  });
+});
+
+
+describe("módulos enriquecidos (ADR 029)", () => {
+  it("descripción del módulo: opcional, hasta 600, vacío = null", () => {
+    expect(descripcionModulo.parse("")).toBeNull();
+    expect(descripcionModulo.parse("   ")).toBeNull();
+    expect(descripcionModulo.parse("  Qué es un dato  ")).toBe("Qué es un dato");
+    expect(descripcionModulo.safeParse("x".repeat(600)).success).toBe(true);
+    expect(descripcionModulo.safeParse("x".repeat(601)).success).toBe(false);
+  });
+  it("descripción de la lección: hasta 400", () => {
+    expect(descripcionLeccion.parse("")).toBeNull();
+    expect(descripcionLeccion.safeParse("x".repeat(400)).success).toBe(true);
+    expect(descripcionLeccion.safeParse("x".repeat(401)).success).toBe(false);
+  });
+  it("«Qué aprenderás»: 0 a 4 puntos de 1 a 140 caracteres, sin vacíos", () => {
+    expect(objetivosModulo.safeParse([]).success).toBe(true);
+    expect(objetivosModulo.safeParse(["a", "b", "c", "d"]).success).toBe(true);
+    expect(objetivosModulo.safeParse(["a", "b", "c", "d", "e"]).success).toBe(false);
+    expect(objetivosModulo.safeParse(["a", "   "]).success).toBe(false);
+    expect(objetivosModulo.safeParse(["x".repeat(140)]).success).toBe(true);
+    expect(objetivosModulo.safeParse(["x".repeat(141)]).success).toBe(false);
+    expect(objetivosModulo.parse(["  Limpiar datos  "])).toEqual(["Limpiar datos"]);
+  });
+  it("duración: entero de 1 a 1.440 o null", () => {
+    expect(duracionMin.safeParse(null).success).toBe(true);
+    expect(duracionMin.safeParse(1).success).toBe(true);
+    expect(duracionMin.safeParse(1440).success).toBe(true);
+    expect(duracionMin.safeParse(0).success).toBe(false);
+    expect(duracionMin.safeParse(1441).success).toBe(false);
+    expect(duracionMin.safeParse(12.5).success).toBe(false);
+    expect(duracionMin.safeParse(Number.NaN).success).toBe(false);
+  });
+  it("los campos nuevos no bloquean la publicación", () => {
+    const base = validarPublicacion({
+      id: "c", slug: "s", titulo: "Curso de prueba", descripcion: "d".repeat(60), publico: null, estado: "borrador",
+      modalidad: "a_su_ritmo", fechaInicio: null, fechaTermino: null, acceso: "invitados", publishedAt: null, createdAt: "", updatedAt: "",
+      objetivos: ["Algo"],
+      modulos: [
+        {
+          id: "m", cursoId: "c", titulo: "M1", orden: 0, descripcion: null, objetivos: [], duracionMin: null,
+          lecciones: [
+            { id: "l", moduloId: "m", cursoId: "c", titulo: "L1", tipo: "texto", contenidoUrl: null, contenidoTexto: "hola", storagePath: null, contenidoTipo: null, descripcion: null, duracionMin: null, orden: 0 },
+          ],
+        },
+      ],
+    } as CursoCompleto);
+    expect(base.bloqueos.some((b) => /descripci|duraci|aprender|punto/i.test(b.mensaje))).toBe(false);
   });
 });

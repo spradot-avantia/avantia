@@ -1,80 +1,48 @@
 "use client";
 
+// Paso 3: LISTA DE MÓDULOS (ADR 029). Cada módulo se abre en su propia pantalla
+// (/cursos/[cursoId]/modulos/[moduloId]), donde se edita en profundidad.
+// Aquí solo se ve el panorama: orden, estado, duración, y agregar o eliminar módulos.
 import { useEffect, useState } from "react";
-import {
-  actualizarLeccionAction,
-  crearLeccionAction,
-  crearModuloAction,
-  eliminarLeccionAction,
-  eliminarModuloAction,
-  moverLeccionAction,
-  moverModuloAction,
-  renombrarModuloAction,
-} from "../../../lib/creador/actions";
+import { crearModuloAction, eliminarModuloAction, moverModuloAction } from "../../../lib/creador/actions";
 import { aplicarEstructuraSugeridaAction } from "../../../lib/creador/actionsEditor";
 import { estadoQuiz } from "../../../lib/creador/quiz";
 import { leccionLista } from "../../../lib/creador/reglasPublicacion";
-import type { Leccion, Modulo, TipoLeccion } from "../../../lib/creador/types";
-import {
-  AVISO_ENLACE_DOCUMENTO,
-  tituloLeccion,
-  tituloModulo,
-  validarUrlLeccion,
-} from "../../../lib/creador/validacion";
-import { MarkdownMinimo } from "../../tenant/MarkdownMinimo";
+import type { Modulo } from "../../../lib/creador/types";
 import { Badge } from "../Badge";
 import { Button } from "../Button";
-import { Callout } from "../Callout";
-import { Field, Input, Textarea } from "../Field";
+import { Acciones } from "./AccionesFila";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { EditorQuiz } from "./EditorQuiz";
 import type { EditorCtx } from "./contexto";
-import "./quiz.css";
+import "./modulo.css";
 
-const TIPOS: ReadonlyArray<{ id: TipoLeccion; label: string }> = [
-  { id: "video", label: "Video" },
-  { id: "texto", label: "Texto" },
-  { id: "documento", label: "Documento" },
-];
-const TEXTO_MAX = 20000;
-
-type Pendiente =
-  | { k: "modulo"; m: Modulo }
-  | { k: "leccion"; l: Leccion }
-  | { k: "tipo"; l: Leccion; tipo: TipoLeccion };
-
-function tieneContenido(l: Leccion) {
-  return !!(l.contenidoUrl?.trim() || l.contenidoTexto?.trim());
+/** Texto «3 lecciones · 25 min» de un módulo. */
+export function resumenModulo(m: Modulo): string {
+  const partes = [`${m.lecciones.length} ${m.lecciones.length === 1 ? "lección" : "lecciones"}`];
+  if (m.duracionMin) partes.push(`${m.duracionMin} min`);
+  return partes.join(" · ");
 }
 
-/** Paso 3: modulos -> lecciones. Reordenar con botones; eliminar con confirmacion. */
+/** Estado de contenido de un módulo: sin lecciones, con lecciones incompletas o listo. */
+export function estadoModulo(m: Modulo): "vacio" | "falta" | "listo" {
+  if (m.lecciones.length === 0) return "vacio";
+  return m.lecciones.every(leccionLista) ? "listo" : "falta";
+}
+
 export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
   const { curso, setCurso, auto } = ctx;
-  const [abierta, setAbierta] = useState<string | null>(null);
-  const [foco, setFoco] = useState<string | null>(null);
-  const [pendiente, setPendiente] = useState<Pendiente | null>(null);
+  const [pendiente, setPendiente] = useState<Modulo | null>(null);
   const [trabajando, setTrabajando] = useState(false);
-  const [tocUrl, setTocUrl] = useState<Record<string, boolean>>({});
-  const [verTexto, setVerTexto] = useState<Record<string, boolean>>({});
-  const [quizDe, setQuizDe] = useState<string | null>(null);
+  const [foco, setFoco] = useState<string | null>(null);
 
   useEffect(() => {
     if (!foco) return;
-    const el = document.getElementById(foco) as HTMLInputElement | HTMLButtonElement | null;
-    el?.focus();
-    if (el instanceof HTMLInputElement) el.select();
+    document.getElementById(foco)?.focus();
     setFoco(null);
   }, [foco, curso.modulos]);
 
-  const mapMod = (id: string, fn: (m: Modulo) => Modulo) =>
-    setCurso((c) => ({ ...c, modulos: c.modulos.map((m) => (m.id === id ? fn(m) : m)) }));
-  const mapLec = (id: string, fn: (l: Leccion) => Leccion) =>
-    setCurso((c) => ({
-      ...c,
-      modulos: c.modulos.map((m) => ({ ...m, lecciones: m.lecciones.map((l) => (l.id === id ? fn(l) : l)) })),
-    }));
+  const abrir = (m: Modulo) => void ctx.salir(`/cursos/${curso.id}/modulos/${m.id}`);
 
-  // ---- Modulos ----------------------------------------------------------------
   const agregarModulo = async () => {
     setTrabajando(true);
     const titulo = `Módulo ${curso.modulos.length + 1}`;
@@ -84,10 +52,13 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
     const id = r.data.id;
     setCurso((c) => ({
       ...c,
-      modulos: [...c.modulos, { id, cursoId: c.id, titulo, orden: c.modulos.length, lecciones: [] }],
+      modulos: [
+        ...c.modulos,
+        { id, cursoId: c.id, titulo, orden: c.modulos.length, descripcion: null, objetivos: [], duracionMin: null, lecciones: [] },
+      ],
     }));
     ctx.anunciar(`${titulo} agregado`);
-    setFoco(`ed-mod-${id}`);
+    setFoco(`ed-abrir-${id}`);
   };
 
   const usarSugerida = async () => {
@@ -97,12 +68,6 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
     if (!r.ok) return ctx.avisar(r.error);
     setCurso((c) => ({ ...c, modulos: r.data.modulos }));
     ctx.anunciar("Estructura sugerida agregada: 3 módulos");
-  };
-
-  const renombrarModulo = (m: Modulo, valor: string) => {
-    mapMod(m.id, (x) => ({ ...x, titulo: valor }));
-    if (!tituloModulo.safeParse(valor).success) return auto.cancelar(`mod:${m.id}`);
-    auto.programar(`mod:${m.id}`, () => renombrarModuloAction(m.id, valor));
   };
 
   const moverModulo = async (m: Modulo, dir: "subir" | "bajar") => {
@@ -135,126 +100,13 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
     setFoco("ed-add-modulo");
   };
 
-  // ---- Lecciones ----------------------------------------------------------------
-  const agregarLeccion = async (m: Modulo) => {
-    setTrabajando(true);
-    const titulo = "Nueva lección";
-    const r = await auto.encolar(null, () => crearLeccionAction(m.id, { titulo, tipo: "video" }));
-    setTrabajando(false);
-    if (!r.ok) return ctx.avisar(r.error);
-    const id = r.data.id;
-    mapMod(m.id, (x) => ({
-      ...x,
-      lecciones: [
-        ...x.lecciones,
-        {
-          id,
-          moduloId: m.id,
-          cursoId: curso.id,
-          titulo,
-          tipo: "video",
-          contenidoUrl: null,
-          contenidoTexto: null,
-          storagePath: null,
-          contenidoTipo: null,
-          orden: x.lecciones.length,
-        },
-      ],
-    }));
-    setAbierta(id);
-    ctx.anunciar("Lección agregada");
-    setFoco(`ed-lec-titulo-${id}`);
-  };
-
-  const renombrarLeccion = (l: Leccion, valor: string) => {
-    mapLec(l.id, (x) => ({ ...x, titulo: valor }));
-    if (!tituloLeccion.safeParse(valor).success) return auto.cancelar(`lec:${l.id}:titulo`);
-    auto.programar(`lec:${l.id}:titulo`, () => actualizarLeccionAction(l.id, { titulo: valor }));
-  };
-
-  const aplicarTipo = (l: Leccion, tipo: TipoLeccion) => {
-    // El contenido anterior se descarta, pero no el título: si se cambia el formato justo
-    // después de escribirlo, cancelar todo el prefijo `lec:<id>:` perdía el título pendiente.
-    auto.cancelar(`lec:${l.id}:url`);
-    auto.cancelar(`lec:${l.id}:texto`);
-    mapLec(l.id, (x) => ({ ...x, tipo, contenidoUrl: null, contenidoTexto: null }));
-    setTocUrl((t) => ({ ...t, [l.id]: false }));
-    void auto.encolar(`lec:${l.id}:tipo`, () => actualizarLeccionAction(l.id, { tipo }));
-  };
-
-  const cambiarTipo = (l: Leccion, tipo: TipoLeccion) => {
-    if (tipo === l.tipo) return;
-    if (tieneContenido(l)) setPendiente({ k: "tipo", l, tipo });
-    else aplicarTipo(l, tipo);
-  };
-
-  const cambiarUrl = (l: Leccion, valor: string) => {
-    mapLec(l.id, (x) => ({ ...x, contenidoUrl: valor }));
-    if (!valor.trim()) return auto.programar(`lec:${l.id}:url`, () => actualizarLeccionAction(l.id, { contenidoUrl: null }));
-    if (!validarUrlLeccion(l.tipo, valor).ok) return auto.cancelar(`lec:${l.id}:url`);
-    auto.programar(`lec:${l.id}:url`, () => actualizarLeccionAction(l.id, { contenidoUrl: valor }));
-  };
-
-  const cambiarTexto = (l: Leccion, valor: string) => {
-    mapLec(l.id, (x) => ({ ...x, contenidoTexto: valor }));
-    auto.programar(`lec:${l.id}:texto`, () => actualizarLeccionAction(l.id, { contenidoTexto: valor }));
-  };
-
-  const moverLeccion = async (m: Modulo, l: Leccion, dir: "subir" | "bajar") => {
-    const i = m.lecciones.findIndex((x) => x.id === l.id);
-    const j = dir === "subir" ? i - 1 : i + 1;
-    if (j < 0 || j >= m.lecciones.length) return;
-    mapMod(m.id, (x) => {
-      const ls = [...x.lecciones];
-      [ls[i], ls[j]] = [ls[j], ls[i]];
-      return { ...x, lecciones: ls };
-    });
-    ctx.anunciar(`${l.titulo || "Lección"} movida a la posición ${j + 1} de ${m.lecciones.length}`);
-    const r = await auto.encolar(null, () => moverLeccionAction(l.id, dir));
-    if (!r.ok) {
-      ctx.avisar(r.error);
-      await ctx.resincronizar();
-    }
-  };
-
-  const eliminarLeccion = async (l: Leccion) => {
-    setPendiente(null);
-    setTrabajando(true);
-    const r = await auto.encolar(null, () => eliminarLeccionAction(l.id));
-    setTrabajando(false);
-    if (!r.ok) return ctx.avisar(r.error);
-    auto.cancelar(`lec:${l.id}:`);
-    mapMod(l.moduloId, (m) => ({ ...m, lecciones: m.lecciones.filter((x) => x.id !== l.id) }));
-    ctx.anunciar(`Lección ${l.titulo} eliminada`);
-    setFoco(`ed-add-leccion-${l.moduloId}`);
-  };
-
   const vacio = curso.modulos.length === 0;
-  
-  const moduloQuiz = quizDe ? curso.modulos.find((m) => m.id === quizDe) : undefined;
-  if (moduloQuiz) {
-    return (
-      <EditorQuiz
-        ctx={ctx}
-        modulo={moduloQuiz}
-        numero={curso.modulos.findIndex((m) => m.id === moduloQuiz.id) + 1}
-        onVolver={() => {
-          setQuizDe(null);
-          setFoco(`ed-quiz-${moduloQuiz.id}`);
-        }}
-      />
-    );
-  }
 
   return (
     <div className="ed-form">
       <p className="ed-lede">
-        Organiza el curso en módulos y cada módulo en lecciones. Cada lección es un video (enlace), un texto o un documento (enlace).
+        Organiza el curso en módulos. Abre cada módulo para describirlo, escribir qué se aprenderá y editar sus lecciones y su quiz.
       </p>
-
-      <div className="ed-solo-movil">
-        <Callout tono="info">Para editar la estructura es más cómodo en escritorio. Desde el móvil puedes revisar y hacer cambios sencillos.</Callout>
-      </div>
 
       {vacio && (
         <div className="ed-sugerida">
@@ -274,178 +126,48 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
         </div>
       )}
 
-      <ol className="ed-mods">
-        {curso.modulos.map((m, i) => {
-          const eMod = tituloModulo.safeParse(m.titulo);
-          return (
-            <li key={m.id} className="ed-mod">
-              <div className="ed-mod__cab">
-                <div className="ed-mod__campo">
-                  <Field id={`ed-mod-${m.id}`} label={`Módulo ${i + 1}`} error={eMod.success ? undefined : eMod.error.issues[0].message}>
-                    <Input
-                      id={`ed-mod-${m.id}`}
-                      value={m.titulo}
-                      autoComplete="off"
-                      invalido={!eMod.success}
-                      onChange={(e) => renombrarModulo(m, e.target.value)}
-                    />
-                  </Field>
+      {!vacio && (
+        <ol className="md-lista">
+          {curso.modulos.map((m, i) => {
+            const estado = estadoModulo(m);
+            const q = estadoQuiz(m.quiz);
+            return (
+              <li key={m.id} className="md-card">
+                <div className="md-card__main">
+                  <h3 className="md-card__titulo">
+                    <span className="md-card__n" aria-hidden="true">
+                      {i + 1}
+                    </span>
+                    <span>{m.titulo.trim() || "Módulo sin nombre"}</span>
+                  </h3>
+                  <p className="md-card__meta">{resumenModulo(m)}</p>
+                  <div className="md-card__chips">
+                    <Badge tono={estado === "listo" ? "ok" : "warning"}>
+                      {estado === "listo" ? "Listo" : estado === "vacio" ? "Sin lecciones" : "Falta contenido"}
+                    </Badge>
+                    <Badge tono="neutral">{q.total ? `Quiz · ${q.total} ${q.total === 1 ? "pregunta" : "preguntas"}` : "Sin quiz"}</Badge>
+                    {m.descripcion && <Badge tono="neutral">Con presentación</Badge>}
+                  </div>
                 </div>
-                <Acciones
-                  nombre={`módulo ${m.titulo || i + 1}`}
-                  primero={i === 0}
-                  ultimo={i === curso.modulos.length - 1}
-                  onSubir={() => moverModulo(m, "subir")}
-                  onBajar={() => moverModulo(m, "bajar")}
-                  onEliminar={() => setPendiente({ k: "modulo", m })}
-                />
-              </div>
-
-              {m.lecciones.length === 0 && <p className="ed-vacio">Este módulo aún no tiene lecciones.</p>}
-              <ul className="ed-lecs">
-                {m.lecciones.map((l, j) => {
-                  const lista = leccionLista(l);
-                  const abiertaAhora = abierta === l.id;
-                  const panelId = `ed-lec-panel-${l.id}`;
-                  const eTitulo = tituloLeccion.safeParse(l.titulo);
-                  const vUrl = l.tipo !== "texto" && l.contenidoUrl?.trim() ? validarUrlLeccion(l.tipo, l.contenidoUrl) : null;
-                  const eUrl = tocUrl[l.id] && vUrl && !vUrl.ok ? vUrl.error : undefined;
-                  const texto = l.contenidoTexto ?? "";
-                  return (
-                    <li key={l.id} className={`ed-lec${abiertaAhora ? " ed-lec--abierta" : ""}`}>
-                      <div className="ed-lec__cab">
-                        <button
-                          type="button"
-                          className="ed-lec__toggle"
-                          aria-expanded={abiertaAhora}
-                          aria-controls={panelId}
-                          onClick={() => setAbierta(abiertaAhora ? null : l.id)}
-                        >
-                          <span className="ed-lec__titulo">{l.titulo.trim() || "Lección sin título"}</span>
-                          <span className="ed-lec__chips">
-                            <Badge tono="neutral">{TIPOS.find((t) => t.id === l.tipo)?.label}</Badge>
-                            <Badge tono={lista ? "ok" : "warning"}>{lista ? "Listo" : "Falta contenido"}</Badge>
-                          </span>
-                        </button>
-                        <Acciones
-                          nombre={`lección ${l.titulo || j + 1}`}
-                          primero={j === 0}
-                          ultimo={j === m.lecciones.length - 1}
-                          onSubir={() => moverLeccion(m, l, "subir")}
-                          onBajar={() => moverLeccion(m, l, "bajar")}
-                          onEliminar={() => setPendiente({ k: "leccion", l })}
-                        />
-                      </div>
-
-                      {abiertaAhora && (
-                        <div id={panelId} className="ed-lec__panel">
-                          <Field
-                            id={`ed-lec-titulo-${l.id}`}
-                            label="Título de la lección"
-                            error={eTitulo.success ? undefined : eTitulo.error.issues[0].message}
-                          >
-                            <Input
-                              id={`ed-lec-titulo-${l.id}`}
-                              value={l.titulo}
-                              autoComplete="off"
-                              invalido={!eTitulo.success}
-                              onChange={(e) => renombrarLeccion(l, e.target.value)}
-                            />
-                          </Field>
-
-                          <fieldset className="ed-formato">
-                            <legend className="cr-field__label">Formato</legend>
-                            <div className="ed-formato__opts">
-                              {TIPOS.map((t) => (
-                                <label key={t.id} className={`ed-opt${l.tipo === t.id ? " ed-opt--sel" : ""}`}>
-                                  <input
-                                    type="radio"
-                                    name={`ed-formato-${l.id}`}
-                                    checked={l.tipo === t.id}
-                                    onChange={() => cambiarTipo(l, t.id)}
-                                  />
-                                  <span>{t.label}</span>
-                                </label>
-                              ))}
-                            </div>
-                          </fieldset>
-
-                          {l.tipo === "texto" ? (
-                            <div className="ed-texto">
-                              <Field
-                                id={`ed-lec-texto-${l.id}`}
-                                label="Texto de la lección"
-                                ayuda="Admite **negrita**, *cursiva*, títulos con #, listas con - o 1. y enlaces [texto](https://…)."
-                                contador={`${texto.length}/${TEXTO_MAX}`}
-                              >
-                                <Textarea
-                                  id={`ed-lec-texto-${l.id}`}
-                                  value={texto}
-                                  rows={8}
-                                  maxLength={TEXTO_MAX}
-                                  conAyuda
-                                  onChange={(e) => cambiarTexto(l, e.target.value)}
-                                />
-                              </Field>
-                              <Button
-                                variante="ghost"
-                                aria-pressed={!!verTexto[l.id]}
-                                onClick={() => setVerTexto((v) => ({ ...v, [l.id]: !v[l.id] }))}
-                              >
-                                {verTexto[l.id] ? "Ocultar cómo se ve" : "Ver cómo se ve"}
-                              </Button>
-                              {verTexto[l.id] && (
-                                <div className="ed-md-prev" aria-label="Así se verá el texto">
-                                  {texto.trim() ? <MarkdownMinimo texto={texto} /> : <p className="ed-vacio">Aún no escribes nada.</p>}
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <Field
-                              id={`ed-lec-url-${l.id}`}
-                              label={l.tipo === "video" ? "Enlace del video" : "Enlace del documento"}
-                              ayuda={
-                                l.tipo === "video"
-                                  ? "Pega el enlace de YouTube, Vimeo o Google Drive (archivo de video)."
-                                  : "Pega cualquier enlace https: Google Drive, Dropbox, OneDrive, Notion, Canva…"
-                              }
-                              error={eUrl}
-                            >
-                              <Input
-                                id={`ed-lec-url-${l.id}`}
-                                type="url"
-                                inputMode="url"
-                                value={l.contenidoUrl ?? ""}
-                                placeholder="https://"
-                                autoComplete="off"
-                                conAyuda
-                                invalido={!!eUrl}
-                                onChange={(e) => cambiarUrl(l, e.target.value)}
-                                onBlur={() => setTocUrl((t) => ({ ...t, [l.id]: true }))}
-                              />
-                            </Field>
-                          )}
-                          {l.tipo === "documento" && (
-                            <Callout tono="warning">
-                              {AVISO_ENLACE_DOCUMENTO} Si el documento es privado, tus estudiantes verán un error al abrirlo.
-                            </Callout>
-                          )}
-                        </div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-
-              <FilaQuiz moduloId={m.id} preguntas={m.quiz} onAbrir={() => setQuizDe(m.id)} />
-
-              <Button id={`ed-add-leccion-${m.id}`} variante="secondary" onClick={() => agregarLeccion(m)} disabled={trabajando}>
-                + Agregar lección
-              </Button>
-            </li>
-          );
-        })}
-      </ol>
+                <div className="md-card__acc">
+                  <Button id={`ed-abrir-${m.id}`} onClick={() => abrir(m)}>
+                    Abrir
+                    <span className="av-sr-only"> {m.titulo || `módulo ${i + 1}`}</span>
+                  </Button>
+                  <Acciones
+                    nombre={`módulo ${m.titulo || i + 1}`}
+                    primero={i === 0}
+                    ultimo={i === curso.modulos.length - 1}
+                    onSubir={() => moverModulo(m, "subir")}
+                    onBajar={() => moverModulo(m, "bajar")}
+                    onEliminar={() => setPendiente(m)}
+                  />
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      )}
 
       {!vacio && (
         <div>
@@ -457,107 +179,19 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
 
       <ConfirmDialog
         abierto={!!pendiente}
-        peligro={pendiente?.k !== "tipo"}
-        titulo={
-          pendiente?.k === "modulo"
-            ? `¿Eliminar el módulo “${pendiente.m.titulo}”?`
-            : pendiente?.k === "leccion"
-              ? `¿Eliminar la lección “${pendiente.l.titulo}”?`
-              : pendiente?.k === "tipo"
-                ? "¿Cambiar el formato de la lección?"
-                : ""
-        }
-        confirmar={pendiente?.k === "tipo" ? "Cambiar formato" : "Eliminar"}
+        peligro
+        titulo={pendiente ? `¿Eliminar el módulo “${pendiente.titulo}”?` : ""}
+        confirmar="Eliminar"
         onCancelar={() => setPendiente(null)}
-        onConfirmar={() => {
-          const p = pendiente;
-          if (!p) return;
-          if (p.k === "modulo") void eliminarModulo(p.m);
-          else if (p.k === "leccion") void eliminarLeccion(p.l);
-          else {
-            setPendiente(null);
-            aplicarTipo(p.l, p.tipo);
-          }
-        }}
+        onConfirmar={() => pendiente && void eliminarModulo(pendiente)}
       >
-        {pendiente?.k === "modulo" && (
+        {pendiente && (
           <p>
-            {pendiente.m.lecciones.length > 0
-              ? `Se eliminarán también sus ${pendiente.m.lecciones.length} lecciones. `
-              : ""}
+            {pendiente.lecciones.length > 0 ? `Se eliminarán también sus ${pendiente.lecciones.length} lecciones. ` : ""}
             Esta acción no se puede deshacer.
           </p>
         )}
-        {pendiente?.k === "leccion" && <p>Se eliminará con su contenido. Esta acción no se puede deshacer.</p>}
-        {pendiente?.k === "tipo" && <p>El enlace o texto que escribiste en el formato anterior se descartará.</p>}
       </ConfirmDialog>
-    </div>
-  );
-}
-
-function Acciones({
-  nombre,
-  primero,
-  ultimo,
-  onSubir,
-  onBajar,
-  onEliminar,
-}: {
-  nombre: string;
-  primero: boolean;
-  ultimo: boolean;
-  onSubir: () => void;
-  onBajar: () => void;
-  onEliminar: () => void;
-}) {
-  // aria-disabled (no disabled): el foco no se pierde al llegar al extremo.
-  return (
-    <div className="ed-acc" role="group" aria-label={`Acciones de ${nombre}`}>
-      <button
-        type="button"
-        className="ed-icono"
-        aria-label={`Subir ${nombre}`}
-        aria-disabled={primero}
-        onClick={() => !primero && onSubir()}
-      >
-        <span aria-hidden="true">↑</span>
-      </button>
-      <button
-        type="button"
-        className="ed-icono"
-        aria-label={`Bajar ${nombre}`}
-        aria-disabled={ultimo}
-        onClick={() => !ultimo && onBajar()}
-      >
-        <span aria-hidden="true">↓</span>
-      </button>
-      <button type="button" className="ed-icono ed-icono--peligro" aria-label={`Eliminar ${nombre}`} onClick={onEliminar}>
-        <span aria-hidden="true">✕</span>
-      </button>
-    </div>
-  );
-}
-
-
-/** Fila "Quiz de repaso" de un módulo (diseño 3.2): estado y acceso al editor del quiz. */
-function FilaQuiz({ moduloId, preguntas, onAbrir }: { moduloId: string; preguntas: Modulo["quiz"]; onAbrir: () => void }) {
-  const q = estadoQuiz(preguntas);
-  const cls = q.completo ? " qz-fila-mod--lista" : q.total > 0 ? " qz-fila-mod--falta" : "";
-  return (
-    <div className={`qz-fila-mod${cls}`}>
-      <div className="qz-fila-mod__t">
-        <b>{q.total ? `Quiz de repaso · ${q.total} ${q.total === 1 ? "pregunta" : "preguntas"}` : "Quiz de repaso"}</b>
-        <span className="qz-ayuda">
-          {q.completo
-            ? "Listo · da puntos y la insignia «Módulo dominado»"
-            : q.total
-              ? `Falta completar: ${q.problema}`
-              : "Opcional · recomendado para que repasen lo que fallan"}
-        </span>
-      </div>
-      <Button id={`ed-quiz-${moduloId}`} variante={q.total ? "secondary" : "primary"} onClick={onAbrir}>
-        {q.total ? "Editar quiz" : "Agregar quiz"}
-      </Button>
     </div>
   );
 }

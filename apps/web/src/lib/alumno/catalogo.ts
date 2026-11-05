@@ -57,10 +57,10 @@ export async function cargarCurso(
 
   const [obj, mods, lecs] = await Promise.all([
     supabaseAdmin.from("curso_objetivos").select("texto, orden").eq("tenant_id", tenantId).eq("curso_id", c.id).order("orden"),
-    supabaseAdmin.from("modulos").select("id, curso_id, titulo, orden").eq("tenant_id", tenantId).eq("curso_id", c.id).order("orden"),
+    supabaseAdmin.from("modulos").select("id, curso_id, titulo, orden, descripcion, objetivos, duracion_min").eq("tenant_id", tenantId).eq("curso_id", c.id).order("orden"),
     supabaseAdmin
       .from("lecciones")
-      .select("id, modulo_id, curso_id, titulo, tipo, contenido_url, contenido_texto, storage_path, contenido_tipo, orden, dia_liberacion")
+      .select("id, modulo_id, curso_id, titulo, tipo, contenido_url, contenido_texto, storage_path, contenido_tipo, descripcion, duracion_min, orden, dia_liberacion")
       .eq("tenant_id", tenantId)
       .eq("curso_id", c.id)
       .order("orden"),
@@ -82,6 +82,9 @@ export async function cargarCurso(
       cursoId: m.curso_id,
       titulo: m.titulo,
       orden: m.orden,
+      descripcion: m.descripcion ?? null,
+      objetivos: Array.isArray(m.objetivos) ? (m.objetivos as string[]) : [],
+      duracionMin: m.duracion_min ?? null,
       lecciones: porModulo.get(m.id) ?? [],
     })),
     diaLiberacion: dia,

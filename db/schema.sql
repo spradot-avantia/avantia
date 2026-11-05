@@ -228,6 +228,10 @@ create table if not exists modulos (
   curso_id uuid not null,
   titulo text not null check (char_length(titulo) between 1 and 120),
   orden integer not null default 0,
+  -- Presentacion del modulo (ADR 029, migracion 0015): todo opcional.
+  descripcion text check (descripcion is null or char_length(descripcion) <= 600),
+  objetivos text[] not null default '{}' check (cardinality(objetivos) <= 4),
+  duracion_min integer check (duracion_min is null or duracion_min between 1 and 1440),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (id, tenant_id),
@@ -254,6 +258,9 @@ create table if not exists lecciones (
   -- Evolucion a archivos (ADR 005): ruta en bucket privado 'materiales' (no usado en MVP).
   storage_path text,
   contenido_tipo text,
+  -- Datos de la leccion (ADR 029, migracion 0015): opcionales.
+  descripcion text check (descripcion is null or char_length(descripcion) <= 400),
+  duracion_min integer check (duracion_min is null or duracion_min between 1 and 1440),
   orden integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),

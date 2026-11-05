@@ -44,6 +44,8 @@ export function mapLeccion(r: any): Leccion {
     contenidoTexto: r.contenido_texto,
     storagePath: r.storage_path,
     contenidoTipo: r.contenido_tipo,
+    descripcion: r.descripcion ?? null,
+    duracionMin: r.duracion_min ?? null,
     orden: r.orden,
   };
 }
@@ -87,10 +89,10 @@ export async function getCurso(cursoId: string): Promise<CursoCompleto | null> {
   if (!c) return null;
   const [obj, mods, lecs, quiz] = await Promise.all([
     db.from("curso_objetivos").select("texto, orden").eq("tenant_id", tenant.id).eq("curso_id", cursoId).order("orden"),
-    db.from("modulos").select("id, curso_id, titulo, orden").eq("tenant_id", tenant.id).eq("curso_id", cursoId).order("orden"),
+    db.from("modulos").select("id, curso_id, titulo, orden, descripcion, objetivos, duracion_min").eq("tenant_id", tenant.id).eq("curso_id", cursoId).order("orden"),
     db
       .from("lecciones")
-      .select("id, modulo_id, curso_id, titulo, tipo, contenido_url, contenido_texto, storage_path, contenido_tipo, orden")
+      .select("id, modulo_id, curso_id, titulo, tipo, contenido_url, contenido_texto, storage_path, contenido_tipo, descripcion, duracion_min, orden")
       .eq("tenant_id", tenant.id)
       .eq("curso_id", cursoId)
       .order("orden"),
@@ -102,6 +104,9 @@ export async function getCurso(cursoId: string): Promise<CursoCompleto | null> {
     cursoId: m.curso_id,
     titulo: m.titulo,
     orden: m.orden,
+    descripcion: m.descripcion ?? null,
+    objetivos: Array.isArray(m.objetivos) ? m.objetivos : [],
+    duracionMin: m.duracion_min ?? null,
     lecciones: lecciones.filter((l) => l.moduloId === m.id),
     quiz: quiz.get(m.id) ?? [],
   }));

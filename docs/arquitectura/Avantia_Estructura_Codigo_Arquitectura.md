@@ -231,3 +231,9 @@ delay de loading que tenía la versión SPA.
 
 `tenants` suma `tipografia` (`clasico`, `moderno`, `cercano`, `editorial`) y `forma` (`recta`, `suave`), ambas con `check` y default que reproduce la apariencia anterior. Es configuración del tenant: no hay tablas nuevas y la RLS (`tenants_update_propio`) y los índices por `tenant_id` existentes cubren el cambio. Se lee en servidor desde el host (`resolveTenantByHostname`, `getSitioAcademia`) y se escribe solo desde el panel con sesión (`guardarAparienciaAction`, validación de lista cerrada en `aparienciaSchema`); nunca del body.
 **Orden de despliegue:** aplicar la migración 0014 **antes** de desplegar el código, porque `resolveTenantByHostname` y `getSitioAcademia` seleccionan las columnas nuevas.
+
+## Módulos enriquecidos y edición por módulo (ADR 029, F1, migración 0015)
+
+`modulos` suma `descripcion` (≤600), `objetivos text[]` (máx. 4, «Qué aprenderás») y `duracion_min` (1–1.440); `lecciones` suma `descripcion` (≤400) y `duracion_min`. Todo es opcional y **no bloquea la publicación**. No hay tablas nuevas (la RLS y los índices por `tenant_id` existentes cubren el cambio); los materiales llegan con la F2 (migración 0016). Validación server-side en `lib/creador/validacion.ts` (`descripcionModulo`, `descripcionLeccion`, `objetivosModulo`, `duracionMin`), escritura en `lib/creador/estructura.ts` (`actualizarModulo`, `actualizarLeccion`) y acción `actualizarModuloAction`, siempre con el tenant de la sesión.
+
+**Editor:** el Paso 3 es una lista de módulos (`PasoEstructura`); cada módulo se abre en `/cursos/[cursoId]/modulos/[moduloId]` (`EditorModulo`: presentación, lecciones con `EditorLecciones`, quiz). La página es un server component que carga el curso del tenant y responde 404 si el módulo no pertenece a él. Las migas y «Volver a los módulos» regresan a `/cursos/[cursoId]/editar?paso=estructura`.

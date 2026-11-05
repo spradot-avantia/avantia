@@ -3,7 +3,16 @@
 // son pocas filas y el orden es idempotente; ver ADR 006).
 import { requireCreadorContext } from "./tenantActual";
 import type { Resultado, TipoLeccion } from "./types";
-import { textoLeccion, tituloLeccion, tituloModulo, validarUrlLeccion } from "./validacion";
+import {
+  descripcionLeccion,
+  descripcionModulo,
+  duracionMin,
+  objetivosModulo,
+  textoLeccion,
+  tituloLeccion,
+  tituloModulo,
+  validarUrlLeccion,
+} from "./validacion";
 
 const ERR = "No pudimos guardar el cambio. Inténtalo de nuevo.";
 
@@ -26,6 +35,42 @@ export async function renombrarModulo(moduloId: string, titulo: string): Promise
   const t = tituloModulo.safeParse(titulo);
   if (!t.success) return { ok: false, error: t.error.issues[0].message, campos: { titulo: t.error.issues[0].message } };
   const { error } = await db.from("modulos").update({ titulo: t.data }).eq("tenant_id", tenant.id).eq("id", moduloId);
+  return error ? { ok: false, error: ERR } : { ok: true, data: undefined };
+}
+
+export interface ModuloPatch {
+  titulo?: string;
+  descripcion?: string | null;
+  objetivos?: string[];
+  duracionMin?: number | null;
+}
+
+/** Actualiza la presentación del módulo (ADR 029). Todos los campos son opcionales. */
+export async function actualizarModulo(moduloId: string, patch: ModuloPatch): Promise<Resultado> {
+  const { tenant, db } = await requireCreadorContext();
+  const fila: Record<string, unknown> = {};
+  if (patch.titulo !== undefined) {
+    const t = tituloModulo.safeParse(patch.titulo);
+    if (!t.success) return { ok: false, error: t.error.issues[0].message, campos: { titulo: t.error.issues[0].message } };
+    fila.titulo = t.data;
+  }
+  if (patch.descripcion !== undefined) {
+    const d = descripcionModulo.safeParse(patch.descripcion ?? "");
+    if (!d.success) return { ok: false, error: d.error.issues[0].message, campos: { descripcion: d.error.issues[0].message } };
+    fila.descripcion = d.data;
+  }
+  if (patch.objetivos !== undefined) {
+    const o = objetivosModulo.safeParse(patch.objetivos);
+    if (!o.success) return { ok: false, error: o.error.issues[0].message, campos: { objetivos: o.error.issues[0].message } };
+    fila.objetivos = o.data;
+  }
+  if (patch.duracionMin !== undefined) {
+    const d = duracionMin.safeParse(patch.duracionMin);
+    if (!d.success) return { ok: false, error: d.error.issues[0].message, campos: { duracionMin: d.error.issues[0].message } };
+    fila.duracion_min = d.data;
+  }
+  if (Object.keys(fila).length === 0) return { ok: true, data: undefined };
+  const { error } = await db.from("modulos").update(fila).eq("tenant_id", tenant.id).eq("id", moduloId);
   return error ? { ok: false, error: ERR } : { ok: true, data: undefined };
 }
 
@@ -65,6 +110,8 @@ export interface LeccionPatch {
   tipo?: TipoLeccion;
   contenidoUrl?: string | null;
   contenidoTexto?: string | null;
+  descripcion?: string | null;
+  duracionMin?: number | null;
 }
 
 /** Actualiza titulo, tipo o contenido. Valida URL contra la lista blanca. */
@@ -99,6 +146,16 @@ export async function actualizarLeccion(leccionId: string, patch: LeccionPatch):
     const x = textoLeccion.safeParse(patch.contenidoTexto ?? "");
     if (!x.success) return { ok: false, error: x.error.issues[0].message, campos: { contenidoTexto: x.error.issues[0].message } };
     fila.contenido_texto = x.data;
+  }
+  if (patch.descripcion !== undefined) {
+    const d = descripcionLeccion.safeParse(patch.descripcion ?? "");
+    if (!d.success) return { ok: false, error: d.error.issues[0].message, campos: { descripcion: d.error.issues[0].message } };
+    fila.descripcion = d.data;
+  }
+  if (patch.duracionMin !== undefined) {
+    const d = duracionMin.safeParse(patch.duracionMin);
+    if (!d.success) return { ok: false, error: d.error.issues[0].message, campos: { duracionMin: d.error.issues[0].message } };
+    fila.duracion_min = d.data;
   }
   if (Object.keys(fila).length === 0) return { ok: true, data: undefined };
   const { error } = await db.from("lecciones").update(fila).eq("tenant_id", tenant.id).eq("id", leccionId);

@@ -60,6 +60,10 @@ export interface Leccion {
   /** Reservado (ADR 005): archivo en bucket privado "materiales"; no se usa en MVP. */
   storagePath: string | null;
   contenidoTipo: string | null;
+  /** Descripción breve de la lección (ADR 029); opcional. */
+  descripcion: string | null;
+  /** Duración estimada en minutos (ADR 029); opcional. */
+  duracionMin: number | null;
   orden: number;
 }
 
@@ -68,6 +72,10 @@ export interface Modulo {
   cursoId: string;
   titulo: string;
   orden: number;
+  /** Presentación del módulo (ADR 029): descripción, «Qué aprenderás» (0..4) y duración estimada. */
+  descripcion: string | null;
+  objetivos: string[];
+  duracionMin: number | null;
   lecciones: Leccion[];
   /** Quiz de repaso del módulo (ADR 022); vacío o ausente si no tiene. */
   quiz?: PreguntaQuiz[];

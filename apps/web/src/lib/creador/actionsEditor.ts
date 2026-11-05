@@ -3,7 +3,7 @@
 // Server Actions propias del editor de curso (complementan actions.ts, que no
 // se toca). Ninguna recibe tenant_id: sale de la sesion (tenantActual.ts).
 import { getCurso } from "./cursos";
-import { crearModulo } from "./estructura";
+import { actualizarModulo, crearModulo, type ModuloPatch } from "./estructura";
 import type { PreguntaQuiz } from "./quiz";
 import { guardarQuiz } from "./quizzes";
 import type { CursoCompleto, Resultado } from "./types";
@@ -48,4 +48,9 @@ export async function aplicarEstructuraSugeridaAction(cursoId: string): Promise<
 /** Guarda el quiz de repaso de un módulo (ADR 022). Reemplaza sus preguntas. */
 export async function guardarQuizAction(moduloId: string, preguntas: PreguntaQuiz[]): Promise<Resultado<PreguntaQuiz[]>> {
   return seguro(() => guardarQuiz(moduloId, preguntas));
+}
+
+/** Actualiza título y presentación del módulo (descripción, «Qué aprenderás», duración). ADR 029. */
+export async function actualizarModuloAction(moduloId: string, patch: ModuloPatch): Promise<Resultado> {
+  return seguro(() => actualizarModulo(moduloId, patch));
 }

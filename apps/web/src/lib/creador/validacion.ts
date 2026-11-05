@@ -52,6 +52,40 @@ const fechaIso = z
 
 export const tituloModulo = z.string().trim().min(1, "El módulo necesita un nombre.").max(120, "Admite hasta 120 caracteres.");
 export const tituloLeccion = z.string().trim().min(1, "La lección necesita un título.").max(120, "Admite hasta 120 caracteres.");
+export const DESCRIPCION_MODULO_MAX = 600;
+export const DESCRIPCION_LECCION_MAX = 400;
+export const OBJETIVO_MODULO_MAX = 140;
+export const OBJETIVOS_MODULO_MAX = 4;
+export const DURACION_MAX_MIN = 1440;
+
+/** Descripción opcional del módulo: texto recortado; vacío = sin descripción (null). */
+export const descripcionModulo = z
+  .string()
+  .max(DESCRIPCION_MODULO_MAX, `Admite hasta ${DESCRIPCION_MODULO_MAX} caracteres.`)
+  .transform((v) => v.trim() || null);
+/** Descripción opcional de la lección. */
+export const descripcionLeccion = z
+  .string()
+  .max(DESCRIPCION_LECCION_MAX, `Admite hasta ${DESCRIPCION_LECCION_MAX} caracteres.`)
+  .transform((v) => v.trim() || null);
+/** «Qué aprenderás» del módulo: 0 a 4 puntos de 1 a 140 caracteres, sin vacíos. */
+export const objetivosModulo = z
+  .array(
+    z
+      .string()
+      .trim()
+      .min(1, "Escribe el punto o quítalo.")
+      .max(OBJETIVO_MODULO_MAX, `Cada punto admite hasta ${OBJETIVO_MODULO_MAX} caracteres.`),
+  )
+  .max(OBJETIVOS_MODULO_MAX, `Puedes definir hasta ${OBJETIVOS_MODULO_MAX} puntos.`);
+/** Duración estimada en minutos: entero de 1 a 1.440, o null si no se indica. */
+export const duracionMin = z
+  .number({ error: "Indica los minutos con un número." })
+  .int("Indica minutos enteros.")
+  .min(1, "La duración mínima es 1 minuto.")
+  .max(DURACION_MAX_MIN, `La duración máxima es ${DURACION_MAX_MIN} minutos.`)
+  .nullable();
+
 export const textoLeccion = z.string().max(20000, "El texto admite hasta 20.000 caracteres.");
 
 /** Valida un campo suelto del curso. Devuelve el valor normalizado o el error. */
