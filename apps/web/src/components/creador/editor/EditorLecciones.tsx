@@ -27,6 +27,7 @@ import { Callout } from "../Callout";
 import { Field, Input, Textarea } from "../Field";
 import { Acciones } from "./AccionesFila";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { EditorMateriales } from "./EditorMateriales";
 import type { EditorCtx } from "./contexto";
 
 const TIPOS: ReadonlyArray<{ id: TipoLeccion; label: string }> = [
@@ -351,6 +352,12 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
                       onChange={(e) => cambiarDuracion(l, e.target.value)}
                     />
                   </Field>
+                  <section className="ed-lec__mats" aria-labelledby={`ed-lec-mats-${l.id}`}>
+                    <h3 id={`ed-lec-mats-${l.id}`} className="ed-lec__mats-t">
+                      Materiales de esta lección
+                    </h3>
+                    <EditorMateriales ctx={ctx} modulo={modulo} leccionId={l.id} nombreGrupo="esta lección" />
+                  </section>
                 </div>
               )}
             </li>

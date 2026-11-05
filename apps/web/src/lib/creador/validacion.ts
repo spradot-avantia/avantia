@@ -86,6 +86,18 @@ export const duracionMin = z
   .max(DURACION_MAX_MIN, `La duración máxima es ${DURACION_MAX_MIN} minutos.`)
   .nullable();
 
+/** Materiales (ADR 029, F2): enlaces o documentos de un módulo o de una lección. */
+export const MATERIALES_MODULO_MAX = 10;
+export const NOTA_MATERIAL_MAX = 200;
+export const URL_MATERIAL_MAX = 2000;
+export const tipoMaterial = z.enum(["documento", "enlace"]);
+export const tituloMaterial = z.string().trim().min(1, "El material necesita un título.").max(120, "Admite hasta 120 caracteres.");
+/** Nota opcional bajo el material; vacío = sin nota (null). */
+export const notaMaterial = z
+  .string()
+  .max(NOTA_MATERIAL_MAX, `Admite hasta ${NOTA_MATERIAL_MAX} caracteres.`)
+  .transform((v) => v.trim() || null);
+
 export const textoLeccion = z.string().max(20000, "El texto admite hasta 20.000 caracteres.");
 
 /** Valida un campo suelto del curso. Devuelve el valor normalizado o el error. */
@@ -204,6 +216,17 @@ export function validarUrlLeccion(
     };
   }
   return { ok: true, url: u.toString(), proveedor: prov };
+}
+
+/**
+ * URL de un material: cualquier enlace https (Drive, Dropbox, Notion, un artículo…).
+ * Nunca http ni otros esquemas (javascript:, data:), ni credenciales en la URL.
+ */
+export function validarUrlMaterial(raw: string): { ok: true; url: string } | { ok: false; error: string } {
+  const u = parseHttps(raw);
+  if (!u) return { ok: false, error: "Pega un enlace completo que empiece con https://." };
+  if (u.toString().length > URL_MATERIAL_MAX) return { ok: false, error: `El enlace admite hasta ${URL_MATERIAL_MAX} caracteres.` };
+  return { ok: true, url: u.toString() };
 }
 
 /** URL embebible para el reproductor, o null si no se puede incrustar. */

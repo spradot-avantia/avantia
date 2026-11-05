@@ -6,6 +6,10 @@ import {
   duracionMin,
   objetivosModulo,
   inspeccionarLogo,
+  notaMaterial,
+  tituloMaterial,
+  tipoMaterial,
+  validarUrlMaterial,
   parsearCorreos,
   sanitizarSvg,
   slugify,
@@ -160,6 +164,7 @@ function cursoBase(over: Partial<CursoCompleto> = {}): CursoCompleto {
         orden: 0,
         descripcion: null,
         objetivos: [],
+        materiales: [],
         duracionMin: null,
         lecciones: [
           { id: "l", moduloId: "m", cursoId: "c", titulo: "L1", tipo: "texto", contenidoUrl: null, contenidoTexto: "hola", storagePath: null, contenidoTipo: null, descripcion: null, duracionMin: null, orden: 0 },
@@ -238,7 +243,7 @@ describe("módulos enriquecidos (ADR 029)", () => {
       objetivos: ["Algo"],
       modulos: [
         {
-          id: "m", cursoId: "c", titulo: "M1", orden: 0, descripcion: null, objetivos: [], duracionMin: null,
+          id: "m", cursoId: "c", titulo: "M1", orden: 0, descripcion: null, objetivos: [], duracionMin: null, materiales: [],
           lecciones: [
             { id: "l", moduloId: "m", cursoId: "c", titulo: "L1", tipo: "texto", contenidoUrl: null, contenidoTexto: "hola", storagePath: null, contenidoTipo: null, descripcion: null, duracionMin: null, orden: 0 },
           ],
@@ -246,5 +251,36 @@ describe("módulos enriquecidos (ADR 029)", () => {
       ],
     } as CursoCompleto);
     expect(base.bloqueos.some((b) => /descripci|duraci|aprender|punto/i.test(b.mensaje))).toBe(false);
+  });
+});
+
+describe("materiales (ADR 029, F2)", () => {
+  it("acepta enlaces https de cualquier servicio", () => {
+    for (const u of ["https://drive.google.com/file/d/abc/view", "https://www.notion.so/pagina-123", "https://ejemplo.cl/guia.pdf?v=2"]) {
+      expect(validarUrlMaterial(u).ok).toBe(true);
+    }
+  });
+  it("rechaza http, otros esquemas, credenciales y texto suelto", () => {
+    for (const u of ["http://ejemplo.cl", "javascript:alert(1)", "data:text/html,hola", "ftp://x.cl/a", "https://usuario:clave@ejemplo.cl", "ejemplo.cl", ""]) {
+      expect(validarUrlMaterial(u).ok).toBe(false);
+    }
+  });
+  it("rechaza URL de más de 2.000 caracteres", () => {
+    expect(validarUrlMaterial("https://ejemplo.cl/" + "a".repeat(2000)).ok).toBe(false);
+  });
+  it("el título es obligatorio y admite hasta 120 caracteres", () => {
+    expect(tituloMaterial.safeParse("   ").success).toBe(false);
+    expect(tituloMaterial.safeParse("a".repeat(121)).success).toBe(false);
+    expect(tituloMaterial.safeParse("  Guía de estilo  ")).toMatchObject({ success: true, data: "Guía de estilo" });
+  });
+  it("la nota es opcional: vacío es null y admite hasta 200", () => {
+    expect(notaMaterial.parse("   ")).toBeNull();
+    expect(notaMaterial.parse(" Lee las páginas 3 a 5 ")).toBe("Lee las páginas 3 a 5");
+    expect(notaMaterial.safeParse("a".repeat(201)).success).toBe(false);
+  });
+  it("el tipo es documento o enlace", () => {
+    expect(tipoMaterial.safeParse("documento").success).toBe(true);
+    expect(tipoMaterial.safeParse("enlace").success).toBe(true);
+    expect(tipoMaterial.safeParse("video").success).toBe(false);
   });
 });

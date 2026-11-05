@@ -67,6 +67,23 @@ export interface Leccion {
   orden: number;
 }
 
+export type TipoMaterial = "documento" | "enlace";
+
+/** Material de un módulo o de una lección (ADR 029, F2): enlace https con título y nota. */
+export interface Material {
+  id: string;
+  cursoId: string;
+  moduloId: string;
+  /** null = material del módulo; con valor = material de esa lección. */
+  leccionId: string | null;
+  titulo: string;
+  /** null mientras el creador aún no pega el enlace (material incompleto). */
+  url: string | null;
+  tipo: TipoMaterial;
+  nota: string | null;
+  orden: number;
+}
+
 export interface Modulo {
   id: string;
   cursoId: string;
@@ -77,6 +94,8 @@ export interface Modulo {
   objetivos: string[];
   duracionMin: number | null;
   lecciones: Leccion[];
+  /** Materiales del módulo y de sus lecciones (ADR 029, F2), en orden. */
+  materiales: Material[];
   /** Quiz de repaso del módulo (ADR 022); vacío o ausente si no tiene. */
   quiz?: PreguntaQuiz[];
 }

@@ -86,6 +86,7 @@ export async function cargarCurso(
       objetivos: Array.isArray(m.objetivos) ? (m.objetivos as string[]) : [],
       duracionMin: m.duracion_min ?? null,
       lecciones: porModulo.get(m.id) ?? [],
+      materiales: [], // F3: la vista del alumno los leerá
     })),
     diaLiberacion: dia,
   };

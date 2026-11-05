@@ -21,6 +21,7 @@ import { Button } from "../Button";
 import { Field, Input, Textarea } from "../Field";
 import { FilaQuiz } from "./AccionesFila";
 import { EditorLecciones } from "./EditorLecciones";
+import { EditorMateriales } from "./EditorMateriales";
 import { EditorQuiz } from "./EditorQuiz";
 import type { EditorCtx } from "./contexto";
 import { resumenModulo } from "./PasoEstructura";
@@ -332,6 +333,13 @@ export function EditorModulo({ cursoInicial, moduloId, urlPublica }: Props) {
           Lecciones
         </h2>
         <EditorLecciones ctx={ctx} modulo={modulo} />
+      </section>
+
+      <section className="ed-card" aria-labelledby="md-mat-t">
+        <h2 id="md-mat-t" className="ed-card__title">
+          Materiales del módulo
+        </h2>
+        <EditorMateriales ctx={ctx} modulo={modulo} nombreGrupo="este módulo" />
       </section>
 
       <section className="ed-card" aria-labelledby="md-quiz-t">

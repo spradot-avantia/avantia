@@ -275,6 +275,37 @@ create trigger lecciones_set_updated_at before update on lecciones
   for each row execute function set_updated_at();
 
 -- ---------------------------------------------------------------------------
+-- materiales: enlaces o documentos (https) de un modulo o de una leccion (ADR 029, migracion 0016)
+-- leccion_id nulo = material del modulo. url nula = material aun incompleto.
+-- ---------------------------------------------------------------------------
+create table if not exists materiales (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references tenants(id) on delete cascade,
+  curso_id uuid not null,
+  modulo_id uuid not null,
+  leccion_id uuid,
+  titulo text not null check (char_length(titulo) between 1 and 120),
+  -- Nulo mientras el creador aún no pega el enlace (el material queda "incompleto").
+  url text check (url is null or (url ~ '^https://' and char_length(url) <= 2000)),
+  tipo text not null default 'enlace' check (tipo in ('documento', 'enlace')),
+  nota text check (nota is null or char_length(nota) <= 200),
+  orden integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  foreign key (curso_id, tenant_id) references cursos (id, tenant_id) on delete cascade,
+  foreign key (modulo_id, tenant_id) references modulos (id, tenant_id) on delete cascade,
+  foreign key (leccion_id, tenant_id) references lecciones (id, tenant_id) on delete cascade
+);
+create index if not exists materiales_tenant_modulo_orden_idx on materiales (tenant_id, modulo_id, orden);
+create index if not exists materiales_tenant_curso_idx on materiales (tenant_id, curso_id);
+create index if not exists materiales_tenant_leccion_idx on materiales (tenant_id, leccion_id) where leccion_id is not null;
+
+drop trigger if exists materiales_set_updated_at on materiales;
+create trigger materiales_set_updated_at before update on materiales
+  for each row execute function set_updated_at();
+
+
+-- ---------------------------------------------------------------------------
 -- invitaciones: correos registrados por el creador para un curso (ADR 007)
 -- ---------------------------------------------------------------------------
 create table if not exists invitaciones (
@@ -297,7 +328,7 @@ do $$
 declare
   t text;
 begin
-  foreach t in array array['curso_objetivos', 'modulos', 'lecciones', 'invitaciones'] loop
+  foreach t in array array['curso_objetivos', 'modulos', 'lecciones', 'invitaciones', 'materiales'] loop
     execute format('alter table %I enable row level security', t);
     execute format('drop policy if exists %I on %I', t || '_select_por_tenant', t);
     execute format('create policy %I on %I for select using (tenant_id = auth_tenant_id())', t || '_select_por_tenant', t);
@@ -312,9 +343,9 @@ end
 $$;
 
 grant select, insert, update, delete
-  on curso_objetivos, modulos, lecciones, invitaciones to service_role;
+  on curso_objetivos, modulos, lecciones, invitaciones, materiales to service_role;
 grant select, insert, update, delete
-  on curso_objetivos, modulos, lecciones, invitaciones to authenticated;
+  on curso_objetivos, modulos, lecciones, invitaciones, materiales to authenticated;
 
 -- ---------------------------------------------------------------------------
 -- Storage: bucket 'logos' (ADR 005). Ruta: {tenant_id}/<archivo>.

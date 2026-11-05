@@ -78,6 +78,7 @@ const curso = (quiz: PreguntaQuiz[] | undefined): CursoCompleto => ({
       orden: 0,
       descripcion: null,
       objetivos: [],
+      materiales: [],
       duracionMin: null,
       quiz,
       lecciones: [

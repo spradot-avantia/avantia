@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { preguntasPorModulo } from "./quizzes";
 import { requireCreadorContext } from "./tenantActual";
 import type {
+  Material,
   CampoCurso,
   Curso,
   CursoCompleto,
@@ -50,6 +51,20 @@ export function mapLeccion(r: any): Leccion {
   };
 }
 
+export function mapMaterial(r: any): Material {
+  return {
+    id: r.id,
+    cursoId: r.curso_id,
+    moduloId: r.modulo_id,
+    leccionId: r.leccion_id ?? null,
+    titulo: r.titulo,
+    url: r.url ?? null,
+    tipo: r.tipo,
+    nota: r.nota ?? null,
+    orden: r.orden,
+  };
+}
+
 const COLS_CURSO =
   "id, slug, titulo, descripcion, publico, estado, modalidad, fecha_inicio, fecha_termino, acceso, published_at, created_at, updated_at";
 
@@ -87,12 +102,18 @@ export async function getCurso(cursoId: string): Promise<CursoCompleto | null> {
   const { tenant, db } = await requireCreadorContext();
   const { data: c } = await db.from("cursos").select(COLS_CURSO).eq("tenant_id", tenant.id).eq("id", cursoId).maybeSingle();
   if (!c) return null;
-  const [obj, mods, lecs, quiz] = await Promise.all([
+  const [obj, mods, lecs, mats, quiz] = await Promise.all([
     db.from("curso_objetivos").select("texto, orden").eq("tenant_id", tenant.id).eq("curso_id", cursoId).order("orden"),
     db.from("modulos").select("id, curso_id, titulo, orden, descripcion, objetivos, duracion_min").eq("tenant_id", tenant.id).eq("curso_id", cursoId).order("orden"),
     db
       .from("lecciones")
       .select("id, modulo_id, curso_id, titulo, tipo, contenido_url, contenido_texto, storage_path, contenido_tipo, descripcion, duracion_min, orden")
+      .eq("tenant_id", tenant.id)
+      .eq("curso_id", cursoId)
+      .order("orden"),
+    db
+      .from("materiales")
+      .select("id, curso_id, modulo_id, leccion_id, titulo, url, tipo, nota, orden")
       .eq("tenant_id", tenant.id)
       .eq("curso_id", cursoId)
       .order("orden"),
@@ -108,6 +129,7 @@ export async function getCurso(cursoId: string): Promise<CursoCompleto | null> {
     objetivos: Array.isArray(m.objetivos) ? m.objetivos : [],
     duracionMin: m.duracion_min ?? null,
     lecciones: lecciones.filter((l) => l.moduloId === m.id),
+    materiales: (mats.data ?? []).filter((x) => x.modulo_id === m.id).map(mapMaterial),
     quiz: quiz.get(m.id) ?? [],
   }));
   return { ...mapCurso(c), objetivos: (obj.data ?? []).map((o) => o.texto), modulos };

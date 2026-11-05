@@ -4,9 +4,10 @@
 // se toca). Ninguna recibe tenant_id: sale de la sesion (tenantActual.ts).
 import { getCurso } from "./cursos";
 import { actualizarModulo, crearModulo, type ModuloPatch } from "./estructura";
+import * as materiales from "./materiales";
 import type { PreguntaQuiz } from "./quiz";
 import { guardarQuiz } from "./quizzes";
-import type { CursoCompleto, Resultado } from "./types";
+import type { CursoCompleto, Material, Resultado, TipoMaterial } from "./types";
 
 const SUGERIDA = ["Contexto", "Casos reales", "Aplicación"];
 
@@ -53,4 +54,21 @@ export async function guardarQuizAction(moduloId: string, preguntas: PreguntaQui
 /** Actualiza título y presentación del módulo (descripción, «Qué aprenderás», duración). ADR 029. */
 export async function actualizarModuloAction(moduloId: string, patch: ModuloPatch): Promise<Resultado> {
   return seguro(() => actualizarModulo(moduloId, patch));
+}
+
+// ---- Materiales (ADR 029, F2) ----------------------------------------------
+export async function crearMaterialAction(
+  moduloId: string,
+  opciones: { leccionId?: string | null; tipo?: TipoMaterial } = {},
+): Promise<Resultado<Material>> {
+  return seguro(() => materiales.crearMaterial(moduloId, opciones));
+}
+export async function actualizarMaterialAction(materialId: string, patch: materiales.MaterialPatch): Promise<Resultado> {
+  return seguro(() => materiales.actualizarMaterial(materialId, patch));
+}
+export async function moverMaterialAction(materialId: string, direccion: "subir" | "bajar"): Promise<Resultado> {
+  return seguro(() => materiales.moverMaterial(materialId, direccion));
+}
+export async function eliminarMaterialAction(materialId: string): Promise<Resultado> {
+  return seguro(() => materiales.eliminarMaterial(materialId));
 }

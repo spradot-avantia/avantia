@@ -54,7 +54,7 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
       ...c,
       modulos: [
         ...c.modulos,
-        { id, cursoId: c.id, titulo, orden: c.modulos.length, descripcion: null, objetivos: [], duracionMin: null, lecciones: [] },
+        { id, cursoId: c.id, titulo, orden: c.modulos.length, descripcion: null, objetivos: [], duracionMin: null, lecciones: [], materiales: [] },
       ],
     }));
     ctx.anunciar(`${titulo} agregado`);
