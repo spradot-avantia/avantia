@@ -2,9 +2,8 @@
 .ci-stack { display: flex; flex-direction: column; gap: var(--av-space-5); }
 .ci-card {
   background: var(--av-surface);
-  border: 1px solid var(--av-line);
+  border: 1px solid var(--av-line-strong);
   border-radius: var(--av-radius-lg);
-  box-shadow: var(--av-shadow-xs);
   padding: var(--av-space-4);
   display: flex;
   flex-direction: column;
@@ -55,7 +54,7 @@
 .ci-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--av-space-3); }
 .ci-row {
   display: flex; flex-direction: column; gap: var(--av-space-3);
-  background: var(--av-surface); border: 1px solid var(--av-line); border-radius: var(--av-radius-lg);
+  background: var(--av-surface); border: 1px solid var(--av-line-strong); border-radius: var(--av-radius-lg);
   padding: var(--av-space-4); min-width: 0;
 }
 .ci-row--compact { padding: var(--av-space-3) var(--av-space-4); border-radius: var(--av-radius-md); }

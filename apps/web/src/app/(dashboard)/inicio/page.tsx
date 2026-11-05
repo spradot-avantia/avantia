@@ -137,7 +137,7 @@ export default async function InicioPage() {
     <div className="ci-stack">
       <PageHeader titulo={titulo} descripcion={descripcion} />
 
-      <section className="ci-card" aria-labelledby="ci-sig-t">
+      <section className="ci-card cr-protagonista" aria-labelledby="ci-sig-t">
         <h2 className="ci-card__title" id="ci-sig-t">
           {siguiente.titulo}
         </h2>

@@ -107,7 +107,7 @@
   background: color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 8%, #fff);
 }
 .mk-drop--err {
-  border-color: #b42318;
+  border-color: var(--av-danger);
 }
 .mk-drop__ico {
   width: 48px;
@@ -147,8 +147,8 @@
   gap: 2px;
   padding: 10px 12px;
   border-radius: var(--av-radius-sm);
-  background: #fdecea;
-  border: 1px solid #b42318;
+  background: var(--av-danger-bg);
+  border: 1px solid var(--av-danger);
   font-size: var(--av-fs-sm);
   color: var(--av-ink);
 }

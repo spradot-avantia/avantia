@@ -55,7 +55,7 @@ export default async function EstudiantesPage({ searchParams }: { searchParams: 
     <div className="ci-stack">
       <PageHeader
         titulo="Estudiantes"
-        descripcion="Todas las personas crean su cuenta. Las que invitas entran activas al confirmar su correo; las que llegan por anuncios o tu página esperan a que actives su inscripción."
+        descripcion="Tus invitados entran al confirmar su correo; los demás esperan tu activación."
       />
       {opciones.length === 0 ? (
         <EmptyState

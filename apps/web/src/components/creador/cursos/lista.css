@@ -1,0 +1,63 @@
+/* Listas de cursos y estados vacíos con ilustración (opción C del rediseño del panel). */
+
+/* ---- Miniatura de curso ---- */
+.lc-cab {
+  display: flex;
+  align-items: center;
+  gap: var(--av-space-3);
+  min-width: 0;
+}
+.lc-thumb {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--av-radius-md);
+  background: linear-gradient(
+    135deg,
+    var(--cr-brand, var(--av-blue-600)),
+    color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 70%, #000)
+  );
+  color: var(--cr-on-brand, #fff);
+  font-size: var(--av-fs-lg);
+  font-weight: var(--av-fw-semibold);
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+.lc-thumb--borrador {
+  background: var(--av-surface-2);
+  color: var(--av-muted);
+  border: 1px dashed var(--av-line-dashed);
+}
+.ci-row--compact .lc-thumb {
+  width: 44px;
+  height: 44px;
+  font-size: var(--av-fs-base);
+}
+@media (min-width: 560px) {
+  .lc-cab {
+    flex: 1 1 auto;
+  }
+}
+
+/* ---- Estado vacío con ilustración ---- */
+.ev-ilus {
+  width: 112px;
+  height: 84px;
+  margin-bottom: var(--av-space-2);
+}
+.ev-ilus .ev-a {
+  fill: color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 16%, var(--av-surface));
+}
+.ev-ilus .ev-b {
+  fill: var(--cr-brand, var(--av-blue-600));
+}
+.ev-ilus .ev-c {
+  fill: var(--av-line-strong);
+}
+.ev-ilus .ev-d {
+  fill: var(--av-surface);
+  stroke: var(--av-line-strong);
+  stroke-width: 1.5;
+}

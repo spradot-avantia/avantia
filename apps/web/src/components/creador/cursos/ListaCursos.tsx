@@ -1,9 +1,11 @@
 import { BadgeEstadoCurso } from "../Badge";
 import { LinkButton } from "../Button";
+import { iniciales } from "../../../lib/creador/color";
 import { CopiarEnlace } from "../inicio/CopiarEnlace";
 import type { CursoResumen } from "../../../lib/creador/types";
 import { textoEstudiantes } from "./utils";
 import "../inicio/inicio.css";
+import "./lista.css";
 
 export interface CursoConUrl
   extends Pick<CursoResumen, "id" | "titulo" | "estado" | "acceso" | "totalEstudiantes" | "totalModulos" | "totalLecciones"> {
@@ -15,17 +17,22 @@ export function ListaCursos({ cursos, compacto }: { cursos: CursoConUrl[]; compa
     <ul className="ci-list">
       {cursos.map((c) => (
         <li key={c.id} className={`ci-row${compacto ? " ci-row--compact" : ""}`}>
-          <div className="ci-row__main">
-            <span className="ci-row__title">{c.titulo}</span>
-            <div className="ci-row__meta">
-              <BadgeEstadoCurso estado={c.estado} />
-              <span>{textoEstudiantes(c.totalEstudiantes, c.acceso)}</span>
-              {!compacto && (
-                <span>
-                  {c.totalModulos} {c.totalModulos === 1 ? "módulo" : "módulos"} · {c.totalLecciones}{" "}
-                  {c.totalLecciones === 1 ? "lección" : "lecciones"}
-                </span>
-              )}
+          <div className="lc-cab">
+            <span className={`lc-thumb${c.estado === "publicado" ? "" : " lc-thumb--borrador"}`} aria-hidden="true">
+              {iniciales(c.titulo)}
+            </span>
+            <div className="ci-row__main">
+              <span className="ci-row__title">{c.titulo}</span>
+              <div className="ci-row__meta">
+                <BadgeEstadoCurso estado={c.estado} />
+                <span>{textoEstudiantes(c.totalEstudiantes, c.acceso)}</span>
+                {!compacto && (
+                  <span>
+                    {c.totalModulos} {c.totalModulos === 1 ? "módulo" : "módulos"} · {c.totalLecciones}{" "}
+                    {c.totalLecciones === 1 ? "lección" : "lecciones"}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <div className={`ci-actions${compacto ? " ci-actions--fila" : ""}`}>

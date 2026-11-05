@@ -1,0 +1,73 @@
+/* Cabecera de pantalla del panel del creador: banda con el color de la academia.
+   --cr-brand / --cr-on-brand los define AppShell con el color del tenant (texto con contraste AA vía textoSobre). */
+
+.av-scope .cr-header {
+  position: relative;
+  padding: var(--av-space-4);
+  border-radius: var(--av-radius-lg);
+  background: linear-gradient(135deg, var(--cr-brand), color-mix(in srgb, var(--cr-brand) 94%, var(--cr-on-brand)));
+  color: var(--cr-on-brand);
+  box-shadow: var(--av-shadow-xs);
+}
+.av-scope .cr-header__title {
+  color: inherit;
+}
+.av-scope .cr-header__desc {
+  color: inherit; /* sin opacidad: mantiene el contraste AA del texto pequeño */
+  max-width: 62ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.av-scope .cr-header__actions {
+  align-items: center;
+}
+
+/* Botones dentro de la banda: el primario se invierte (fondo = color del texto) */
+.av-scope .cr-header .av-btn--primary {
+  background: var(--cr-on-brand);
+  border-color: var(--cr-on-brand);
+  color: var(--cr-brand);
+}
+.av-scope .cr-header .av-btn--primary:hover {
+  background: color-mix(in srgb, var(--cr-on-brand) 90%, var(--cr-brand));
+}
+.av-scope .cr-header .av-btn--secondary {
+  background: transparent;
+  border-color: var(--cr-on-brand);
+  color: var(--cr-on-brand);
+}
+.av-scope .cr-header .av-btn--secondary:hover {
+  background: color-mix(in srgb, var(--cr-on-brand) 14%, transparent);
+}
+.av-scope .cr-header :focus-visible {
+  outline: 2px solid var(--cr-on-brand);
+  outline-offset: 2px;
+}
+
+@media (min-width: 700px) {
+  .av-scope .cr-header {
+    padding: var(--av-space-5);
+  }
+}
+@media (min-width: 1100px) {
+  .av-scope .cr-header {
+    padding: var(--av-space-5) var(--av-space-6);
+    min-height: 96px;
+    align-items: center;
+  }
+  .av-scope .cr-header__title {
+    font-size: 30px;
+  }
+}
+
+/* Elemento protagonista de la pantalla: un tinte del color de la academia y más peso que el resto */
+.av-scope .cr-protagonista,
+.av-scope .ci-stack > .ci-det {
+  background: var(--av-surface);
+  border-color: color-mix(in srgb, var(--cr-brand) 45%, var(--av-line-strong));
+}
+.av-scope .cr-protagonista .ci-card__title {
+  font-size: var(--av-fs-xl);
+}

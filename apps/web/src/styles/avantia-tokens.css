@@ -22,6 +22,9 @@
   --av-bg-sunken: #f1efe9;
   --av-surface: #ffffff;
   --av-surface-2: #eff0f5;
+  /* Panel del creador: lienzo (1,13:1 con la tarjeta blanca) y menú lateral (tono propio, 4,67:1 con --av-muted). */
+  --av-canvas: #f3f1eb;
+  --av-side: #e4e7f1;
 
   /* ---- Color: azul de marca ---- */
   --av-blue-50: #e4edfd;
@@ -39,6 +42,14 @@
   /* ---- Color: estado ---- */
   --av-success-bg: #e2f4ee;
   --av-success: #137a5a;
+  /* Error y advertencia (ADR 028): texto/fondo >= 4,5:1; borde/fondo >= 3:1 */
+  --av-danger: #b42318;
+  --av-danger-bg: #fef3f2;
+  --av-danger-line: #e5544a;
+  --av-danger-ink: #7a271a; /* texto sobre --av-danger-bg */
+  --av-warning: #b54708;
+  --av-warning-bg: #fff6e5;
+  --av-warning-ink: #7a4b00; /* texto sobre --av-warning-bg */
 
   /* ---- Colores de academia (ejemplos de marca del Creador) ---- */
   --av-brand-amber: #c2410c;

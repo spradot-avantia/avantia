@@ -52,7 +52,7 @@
   color: var(--av-success);
 }
 .ed-save--error {
-  color: #b42318;
+  color: var(--av-danger);
   font-weight: var(--av-fw-medium);
 }
 .ed-save--aviso {
@@ -127,9 +127,8 @@
   gap: var(--av-space-4);
   padding: var(--av-space-4);
   background: var(--av-surface);
-  border: 1px solid var(--av-line);
+  border: 1px solid var(--av-line-strong);
   border-radius: var(--av-radius-lg);
-  box-shadow: var(--av-shadow-xs);
 }
 .ed-card__title {
   font-size: var(--av-fs-xl);
@@ -168,9 +167,9 @@
   justify-content: space-between;
   gap: var(--av-space-3);
   padding: var(--av-space-3) var(--av-space-4);
-  border: 1px solid #f2b8b3;
+  border: 1px solid var(--av-danger-line);
   border-radius: var(--av-radius-md);
-  background: #fdecea;
+  background: var(--av-danger-bg);
   color: #7a1a12;
 }
 
@@ -193,7 +192,7 @@
   gap: 4px;
 }
 .ed-guia__col--evita strong {
-  color: #b42318;
+  color: var(--av-danger);
 }
 .ed-guia__col--mejor strong {
   color: var(--av-success);
@@ -392,8 +391,8 @@
   cursor: not-allowed;
 }
 .ed-icono--peligro {
-  color: #b42318;
-  border-color: #f2b8b3;
+  color: var(--av-danger);
+  border-color: var(--av-danger-line);
 }
 .ed-formato {
   border: 0;
@@ -775,7 +774,6 @@
   border-radius: var(--av-radius-lg);
   background: var(--av-surface);
   overflow: hidden;
-  box-shadow: var(--av-shadow-sm);
 }
 .vp-marco--movil {
   width: 100%;

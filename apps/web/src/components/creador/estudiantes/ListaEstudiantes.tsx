@@ -5,7 +5,9 @@ import { quitarEstudianteAction } from "../../../lib/creador/actions";
 import type { EstadoInvitacion } from "../../../lib/creador/types";
 import { Badge } from "../Badge";
 import { Button } from "../Button";
+import { Avatar } from "./Avatar";
 import "../inicio/inicio.css";
+import "./avatares.css";
 
 export interface FilaEstudiante {
   id: string;
@@ -45,12 +47,15 @@ export function ListaEstudiantes({ filas }: { filas: FilaEstudiante[] }) {
       )}
       <ul className="ci-list">
         {filas.map((f) => (
-          <li key={f.id} className="ci-row ci-row--compact">
-            <div className="ci-row__main">
-              <span className="ci-row__title">{f.email}</span>
-              <div className="ci-row__meta">
-                <span>{f.cursoTitulo}</span>
-                <Badge tono={ESTADO[f.estado].tono}>{ESTADO[f.estado].texto}</Badge>
+          <li key={f.id} className="ci-row ci-row--compact ea-fila">
+            <div className="ea-id">
+              <Avatar nombre={f.email} />
+              <div className="ea-datos">
+                <span className="ci-row__title">{f.email}</span>
+                <div className="ea-sub">
+                  <span>{f.cursoTitulo}</span>
+                  <Badge tono={ESTADO[f.estado].tono}>{ESTADO[f.estado].texto}</Badge>
+                </div>
               </div>
             </div>
             <div className="ci-actions">

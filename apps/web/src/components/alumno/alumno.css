@@ -251,10 +251,10 @@
   border-radius: var(--av-radius-md);
 }
 .al-input[aria-invalid="true"] {
-  border-color: #b42318;
+  border-color: var(--av-danger);
 }
 .al-error {
-  color: #b42318;
+  color: var(--av-danger);
   font-size: var(--av-fs-sm);
 }
 .al-alert {
@@ -264,9 +264,9 @@
   background: var(--av-bg-sunken);
 }
 .al-alert--error {
-  background: #fef3f2;
-  border-color: #fda29b;
-  color: #7a271a;
+  background: var(--av-danger-bg);
+  border-color: var(--av-danger-line);
+  color: var(--av-danger-ink);
 }
 .al-alert--ok {
   background: var(--av-success-bg);
@@ -304,12 +304,12 @@
   color: var(--av-ink);
 }
 .al-badge--wait {
-  background: #fff6e5;
-  color: #7a4b00;
+  background: var(--av-warning-bg);
+  color: var(--av-warning-ink);
 }
 .al-badge--no {
-  background: #fef3f2;
-  color: #7a271a;
+  background: var(--av-danger-bg);
+  color: var(--av-danger-ink);
 }
 .al-bar {
   height: 10px;
@@ -727,8 +727,8 @@
   background: var(--av-success-bg);
 }
 .al-quiz__op--mal {
-  border-color: #b42318;
-  background: #fdecea;
+  border-color: var(--av-danger);
+  background: var(--av-danger-bg);
 }
 .al-quiz__fb {
   padding: 12px 14px;
@@ -743,8 +743,8 @@
   border-color: var(--av-success);
 }
 .al-quiz__fb.is-mal {
-  background: #fdecea;
-  border-color: #b42318;
+  background: var(--av-danger-bg);
+  border-color: var(--av-danger);
 }
 
 /* Enlaces dentro de texto: se distinguen por subrayado y no solo por color (WCAG 1.4.1). */

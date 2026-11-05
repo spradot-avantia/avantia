@@ -110,7 +110,7 @@
   background: var(--av-line-strong);
 }
 .au-meter[data-nivel="corta"] i:nth-child(-n + 1) {
-  background: #b42318;
+  background: var(--av-danger);
 }
 .au-meter[data-nivel="aceptable"] i:nth-child(-n + 2) {
   background: var(--av-violet-500);

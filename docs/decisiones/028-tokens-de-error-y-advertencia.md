@@ -1,13 +1,13 @@
 # 028 — Tokens de error y advertencia en el sistema de diseño
 
 - **Fecha:** 2026-11-05
-- **Estado:** Propuesta (pendiente de aprobación de Samuel; sin código todavía)
+- **Estado:** Aceptada (aprobada por Samuel el 2026-11-05)
 
 ## Contexto
 
 `avantia-tokens.css` define éxito (`--av-success`, `--av-success-bg`) pero no error ni advertencia. Resultado, medido en la auditoría B-26: el rojo se escribe a mano en 7 hojas de estilo con dos valores (`#b42318`, 15 usos, y `#b3261e`), el fondo de error tiene 4 variantes (`#fdecea`, `#fef3f2`, `#fce6e4`, `#fda29b` de borde) y la advertencia se resuelve con colores sueltos (`#7a4b00` sobre `#fff6e5`). Dos pantallas de error pueden verse distintas y cualquier ajuste de contraste obliga a tocar muchos archivos. CLAUDE.md pide usar tokens y no hardcodear colores.
 
-## Decisión (propuesta)
+## Decisión
 
 Agregar a `avantia-tokens.css` dos familias con el mismo patrón que éxito (texto, fondo y borde), todas con contraste ≥ 4,5:1 texto/fondo y ≥ 3:1 borde/fondo:
 
@@ -29,3 +29,7 @@ Fuera de alcance: `sitio.css` (white-label, mantiene sus neutros propios) y el c
 - Un cambio de contraste o de marca se hace en un solo lugar.
 - La verificación visual de la migración es acotada: pantallas con errores de formulario, quiz del alumno y avisos del panel.
 - El PR debe revisar con axe las pantallas tocadas.
+
+## Nota de implementación
+
+`--av-danger-line` pasó de `#fda29b` (1,8:1 sobre `--av-danger-bg`, no cumplía 3:1) a `#e5544a` (3,4:1). Los bordes suaves antiguos (`#f2b8b3`, `#fda29b`) quedan unificados en este valor, algo más saturado. Contrastes verificados: danger/bg 6,05, danger-ink/bg 9,06, warning/bg 5,06, warning-ink/bg 6,90.

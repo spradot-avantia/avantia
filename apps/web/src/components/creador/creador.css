@@ -7,6 +7,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--av-canvas);
 }
 
 /* ---- Barra superior (movil) ---- */
@@ -20,9 +21,10 @@
   gap: var(--av-space-3);
   min-height: 60px;
   padding: 6px var(--av-space-4);
-  background: var(--av-surface);
-  border-bottom: 1px solid var(--av-line);
+  background: var(--av-side);
+  border-bottom: 1px solid var(--av-line-strong);
 }
+/* Botón «Menú»: sobre la barra tonal queda como control blanco. */
 .cr-menu-btn {
   display: inline-flex;
   align-items: center;
@@ -41,8 +43,8 @@
   position: sticky;
   top: 60px;
   z-index: 29;
-  background: var(--av-surface);
-  border-bottom: 1px solid var(--av-line);
+  background: var(--av-side);
+  border-bottom: 1px solid var(--av-line-strong);
   box-shadow: var(--av-shadow-sm);
   padding: var(--av-space-3) var(--av-space-4) var(--av-space-4);
   display: flex;
@@ -93,7 +95,7 @@
 }
 .av-scope .cr-nav a:hover,
 .av-scope .cr-nav__salir:hover {
-  background: var(--av-surface-2);
+  background: color-mix(in srgb, var(--av-surface) 60%, transparent);
   color: var(--av-ink);
 }
 .cr-nav a:focus-visible,
@@ -103,9 +105,10 @@
   outline-offset: 2px;
 }
 .av-scope .cr-nav a[aria-current="page"] {
-  background: color-mix(in srgb, var(--cr-brand) 12%, var(--av-surface));
+  background: var(--av-surface);
   color: var(--av-ink);
   font-weight: var(--av-fw-semibold);
+  box-shadow: inset 0 0 0 1px var(--av-line-strong);
 }
 .cr-nav a[aria-current="page"] .cr-nav__ico {
   color: var(--cr-brand);
@@ -114,7 +117,7 @@
   display: block;
   height: 1px;
   margin: var(--av-space-3) var(--av-space-4);
-  background: var(--av-line);
+  background: var(--av-line-strong);
 }
 /* Sesión: el correo se trunca; «Cerrar sesión» comparte estilo con los ítems del menú. */
 .cr-side .au-user,
@@ -165,8 +168,8 @@
     width: 264px;
     flex-shrink: 0;
     height: 100vh;
-    background: var(--av-surface);
-    border-right: 1px solid var(--av-line);
+    background: var(--av-side);
+    border-right: 1px solid var(--av-line-strong);
   }
   .cr-main {
     padding: var(--av-space-6) var(--av-gutter);
@@ -288,12 +291,12 @@
 }
 .cr-btn--danger {
   background: transparent;
-  color: #b42318;
-  border-color: #f2b8b3;
+  color: var(--av-danger);
+  border-color: var(--av-danger-line);
 }
 .av-scope .cr-btn--danger:hover {
-  background: #fdecea;
-  color: #b42318;
+  background: var(--av-danger-bg);
+  color: var(--av-danger);
 }
 
 /* ---- Campos ---- */
@@ -317,7 +320,7 @@
 }
 .cr-field__error {
   font-size: var(--av-fs-sm);
-  color: #b42318;
+  color: var(--av-danger);
   font-weight: var(--av-fw-medium);
 }
 .cr-field__counter {
@@ -364,8 +367,8 @@ select.cr-input {
   border-color: var(--av-violet-200);
 }
 .cr-callout--danger {
-  background: #fdecea;
-  border-color: #f2b8b3;
+  background: var(--av-danger-bg);
+  border-color: var(--av-danger-line);
 }
 
 /* ---- Badge ---- */

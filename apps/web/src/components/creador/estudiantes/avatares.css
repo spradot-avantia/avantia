@@ -1,0 +1,63 @@
+/* Avatar con iniciales y fila de estudiante (opción C del rediseño del panel). */
+.ea-id {
+  display: flex;
+  align-items: center;
+  gap: var(--av-space-3);
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.ea-ava {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--av-surface);
+  font-size: var(--av-fs-sm);
+  font-weight: var(--av-fw-semibold);
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+/* Paleta corta: todas dan ≥ 4,5:1 con texto blanco. */
+.ea-ava--0 { background: var(--av-blue-700); }
+.ea-ava--1 { background: var(--av-violet-700); }
+.ea-ava--2 { background: var(--av-brand-teal); }
+.ea-ava--3 { background: var(--av-brand-petrol); }
+.ea-ava--4 { background: var(--av-brand-plum); }
+.ea-ava--5 { background: var(--av-success); }
+.ea-ava--6 { background: var(--av-brand-amber); }
+
+.ea-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ea-datos .ci-row__title,
+.ea-correo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ea-correo {
+  font-size: var(--av-fs-sm);
+  color: var(--av-muted);
+}
+.ea-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--av-space-2) var(--av-space-3);
+  font-size: var(--av-fs-sm);
+  color: var(--av-muted);
+}
+.ea-fila .ci-alum__lado {
+  justify-content: space-between;
+}
+@media (min-width: 720px) {
+  .ea-fila .ci-alum__lado {
+    flex: none;
+    justify-content: flex-end;
+    gap: var(--av-space-5);
+  }
+}

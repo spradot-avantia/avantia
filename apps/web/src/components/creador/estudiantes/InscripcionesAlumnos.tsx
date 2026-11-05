@@ -7,8 +7,11 @@ import { MEDIOS_PAGO } from "../../../lib/creador/mediosPago";
 import { Badge } from "../Badge";
 import { Button } from "../Button";
 import { Callout } from "../Callout";
+import { EmptyState } from "../EmptyState";
+import { Avatar } from "./Avatar";
 import "../inicio/inicio.css";
 import "./estudiantes.css";
+import "./avatares.css";
 
 const ORIGEN = { invitacion: "Invitación", anuncio: "Anuncio", pagina: "Tu página" } as const;
 
@@ -17,6 +20,14 @@ function cuando(iso: string): string {
 }
 function precio(c: number): string {
   return c > 0 ? new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(c / 100) : "Gratuito";
+}
+/** Abre y lleva al foco el bloque «Registrar estudiantes por correo» de la página. */
+function abrirRegistro() {
+  const det = document.querySelector<HTMLDetailsElement>("details.ci-det");
+  if (!det) return;
+  det.open = true;
+  det.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  det.querySelector<HTMLElement>("select, textarea, input")?.focus({ preventScroll: true });
 }
 const horasEspera = (iso: string) => (Date.now() - new Date(iso).getTime()) / 3600000;
 
@@ -52,7 +63,13 @@ export function PorActivar({ filas }: { filas: FilaInscripcion[] }) {
   }
 
   if (filas.length === 0) {
-    return <Callout titulo="No tienes inscripciones por activar">Aquí aparecen quienes crean su cuenta desde un anuncio o tu página.</Callout>;
+    return (
+      <EmptyState
+        ilustracion="inscripciones"
+        titulo="No tienes inscripciones por activar"
+        descripcion="Aquí aparecen quienes crean su cuenta desde un anuncio o tu página, para que confirmes su pago y los actives."
+      />
+    );
   }
 
   return (
@@ -68,19 +85,21 @@ export function PorActivar({ filas }: { filas: FilaInscripcion[] }) {
       <ul className="ci-list">
         {filas.map((f) => (
           <li key={f.id} className="ci-card ci-stack" style={{ gap: "var(--av-space-3)" }}>
-            <div className="ci-row__main">
-              <span className="ci-row__title">
-                {f.nombre} · {f.correo}
-              </span>
-              <div className="ci-row__meta">
-                <span>
-                  {f.cursoTitulo} · {precio(f.precioCentavos)}
-                </span>
-                <span>
-                  Origen: {ORIGEN[f.origen]}
-                  {f.campana ? ` · ${f.campana}` : ""} · cuenta creada {cuando(f.creadaEn)}
-                </span>
-                {horasEspera(f.creadaEn) > 24 && <Badge tono="warning">Lleva más de 24 horas esperando</Badge>}
+            <div className="ea-id">
+              <Avatar nombre={f.nombre || f.correo} />
+              <div className="ci-row__main">
+                <span className="ci-row__title">{f.nombre}</span>
+                <span className="ea-correo">{f.correo}</span>
+                <div className="ci-row__meta">
+                  <span>
+                    {f.cursoTitulo} · {precio(f.precioCentavos)}
+                  </span>
+                  <span>
+                    Origen: {ORIGEN[f.origen]}
+                    {f.campana ? ` · ${f.campana}` : ""} · cuenta creada {cuando(f.creadaEn)}
+                  </span>
+                  {horasEspera(f.creadaEn) > 24 && <Badge tono="warning">Lleva más de 24 horas esperando</Badge>}
+                </div>
               </div>
             </div>
 
@@ -132,7 +151,18 @@ export function PorActivar({ filas }: { filas: FilaInscripcion[] }) {
 /** Estudiantes con cuenta: inscripción, avance, XP y quién lleva días sin entrar. */
 export function TablaAlumnos({ filas }: { filas: FilaInscripcion[] }) {
   if (filas.length === 0) {
-    return <Callout titulo="Aún no hay estudiantes con cuenta">Cuando alguien cree su cuenta o acepte tu invitación, aparecerá aquí con su avance.</Callout>;
+    return (
+      <EmptyState
+        ilustracion="estudiantes"
+        titulo="Aún no hay estudiantes con cuenta"
+        descripcion="Cuando alguien cree su cuenta o acepte tu invitación, aparecerá aquí con su avance."
+        accion={
+          <Button variante="secondary" onClick={abrirRegistro}>
+            Registrar estudiantes
+          </Button>
+        }
+      />
+    );
   }
   const ESTADO = {
     activa: <Badge tono="ok">Activa</Badge>,
@@ -144,16 +174,19 @@ export function TablaAlumnos({ filas }: { filas: FilaInscripcion[] }) {
   return (
     <ul className="ci-list">
       {filas.map((f) => (
-        <li key={f.id} className="ci-row ci-row--compact ci-card">
-          <div className="ci-row__main">
-            <span className="ci-row__title">{f.nombre}</span>
-            <div className="ci-row__meta">
-              <span>{f.correo}</span>
-              <span>{f.cursoTitulo}</span>
-              <span>
-                Origen: {ORIGEN[f.origen]}
-                {f.campana ? ` · ${f.campana}` : ""}
-              </span>
+        <li key={f.id} className="ci-row ci-row--compact ci-card ea-fila">
+          <div className="ea-id">
+            <Avatar nombre={f.nombre || f.correo} />
+            <div className="ea-datos">
+              <span className="ci-row__title">{f.nombre}</span>
+              <span className="ea-correo">{f.correo}</span>
+              <div className="ea-sub">
+                <span>{f.cursoTitulo}</span>
+                <span>
+                  Origen: {ORIGEN[f.origen]}
+                  {f.campana ? ` · ${f.campana}` : ""}
+                </span>
+              </div>
             </div>
           </div>
           <div className="ci-alum__lado">

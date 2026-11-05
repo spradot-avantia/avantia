@@ -27,6 +27,7 @@ export default async function CursosPage() {
       />
       {cursos.length === 0 ? (
         <EmptyState
+          ilustracion="cursos"
           titulo="Aún no tienes cursos"
           descripcion="Crea tu primer curso con una estructura sugerida o desde cero. El borrador se guarda solo."
           accion={<LinkButton href="/cursos/nuevo">Crear curso</LinkButton>}
