@@ -25,8 +25,19 @@ export default async function MiAcademiaPage() {
     <>
       <PageHeader titulo="Mi academia" descripcion="Tu marca y cómo la verán tus estudiantes." />
 
-      <div className="pg-cols pg-bloque">
-        <SeccionPagina pagina={pagina} color={tenant.colorPrimario} direccion={direccion} />
+      <nav className="mk-secciones" aria-label="Secciones de Mi academia">
+        <a href="#marca">Marca</a>
+        <a href="#pagina">Página</a>
+        <a href="#dominio">Dominio</a>
+      </nav>
+
+      <div id="marca" className="mk-seccion">
+        <MarcaForm tenant={tenant} />
+      </div>
+
+      <SeccionPagina pagina={pagina} color={tenant.colorPrimario} direccion={direccion} />
+
+      <div id="dominio" className="mk-seccion">
         <DominioCard
           direccionBase={direccionBase}
           dominioRaiz={dominioRaiz}
@@ -34,39 +45,6 @@ export default async function MiAcademiaPage() {
           solicitado={pagina.dominioSolicitado}
           token={pagina.dominioToken}
         />
-      </div>
-
-      <div className="mk-grid">
-        <MarcaForm tenant={tenant} />
-        <div className="mk-aside">
-          <section className="mk-card" aria-labelledby="mk-quien">
-            <h2 className="mk-h2" id="mk-quien">
-              Quién ve esta academia
-            </h2>
-            <p className="mk-ayuda">Solo tú y las personas con permiso de edición ven y cambian cursos, estudiantes y sesiones.</p>
-          </section>
-          <section className="mk-card" aria-labelledby="mk-donde">
-            <h2 className="mk-h2" id="mk-donde">
-              Dónde aparece tu logo
-            </h2>
-            <ul className="mk-lista">
-              <li>Menú lateral y barra superior en el móvil</li>
-              <li>Editor de cursos y vista previa del curso</li>
-              <li>Páginas que verán tus estudiantes</li>
-            </ul>
-            <p className="mk-ayuda">Avantia aparece solo como firma discreta al pie del menú.</p>
-          </section>
-          <section className="mk-card" aria-labelledby="mk-aun">
-            <h2 className="mk-h2" id="mk-aun">
-              Aún no disponible
-            </h2>
-            <ul className="mk-lista mk-lista--no">
-              <li>Experiencia del estudiante</li>
-              <li>Portadas de curso y documentos</li>
-              <li>Cobros, comunidad y estructurar con IA</li>
-            </ul>
-          </section>
-        </div>
       </div>
     </>
   );

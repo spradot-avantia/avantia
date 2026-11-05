@@ -7,7 +7,7 @@
 
 Hoy cada academia solo personaliza **color primario, logo (o iniciales) y frase**. Con el mismo tipo, los mismos radios y la misma composición, dos academias se ven casi iguales y el alumno no siente que está en «la casa» de su creador. La auditoría de diseño (B-24) lo señaló como la mayor brecha frente a productos como Skool. Al mismo tiempo, CLAUDE.md pide tokens (nada de tipografías ni colores sueltos), accesibilidad AA y que en el sitio de una academia no aparezca marca Avantia.
 
-## Decisión (propuesta)
+## Decisión
 
 Ampliar la identidad con **un conjunto cerrado de opciones**, no con estilos libres:
 

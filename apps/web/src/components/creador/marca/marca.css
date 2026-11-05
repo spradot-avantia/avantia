@@ -493,3 +493,39 @@
     transition: none;
   }
 }
+
+/* Mi academia: navegación entre secciones y ancho de lectura de cada una */
+.mk-secciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--av-space-2);
+  margin-bottom: var(--av-space-4);
+}
+.mk-secciones a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--av-space-4);
+  border: 1px solid var(--av-line-strong);
+  border-radius: 999px;
+  background: var(--av-surface);
+  color: var(--av-ink);
+  font-size: var(--av-fs-sm);
+  font-weight: var(--av-fw-medium);
+  text-decoration: none;
+}
+.mk-secciones a:hover {
+  border-color: var(--av-blue-600);
+}
+.mk-secciones a:focus-visible {
+  outline: 2px solid var(--av-blue-600);
+  outline-offset: 2px;
+}
+.mk-seccion {
+  max-width: 760px;
+  margin-bottom: var(--av-space-5);
+  scroll-margin-top: var(--av-space-5);
+}
+#pagina {
+  scroll-margin-top: var(--av-space-5);
+}
