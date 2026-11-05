@@ -344,6 +344,16 @@
   font-weight: var(--av-fw-semibold);
   color: var(--av-ink);
 }
+.mk-prev__caja {
+  display: flex;
+  flex-direction: column;
+}
+.mk-prev__caja > .mk-prev__panel {
+  flex: 1;
+}
+.mk-prev__caja > .mk-prev__cuerpo {
+  flex: 1;
+}
 .mk-prev__panel {
   display: grid;
   grid-template-columns: 46% 1fr;

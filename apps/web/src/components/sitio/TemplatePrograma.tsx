@@ -9,7 +9,7 @@ export function TemplatePrograma({ d }: { d: DatosSitio }) {
     <div className="st-programa">
       <header className="st-barra">
         <MarcaSitio academia={d.academia} />
-        <nav className="st-nav" aria-label="Secciones">
+        <nav className="st-nav" aria-label="Secciones de la página">
           <a href="#cursos">Qué incluye</a>
           <a href="#quien">Quién enseña</a>
           {d.testimonios.length > 0 && <a href="#opiniones">Opiniones</a>}
