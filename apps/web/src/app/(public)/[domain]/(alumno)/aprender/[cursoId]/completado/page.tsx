@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Insignia } from "../../../../../../../components/alumno/Piezas";
+import { Insignia, Sello } from "../../../../../../../components/alumno/Piezas";
 import { exigirCursoActivo } from "../../../../../../../lib/alumno/guardia";
 import { calcularXp, nivelDe } from "../../../../../../../lib/alumno/xp";
 
@@ -18,7 +18,10 @@ export default async function CompletadoPage({ params }: { params: { cursoId: st
   return (
     <>
       <section className="al-hero">
-        <p className="al-badge al-badge--ok">🎉 Curso completado</p>
+        <p className="al-hecho">
+          <Sello />
+          Curso completado
+        </p>
         <h1>¡Lo lograste! Terminaste «{curso.titulo}»</h1>
         <p className="al-lede">
           Completaste {d.lecciones} {d.lecciones === 1 ? "lección" : "lecciones"} y sumaste <strong>{d.xp} XP</strong>. Ya estás en el nivel{" "}
@@ -40,7 +43,7 @@ export default async function CompletadoPage({ params }: { params: { cursoId: st
       <section className="al-stack">
         <h2>Tu insignia</h2>
         <ul className="al-insignias">
-          <Insignia activa icono="🏁" titulo="Curso completado">
+          <Insignia activa icono={<Sello tam={22} />} titulo="Curso completado">
             Todas las lecciones.
           </Insignia>
         </ul>

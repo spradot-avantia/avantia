@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Barra, Insignia } from "../../../../../components/alumno/Piezas";
+import { Barra, Insignia, Sello } from "../../../../../components/alumno/Piezas";
 import { getTenantPublico } from "../../../../../lib/alumno/contexto";
 import { inscripcionesDe } from "../../../../../lib/alumno/inscripciones";
 import { resumenDelAlumno } from "../../../../../lib/alumno/progreso";
@@ -33,21 +33,24 @@ export default async function ProgresoPage() {
         <h1>Mi progreso</h1>
       </section>
 
-      <section className="al-card" aria-labelledby="xp-t">
-        <h2 id="xp-t">Tu experiencia</h2>
-        <div className="al-xp">
-          <span className="al-nivel" aria-label={`Nivel ${nivel.nivel}`}>
+      <section className="al-card al-nivelcard" aria-labelledby="xp-t">
+        <h2 id="xp-t" className="av-sr-only">
+          Tu experiencia
+        </h2>
+        <div className="al-nivelcard__top">
+          <span className="al-nivel al-nivel--grande" aria-label={`Nivel ${nivel.nivel}`}>
             {nivel.nivel}
           </span>
-          <div style={{ flex: 1 }}>
-            <Barra
-              etiqueta={`${xp} XP · Nivel ${nivel.nivel}`}
-              pct={nivel.pct}
-              detalle={nivel.faltan != null ? `Faltan ${nivel.faltan} para el nivel ${nivel.siguiente}` : "Nivel máximo"}
-            />
+          <div>
+            <p className="al-nivelcard__xp">{xp} XP</p>
+            <p className="al-muted">Nivel {nivel.nivel}</p>
           </div>
         </div>
-        <p className="al-muted">La XP se suma sola cada vez que completas una lección, un módulo o un curso. Nunca se descuenta.</p>
+        <Barra
+          etiqueta={nivel.siguiente != null ? `Nivel ${nivel.siguiente}` : "Nivel máximo"}
+          pct={nivel.pct}
+          detalle={nivel.faltan != null ? `Faltan ${nivel.faltan} XP` : "Lo lograste"}
+        />
       </section>
 
       {cursos.length === 0 ? (
@@ -87,14 +90,14 @@ export default async function ProgresoPage() {
       <section className="al-stack" aria-labelledby="ins-t">
         <h2 id="ins-t">Insignias</h2>
         <ul className="al-insignias">
-          <Insignia activa={haTerminado} icono="🏁" titulo="Curso completado">
+          <Insignia activa={haTerminado} icono={<Sello tam={22} />} titulo="Curso completado">
             Completa todas las lecciones de un curso.
           </Insignia>
         </ul>
       </section>
 
-      <section className="al-card" aria-labelledby="como-t">
-        <h2 id="como-t">Cómo se gana XP</h2>
+      <details className="al-card al-reglas-det">
+        <summary>Cómo se gana XP</summary>
         <ul className="al-reglas">
           <li>
             <span>Lección completada</span>
@@ -109,7 +112,8 @@ export default async function ProgresoPage() {
             <strong>+{XP_CURSO}</strong>
           </li>
         </ul>
-      </section>
+        <p className="al-muted">La XP se suma sola y nunca se descuenta. El quiz de cada módulo también suma.</p>
+      </details>
     </>
   );
 }

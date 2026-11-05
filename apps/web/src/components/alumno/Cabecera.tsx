@@ -3,6 +3,7 @@ import { FormAccion } from "./FormAccion";
 import { salirAction } from "../../lib/alumno/actions";
 import type { AlumnoSesion } from "../../lib/alumno/sesion";
 import type { Tenant } from "../../types/tenant";
+import { TabsAlumno } from "./TabsAlumno";
 import { TenantMark } from "../creador/TenantMark";
 import "./alumno.css";
 
@@ -16,10 +17,7 @@ export function Cabecera({ tenant, alumno }: { tenant: Tenant; alumno: AlumnoSes
         {alumno ? (
           <>
             {/* En móvil las secciones van en una barra inferior (más cerca del pulgar) y el encabezado queda en una línea. */}
-            <nav className="al-tabs" aria-label="Secciones">
-              <Link href="/mis-cursos">Mis cursos</Link>
-              <Link href="/progreso">Mi progreso</Link>
-            </nav>
+            <TabsAlumno />
             <div className="al-nav al-nav--cuenta">
               <span className="al-user" title={alumno.correo}>
                 {alumno.nombre.split(" ")[0]}

@@ -42,7 +42,7 @@ export function EstadoBadge({ estado }: { estado: string }) {
   return <span className={`al-badge ${e.clase}`}>{e.texto}</span>;
 }
 
-export function Insignia({ activa, icono, titulo, children }: { activa: boolean; icono: string; titulo: string; children: ReactNode }) {
+export function Insignia({ activa, icono, titulo, children }: { activa: boolean; icono: ReactNode; titulo: string; children: ReactNode }) {
   return (
     <li className={`al-insignia${activa ? " al-insignia--on" : ""}`}>
       <span className="al-insignia__ico" aria-hidden="true">
