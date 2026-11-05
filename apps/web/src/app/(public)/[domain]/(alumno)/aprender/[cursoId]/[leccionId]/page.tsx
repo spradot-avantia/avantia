@@ -58,10 +58,13 @@ export default async function LeccionPage({
           <Link href="/mis-cursos">Mis cursos</Link> › {curso.titulo}
         </p>
         <div className="al-prog-movil">
-          <Barra etiqueta={`Lección ${idx + 1} de ${orden.length}`} pct={pct} detalle={`${pct} %`} />
+          <Barra etiqueta={`Lección ${idx + 1} de ${orden.length}`} pct={pct} detalle={`${pct} % del curso`} />
         </div>
-        <p className="al-muted">
-          Módulo {leccion.moduloNum} · Lección {leccion.num} · {TIPO[leccion.tipo]}
+        <p className="al-muted al-meta">
+          <span>
+            Módulo {leccion.moduloNum} · Lección {leccion.num} · {TIPO[leccion.tipo]}
+          </span>
+          {hecha && <span className="al-badge al-badge--ok">✓ Completada</span>}
         </p>
         <h1>{leccion.titulo}</h1>
 
@@ -82,6 +85,21 @@ export default async function LeccionPage({
           </p>
         )}
 
+        {hecha && esUltimaDelModulo && quizActual && (
+          <div className="al-card al-quizcta">
+            <p className="al-quizcta__t">Repasa el módulo con un quiz de {quizActual.total} preguntas</p>
+            <p className="al-muted">
+              {quizActual.respondidas >= quizActual.total
+                ? quizActual.dominado
+                  ? "🏅 Módulo dominado"
+                  : `Lo respondiste: ${quizActual.aciertosPrimerIntento} de ${quizActual.total} al primer intento.`
+                : "Gana XP y la insignia «Módulo dominado» con 80 % de aciertos."}
+            </p>
+            <Link href={`/aprender/${curso.id}/quiz/${curso.modulos.find((m) => m.id === leccion.moduloId)?.id}`} className="al-btn al-btn--sec">
+              {quizActual.respondidas >= quizActual.total ? "Repetir el quiz" : "Hacer el quiz"}
+            </Link>
+          </div>
+        )}
         <div className="al-pager">
           {previa ? (
             <Link href={`/aprender/${curso.id}/${previa.id}`} className="al-btn al-btn--sec">
@@ -111,22 +129,6 @@ export default async function LeccionPage({
               </FormAccion>
             ))}
         </div>
-        {hecha && <p className="al-badge al-badge--ok">✓ Completada</p>}
-        {hecha && esUltimaDelModulo && quizActual && (
-          <div className="al-card al-quizcta">
-            <p className="al-quizcta__t">Repasa el módulo con un quiz de {quizActual.total} preguntas</p>
-            <p className="al-muted">
-              {quizActual.respondidas >= quizActual.total
-                ? quizActual.dominado
-                  ? "🏅 Módulo dominado"
-                  : `Lo respondiste: ${quizActual.aciertosPrimerIntento} de ${quizActual.total} al primer intento.`
-                : "Gana XP y la insignia «Módulo dominado» con 80 % de aciertos."}
-            </p>
-            <Link href={`/aprender/${curso.id}/quiz/${curso.modulos.find((m) => m.id === leccion.moduloId)?.id}`} className="al-btn al-btn--sec">
-              {quizActual.respondidas >= quizActual.total ? "Repetir el quiz" : "Hacer el quiz"}
-            </Link>
-          </div>
-        )}
       </article>
 
       <aside className="al-player__side al-card al-temario" aria-label="Contenido del curso">

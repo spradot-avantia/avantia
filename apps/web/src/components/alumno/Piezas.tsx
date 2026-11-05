@@ -24,6 +24,19 @@ const ESTADOS: Record<string, { texto: string; clase: string }> = {
   cancelada: { texto: "Cancelada", clase: "al-badge--no" },
 };
 
+/** Sello de curso completado (SVG propio, hereda el color de la academia). */
+export function Sello({ tam = 28 }: { tam?: number }) {
+  return (
+    <svg width={tam} height={tam} viewBox="0 0 24 24" fill="none" aria-hidden="true" className="al-sello">
+      <path
+        d="M12 2.5l2.4 1.7 2.9-.2 1.1 2.7 2.5 1.5-.6 2.8 1.2 2.6-2 2.1-.4 2.9-2.9.7-1.9 2.2L12 20.5 9.7 21.5l-1.9-2.2-2.9-.7-.4-2.9-2-2.1 1.2-2.6-.6-2.8 2.5-1.5 1.1-2.7 2.9.2L12 2.5z"
+        fill="currentColor"
+      />
+      <path d="M8.2 12.2l2.6 2.6 5-5.2" stroke="var(--al-on-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function EstadoBadge({ estado }: { estado: string }) {
   const e = ESTADOS[estado] ?? ESTADOS.pendiente;
   return <span className={`al-badge ${e.clase}`}>{e.texto}</span>;

@@ -754,3 +754,55 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+/* ---- Pulido de diseño 2026-11-04 · recorrido del alumno ---- */
+
+/* Curso completado: la tarjeta cambia de peso, no solo de texto. */
+.al-card--hecho {
+  background: color-mix(in srgb, var(--al-brand) 7%, var(--av-surface));
+  border-color: color-mix(in srgb, var(--al-brand) 35%, var(--av-line));
+}
+.al-hecho {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: var(--av-fw-semibold);
+  color: var(--al-brand);
+}
+.al-sello {
+  color: var(--al-brand);
+  flex-shrink: 0;
+}
+.al-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--av-space-3);
+}
+@media (max-width: 559px) {
+  .al-acciones .al-btn {
+    width: 100%;
+  }
+}
+
+/* Lección: estado completado junto al tipo de lección, y navegación siempre a la mano en móvil. */
+.al-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px var(--av-space-3);
+}
+@media (max-width: 559px) {
+  .al-pager {
+    position: sticky;
+    bottom: calc(56px + env(safe-area-inset-bottom));
+    z-index: 4;
+    margin: 0 calc(var(--av-space-4) * -1);
+    padding: var(--av-space-3) var(--av-space-4);
+    background: var(--av-surface);
+    border-top: 1px solid var(--av-line);
+  }
+}
+.al-card--hecho .al-bar {
+  background: var(--av-surface);
+  box-shadow: inset 0 0 0 1px var(--av-line);
+}

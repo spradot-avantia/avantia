@@ -1,6 +1,6 @@
 // Template Programa: página de curso con reserva siempre visible (diseño 2.3).
-import { resumenCurso, type DatosSitio } from "../../lib/sitio/tipos";
-import { Cta, Ej, MarcaSitio, PieSitio, Portada, estiloAcento, textoAccion } from "./partes";
+import type { DatosSitio } from "../../lib/sitio/tipos";
+import { Cta, Ej, MarcaSitio, PieSitio, Portada, TarjetaCurso, estiloAcento, textoAccion } from "./partes";
 
 export function TemplatePrograma({ d }: { d: DatosSitio }) {
   const acento = estiloAcento(d.academia.colorPrimario);
@@ -59,19 +59,7 @@ export function TemplatePrograma({ d }: { d: DatosSitio }) {
         ) : (
           <ul className="st-pr-cursos">
             {d.cursos.map((c) => (
-              <li key={c.id} className="st-pr-curso" style={{ borderTopColor: d.academia.colorPrimario }}>
-                <div>
-                  <h3 className="st-h3">{c.titulo}</h3>
-                  <p className="st-meta">{resumenCurso(c)}</p>
-                  {c.descripcion && <p className="st-txt">{c.descripcion}</p>}
-                </div>
-                <div className="st-pr-curso__lado">
-                  {c.precio && <strong className="st-precio">{c.precio}</strong>}
-                  <Cta d={d} href={`/curso/${c.slug}`} className="st-btn st-btn--sec">
-                    Ver el curso
-                  </Cta>
-                </div>
-              </li>
+              <TarjetaCurso key={c.id} color={d.academia.colorPrimario} c={c} vista={d.modo === "vista"} />
             ))}
           </ul>
         )}

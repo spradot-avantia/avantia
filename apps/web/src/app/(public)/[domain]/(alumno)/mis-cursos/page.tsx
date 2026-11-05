@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Barra, EstadoBadge } from "../../../../../components/alumno/Piezas";
+import { Barra, EstadoBadge, Sello } from "../../../../../components/alumno/Piezas";
 import { getTenantPublico } from "../../../../../lib/alumno/contexto";
 import { aplicarInvitaciones, inscripcionesDe } from "../../../../../lib/alumno/inscripciones";
 import { repasoDeHoy } from "../../../../../lib/alumno/repaso";
@@ -61,48 +61,66 @@ export default async function MisCursosPage() {
         </section>
       ) : (
         <div className="al-grid">
-          {resumen.map((c) => (
-            <article key={c.cursoId} className="al-card">
-              <EstadoBadge estado={c.estadoInscripcion} />
-              <h2>{c.titulo}</h2>
-              {c.estadoInscripcion === "activa" && (
-                <>
-                  <Barra
-                    etiqueta="Avance"
-                    pct={c.avance}
-                    detalle={`${c.completadas} de ${c.totalLecciones} lecciones`}
-                  />
-                  {c.dominio && (
-                    <Barra etiqueta="Lo que dominas" pct={c.dominio.pct} detalle={`${c.dominio.dominadas} de ${c.dominio.total} preguntas`} />
-                  )}
-                  {c.continuarId ? (
-                    <Link href={`/aprender/${c.cursoId}/${c.continuarId}`} className="al-btn">
-                      {c.completadas === 0 ? "Empezar el curso" : c.completadas === c.totalLecciones ? "Repasar el curso" : "Continuar donde quedé"}
-                    </Link>
-                  ) : (
-                    <p className="al-muted">Este curso aún no tiene lecciones.</p>
-                  )}
-                </>
-              )}
-              {c.estadoInscripcion === "pendiente" && (
-                <>
-                  <p>
-                    Tu cuenta ya está lista. <strong>{tenant.nombre}</strong> debe activar tu inscripción para que puedas empezar.
+          {resumen.map((c) => {
+            const completo = c.estadoInscripcion === "activa" && c.totalLecciones > 0 && c.completadas === c.totalLecciones;
+            return (
+              <article key={c.cursoId} className={`al-card${completo ? " al-card--hecho" : ""}`}>
+                {completo ? (
+                  <p className="al-hecho">
+                    <Sello />
+                    Curso completado
                   </p>
-                  <p className="al-muted">
-                    La academia revisa cada solicitud (y, si el curso tiene costo, confirma el pago a mano). Cuando la active, este curso se abrirá aquí
-                    mismo; no necesitas hacer nada más.
-                  </p>
-                </>
-              )}
-              {(c.estadoInscripcion === "rechazada" || c.estadoInscripcion === "vencida" || c.estadoInscripcion === "cancelada") && (
-                <p className="al-muted">Tu inscripción no está vigente. Escríbele a la academia si crees que es un error.</p>
-              )}
-              <Link href={`/curso/${c.slug}`} className="al-link">
-                Ver la ficha del curso
-              </Link>
-            </article>
-          ))}
+                ) : (
+                  <EstadoBadge estado={c.estadoInscripcion} />
+                )}
+                <h2>{c.titulo}</h2>
+                {c.estadoInscripcion === "activa" && (
+                  <>
+                    {!completo && <Barra etiqueta="Avance" pct={c.avance} detalle={`${c.completadas} de ${c.totalLecciones} lecciones`} />}
+                    {c.dominio && (
+                      <Barra etiqueta="Lo que dominas" pct={c.dominio.pct} detalle={`${c.dominio.dominadas} de ${c.dominio.total} preguntas`} />
+                    )}
+                    {completo && (
+                      <p className="al-muted">
+                        Terminaste las {c.totalLecciones} lecciones. Mira lo que lograste o repasa lo que quieras reforzar.
+                      </p>
+                    )}
+                    {c.continuarId ? (
+                      <div className="al-acciones">
+                        <Link href={completo ? `/aprender/${c.cursoId}/completado` : `/aprender/${c.cursoId}/${c.continuarId}`} className="al-btn">
+                          {completo ? "Ver mi cierre" : c.completadas === 0 ? "Empezar el curso" : "Continuar donde quedé"}
+                        </Link>
+                        {completo && (
+                          <Link href={`/aprender/${c.cursoId}/${c.continuarId}`} className="al-btn al-btn--sec">
+                            Repasar el curso
+                          </Link>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="al-muted">Este curso aún no tiene lecciones.</p>
+                    )}
+                  </>
+                )}
+                {c.estadoInscripcion === "pendiente" && (
+                  <>
+                    <p>
+                      Tu cuenta ya está lista. <strong>{tenant.nombre}</strong> debe activar tu inscripción para que puedas empezar.
+                    </p>
+                    <p className="al-muted">
+                      La academia revisa cada solicitud (y, si el curso tiene costo, confirma el pago a mano). Cuando la active, este curso se abrirá
+                      aquí mismo; no necesitas hacer nada más.
+                    </p>
+                  </>
+                )}
+                {(c.estadoInscripcion === "rechazada" || c.estadoInscripcion === "vencida" || c.estadoInscripcion === "cancelada") && (
+                  <p className="al-muted">Tu inscripción no está vigente. Escríbele a la academia si crees que es un error.</p>
+                )}
+                <Link href={`/curso/${c.slug}`} className="al-link">
+                  Ver la ficha del curso
+                </Link>
+              </article>
+            );
+          })}
         </div>
       )}
     </>

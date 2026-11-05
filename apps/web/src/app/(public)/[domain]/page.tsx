@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BarraAlumno } from "../../../components/alumno/BarraAlumno";
 import { PlantillaSitio } from "../../../components/sitio/PlantillaSitio";
-import { MarcaSitio } from "../../../components/sitio/partes";
+import { MarcaSitio, TarjetaCurso } from "../../../components/sitio/partes";
+import { textoSobre } from "../../../lib/creador/color";
 import { getAlumnoActual } from "../../../lib/alumno/sesion";
 import { getSitioAcademia } from "../../../lib/sitio/paginaPublica";
-import { construirDatosSitio, resumenCurso } from "../../../lib/sitio/tipos";
+import { construirDatosSitio } from "../../../lib/sitio/tipos";
 import { resolveTenantByHostname } from "../../../lib/tenant/resolve";
 import "../../../components/sitio/sitio.css";
 
@@ -34,6 +35,7 @@ export default async function SitioAcademiaPage({ params }: { params: { domain: 
   if (!sitio) notFound();
 
   const alumno = await getAlumnoActual();
+  const color = sitio.academia.colorPrimario;
   const pub = sitio.publicado;
   if (pub?.template) {
     const d = construirDatosSitio({ contenido: pub, template: pub.template, academia: sitio.academia, cursos: sitio.cursos, modo: "publico" });
@@ -52,31 +54,30 @@ export default async function SitioAcademiaPage({ params }: { params: { domain: 
         <header className="st-barra">
           <MarcaSitio academia={sitio.academia} />
         </header>
-        <section className="st-sec">
-          <h1 className="st-h1">{sitio.academia.nombre}</h1>
-          {sitio.academia.frase && <p className="st-lede">{sitio.academia.frase}</p>}
+        <section
+          className="st-inicio-hero"
+          style={{ background: `linear-gradient(135deg, ${color}, color-mix(in srgb, ${color} 70%, #000))`, color: textoSobre(color) }}
+        >
+          <div className="st-inicio-hero__in">
+            <h1 className="st-h1">{sitio.academia.nombre}</h1>
+            {sitio.academia.frase && <p className="st-inicio-hero__frase">{sitio.academia.frase}</p>}
+            {sitio.cursos.length > 0 && (
+              <a className="st-btn st-btn--sec" href="#st-cursos">
+                Ver {sitio.cursos.length === 1 ? "el curso" : `los ${sitio.cursos.length} cursos`}
+              </a>
+            )}
+          </div>
         </section>
         <section className="st-sec" aria-labelledby="st-cursos">
           <h2 className="st-h2" id="st-cursos">
-            Cursos
+            {sitio.cursos.length === 1 ? "El curso" : "Cursos"}
           </h2>
           {sitio.cursos.length === 0 ? (
             <p className="st-vacio">Pronto publicaremos los cursos de esta academia.</p>
           ) : (
             <ul className="st-pr-cursos">
               {sitio.cursos.map((c) => (
-                <li key={c.id} className="st-pr-curso" style={{ borderTopColor: sitio.academia.colorPrimario }}>
-                  <div>
-                    <h3 className="st-h3">{c.titulo}</h3>
-                    <p className="st-meta">{resumenCurso(c)}</p>
-                  </div>
-                  <div className="st-pr-curso__lado">
-                    {c.precio && <strong className="st-precio">{c.precio}</strong>}
-                    <a className="st-btn st-btn--sec" href={`/curso/${c.slug}`}>
-                      Ver el curso
-                    </a>
-                  </div>
-                </li>
+                <TarjetaCurso key={c.id} color={color} c={c} />
               ))}
             </ul>
           )}

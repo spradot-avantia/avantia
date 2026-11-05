@@ -365,21 +365,58 @@
 }
 .st-pr-curso {
   display: grid;
-  gap: 14px;
-  padding: 18px;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
   border-radius: 14px;
   background: #fff;
   border: 1px solid #e6e4dc;
-  border-top: 6px solid;
+}
+.st-pr-curso__banda {
+  display: flex;
+  align-items: flex-end;
+  min-height: 72px;
+  padding: 14px 18px;
+}
+.st-pr-curso__cuando {
+  font-size: 14px;
+  font-weight: 600;
+}
+.st-pr-curso__cuerpo {
+  padding: 16px 18px 4px;
+}
+.st-pr-curso__desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .st-pr-curso__lado {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
+  padding: 14px 18px 18px;
 }
 .st-precio {
+  font-size: 20px;
+}
+.st-inicio-hero {
+  padding: 56px 20px 52px;
+}
+.st-inicio-hero__in {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+}
+.st-inicio-hero .st-h1 {
+  max-width: 14em;
+  text-wrap: balance;
+}
+.st-inicio-hero__frase {
+  max-width: 32em;
   font-size: 18px;
+  opacity: 0.92;
 }
 .st-pr-quien {
   border-top: 1px solid #e6e4dc;
@@ -544,9 +581,11 @@
     align-items: center;
     padding-top: 56px;
   }
-  .st-pr-curso {
-    grid-template-columns: 1fr auto;
-    align-items: center;
+  .st-pr-cursos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .st-inicio-hero {
+    padding: 80px max(32px, calc((100% - 1056px) / 2)) 72px;
   }
   .st-testis {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

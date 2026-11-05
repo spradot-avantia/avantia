@@ -2,7 +2,7 @@
 // en el servidor (sitio público) y dentro de la vista previa del editor.
 import type { CSSProperties, ReactNode } from "react";
 import { iniciales, textoSobre } from "../../lib/creador/color";
-import { destinoAccion, type AcademiaSitio, type DatosSitio } from "../../lib/sitio/tipos";
+import { destinoAccion, resumenCurso, type AcademiaSitio, type CursoSitio, type DatosSitio } from "../../lib/sitio/tipos";
 
 /** Envuelve un texto de ejemplo: en la vista previa se marca en naranjo. */
 export function Ej({ si, children }: { si: boolean; children: ReactNode }) {
@@ -90,6 +90,43 @@ export function Portada({ d, className, vacio }: { d: DatosSitio; className: str
     >
       {vacio}
     </div>
+  );
+}
+
+/** Tarjeta de curso del template Programa: banda con el color de la academia, datos del curso y acción con acento. */
+export function TarjetaCurso({ color, c, vista }: { color: string; c: CursoSitio; vista?: boolean }) {
+  const sobre = textoSobre(color);
+  const cuando = c.modalidad === "con_fechas" ? resumenCurso(c).split(" · ")[0] : "A su ritmo";
+  const contenido = [
+    c.totalModulos ? `${c.totalModulos} ${c.totalModulos === 1 ? "módulo" : "módulos"}` : null,
+    c.totalLecciones ? `${c.totalLecciones} ${c.totalLecciones === 1 ? "lección" : "lecciones"}` : null,
+  ].filter(Boolean);
+  return (
+    <li className="st-pr-curso">
+      <div
+        className="st-pr-curso__banda"
+        style={{ background: `linear-gradient(135deg, ${color}, color-mix(in srgb, ${color} 70%, #000))`, color: sobre }}
+      >
+        <span className="st-pr-curso__cuando">{cuando}</span>
+      </div>
+      <div className="st-pr-curso__cuerpo">
+        <h3 className="st-h3">{c.titulo}</h3>
+        {contenido.length > 0 && <p className="st-meta">{contenido.join(" · ")}</p>}
+        {c.descripcion && <p className="st-txt st-pr-curso__desc">{c.descripcion}</p>}
+      </div>
+      <div className="st-pr-curso__lado">
+        {c.precio && <strong className="st-precio">{c.precio}</strong>}
+        {vista ? (
+          <span className="st-btn" style={estiloAcento(color)} aria-disabled="true">
+            Ver el curso
+          </span>
+        ) : (
+          <a className="st-btn" style={estiloAcento(color)} href={`/curso/${c.slug}`}>
+            Ver el curso
+          </a>
+        )}
+      </div>
+    </li>
   );
 }
 

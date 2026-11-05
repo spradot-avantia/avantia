@@ -3,7 +3,7 @@
 > Fuente de verdad del trabajo pendiente. Se actualiza en cada sesión de revisión
 > y en el mismo PR que cierra un ítem. Los RQ son de `docs/producto/Requerimientos_MVP.md`.
 > Los planes por día/sprint viven en este mismo directorio (`AAAA-MM-DD_*.md`).
-> Última actualización: 2026-11-04. «Solicitar acceso» (F7) hecho: cursos por invitación admiten solicitud pendiente.
+> Última actualización: 2026-11-04. Auditoría de diseño agresiva (skills `impeccable` y `web-design-guidelines`): primer lote en `dev` (B-24).
 
 Foto del avance contra el MVP completo: `Estado_MVP_2026-10-13.md`.
 
@@ -33,6 +33,7 @@ Estados: `Pendiente` · `En curso` · `Bloqueado` · `Hecho`.
 | B-22 | Pasarela Mercado Pago por academia ([ADR 020](../decisiones/020-pasarela-de-pago-mercado-pago.md), Propuesta) | RQ-19/20/21 | En pausa hasta nuevo aviso de Samuel (2026-11-03); además Q7 y Q10 | Incluye editor de precio del curso y pantalla «Cobros» |
 | B-21 | «Contactos» de empresas (diseño `04` 4.1) y pantalla 5.3 con estado de pago detallado | RQ-14 | Pendiente | Hoy la inscripción pendiente se explica en «Mis cursos» |
 | B-23 | Hallazgos de la prueba E2E en producción y auditoría UX/UI: ver [2026-11-04_Prueba_E2E_Produccion](2026-11-04_Prueba_E2E_Produccion.md) | RQ-13..16 | En curso | 2026-11-04: corregidos en `dev` F1, F2, F4, F5, F6 y la auditoría del alumno y del inicio del creador (sin commit aún). Falta verificar en producción tras desplegar y revisar a 360–390 px en móvil real |
+| B-24 | Pulido de diseño del recorrido del alumno (auditoría `impeccable` crítica, 2026-11-04: 20/32, «aceptable»; referencias DataCamp y Skool, sin copiar). **Lote 1, en `dev` sin commit:** curso completado con tarjeta propia y «Ver mi cierre» como acción principal; lección con «Completada» junto al tipo, progreso «% del curso» y navegación fija abajo en móvil; home del tenant con hero del color de la academia y tarjetas de curso con banda y CTA de acento (se quita el borde superior grueso). **Pendiente:** Mi progreso (bloque de nivel y XP, insignias con ilustración, reglas del XP plegadas), barra inferior móvil con íconos y «Repaso», identidad por tenant más allá del color (requiere ADR en `Propuesta`), auditar el panel del creador (necesita sesión de Google) | RQ-13..16 | En curso | Verificado en local (móvil y escritorio, axe 0 violaciones, sin scroll horizontal); falta verificar en producción tras desplegar. Hipótesis, no hecho: que el cierre y la navegación fija mejoren la finalización; se mide |
 | B-07 | Móvil base: viewport, inputs ≥16 px, botones ≥44 px, sidebar colapsable, manifest PWA por tenant | Impacto_Movil | Sin confirmar | Revisar qué quedó hecho |
 
 ## H1 — academia gratis cursable desde celular
