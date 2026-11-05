@@ -1,6 +1,7 @@
 import { nombreModulo, sinTituloRepetido } from "../../lib/alumno/formato";
 import type { ReactNode } from "react";
 import { leccionLista } from "../../lib/creador/reglasPublicacion";
+import { textoSobre } from "../../lib/creador/color";
 import type { CursoCompleto, Leccion, TenantCreador } from "../../lib/creador/types";
 import { urlEmbebible } from "../../lib/creador/validacion";
 import { TenantMark } from "../creador/TenantMark";
@@ -76,7 +77,7 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
   const objetivos = curso.objetivos.filter((o) => o.trim());
 
   return (
-    <article className="fc" style={{ ["--fc-brand" as string]: tenant.colorPrimario }}>
+    <article className="fc" style={{ ["--fc-brand" as string]: tenant.colorPrimario, ["--fc-on-brand" as string]: textoSobre(tenant.colorPrimario) }}>
       {!sinCabecera && (
         <header className="fc-top">
           <TenantMark nombre={tenant.nombre} logoUrl={tenant.logoUrl} logoModo={tenant.logoModo} color={tenant.colorPrimario} />

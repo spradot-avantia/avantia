@@ -46,7 +46,7 @@
   color: var(--av-muted);
   margin: 0;
 }
-.fc-cta {
+.fc .fc-cta {
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
@@ -56,13 +56,13 @@
   border: 0;
   border-radius: var(--av-radius-md);
   background: var(--fc-brand);
-  color: #fff;
+  color: var(--fc-on-brand, #fff);
   font: inherit;
   font-weight: var(--av-fw-medium);
   text-decoration: none;
   cursor: pointer;
 }
-.fc-cta:disabled {
+.fc .fc-cta:disabled {
   cursor: default;
 }
 .fc-nota {
