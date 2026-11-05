@@ -1,11 +1,14 @@
 /* Sitio público de la academia: templates Programa, Maestro y Consultor (ADR 021).
    Prefijo .st-. Mobile-first. Usa container queries (no media queries) para que
    la vista previa del editor se vea igual que el sitio en su ancho real.
-   El color de cada academia llega inline (botones con texto de contraste AA). */
+   El color de cada academia llega inline (botones con texto de contraste AA).
+   La tipografía y la forma de cada academia (ADR 027) llegan por clase tn-*. */
+
+@import "../../styles/identidad-tenant.css";
 
 .st {
   container-type: inline-size;
-  font-family: var(--av-font-sans, Inter, system-ui, sans-serif);
+  font-family: var(--tn-font-body, var(--av-font-sans, Inter, system-ui, sans-serif));
   font-size: 16px;
   line-height: 1.55;
   color: #171717;

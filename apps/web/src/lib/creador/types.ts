@@ -1,6 +1,7 @@
 // Tipos del dominio del Espacio del Creador (camelCase en la app; columnas
 // snake_case en la base, ver db/migrations/0001_espacio_creador.sql).
 
+import type { Forma, Tipografia } from "../tenant/identidad";
 import type { PreguntaQuiz } from "./quiz";
 export type LogoModo = "logo_y_nombre" | "solo_logo";
 export type EstadoCurso = "borrador" | "publicado";
@@ -39,6 +40,9 @@ export interface TenantCreador {
   colorPrimario: string;
   logoUrl: string | null;
   logoModo: LogoModo;
+  /** Identidad visual (ADR 027): lista cerrada, default clasico + suave. */
+  tipografia: Tipografia;
+  forma: Forma;
   pais: string | null;
   moneda: string | null;
   /** false => el creador aún no pasó por /onboarding. */

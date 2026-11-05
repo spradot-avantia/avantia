@@ -1,5 +1,7 @@
 /* Sitio de la academia · lado alumno. Mobile-first (360–390 px), tokens Avantia.
    El color de la academia llega en --al-brand / --al-on-brand (nunca marca Avantia). */
+@import "../../styles/identidad-tenant.css";
+
 .al {
   --al-brand: var(--av-blue-600);
   --al-on-brand: #ffffff;
@@ -8,7 +10,7 @@
   flex-direction: column;
   background: var(--av-bg);
   color: var(--av-ink);
-  font-family: var(--av-font-sans);
+  font-family: var(--tn-font-body, var(--av-font-sans));
   font-size: var(--av-fs-base);
   line-height: var(--av-lh-body);
 }

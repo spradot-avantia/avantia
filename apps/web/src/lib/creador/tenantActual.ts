@@ -2,6 +2,7 @@ import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getUsuarioActual } from "../auth/usuario";
 import { createSupabaseServerClient } from "../supabase/server";
+import { formaDe, tipografiaDe } from "../tenant/identidad";
 import type { LogoModo, TenantCreador } from "./types";
 
 /**
@@ -25,7 +26,7 @@ export interface CreadorContext {
 }
 
 const COLUMNAS =
-  "id, slug, subdomain, custom_domain, nombre, frase, area, color_primario, logo_url, logo_modo, pais, moneda, onboarding_completado_at";
+  "id, slug, subdomain, custom_domain, nombre, frase, area, color_primario, logo_url, logo_modo, tipografia, forma, pais, moneda, onboarding_completado_at";
 
 function mapTenant(r: any): TenantCreador {
   return {
@@ -39,6 +40,8 @@ function mapTenant(r: any): TenantCreador {
     colorPrimario: r.color_primario ?? "#2563eb",
     logoUrl: r.logo_url,
     logoModo: (r.logo_modo ?? "logo_y_nombre") as LogoModo,
+    tipografia: tipografiaDe(r.tipografia),
+    forma: formaDe(r.forma),
     pais: r.pais,
     moneda: r.moneda,
     onboardingCompletado: !!r.onboarding_completado_at,

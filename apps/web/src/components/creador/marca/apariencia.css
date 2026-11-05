@@ -1,0 +1,90 @@
+/* Mi academia > Apariencia (ADR 027): tarjetas de tipografía y forma. Radios nativos (grupo accesible). */
+@import "../../../styles/identidad-tenant.css";
+
+.ap-grupo {
+  display: grid;
+  gap: var(--av-space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.ap-grupo > legend {
+  padding: 0;
+  margin-bottom: var(--av-space-2);
+}
+.ap-opciones {
+  display: grid;
+  gap: var(--av-space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ap-opciones--forma {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 700px) {
+  .ap-opciones {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ap-opciones--forma {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ap-opcion {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--av-space-1);
+  min-height: var(--av-target);
+  padding: var(--av-space-3);
+  border: 1px solid var(--av-line-strong);
+  border-radius: var(--av-radius-md);
+  background: var(--av-surface);
+  cursor: pointer;
+}
+.ap-opcion:hover {
+  border-color: var(--av-blue-400);
+}
+.ap-opcion:has(input:checked) {
+  border-color: var(--av-blue-600);
+  box-shadow: inset 0 0 0 1px var(--av-blue-600);
+  background: var(--av-blue-50);
+}
+.ap-opcion:has(input:focus-visible) {
+  outline: 3px solid var(--av-blue-400);
+  outline-offset: 2px;
+}
+/* El radio nativo queda en su sitio (foco y teclado) pero invisible: la tarjeta es el control. */
+.ap-opcion input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ap-muestra--tipo {
+  font-family: var(--tn-font-display, var(--av-font-sans));
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--av-ink);
+}
+.ap-muestra--forma {
+  display: block;
+  width: 100%;
+  height: 44px;
+  border: 2px solid var(--av-ink-2);
+  border-radius: var(--tn-radio-lg, 20px);
+  background: var(--av-surface);
+}
+.ap-nombre {
+  font-weight: var(--av-fw-semibold);
+  color: var(--av-ink);
+  font-family: var(--tn-font-body, var(--av-font-sans));
+}
+.ap-detalle {
+  font-size: var(--av-fs-xs);
+  color: var(--av-muted);
+}

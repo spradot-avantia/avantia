@@ -1,6 +1,7 @@
 // Datos que reciben los templates del sitio público (Programa, Maestro y
 // Consultor). Módulo PURO: lo usan el sitio público (servidor) y la vista
 // previa del editor (cliente).
+import type { Forma, Tipografia } from "../tenant/identidad";
 import {
   EJEMPLOS,
   muestraTestimoniosEjemplo,
@@ -28,6 +29,9 @@ export interface AcademiaSitio {
   colorPrimario: string;
   logoUrl: string | null;
   logoModo: "logo_y_nombre" | "solo_logo";
+  /** Identidad visual (ADR 027). */
+  tipografia: Tipografia;
+  forma: Forma;
 }
 
 /** Qué partes se muestran con contenido de ejemplo (solo en la vista previa). */

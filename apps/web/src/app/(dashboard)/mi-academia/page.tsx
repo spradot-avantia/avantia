@@ -1,8 +1,10 @@
 import { EmptyState, PageHeader, SinAcademia } from "../../../components/creador";
+import { AparienciaForm } from "../../../components/creador/marca/AparienciaForm";
 import { MarcaForm } from "../../../components/creador/marca/MarcaForm";
 import { DominioCard } from "../../../components/creador/pagina/DominioCard";
 import { SeccionPagina } from "../../../components/creador/pagina/SeccionPagina";
 import { cargarPaginaCreador } from "../../../lib/creador/paginaData";
+import { clasesFuentes } from "../../../lib/tenant/fuentes";
 import "../../../components/creador/marca/marca.css";
 import "../../../components/creador/pagina/pagina.css";
 
@@ -27,12 +29,17 @@ export default async function MiAcademiaPage() {
 
       <nav className="mk-secciones" aria-label="Secciones de Mi academia">
         <a href="#marca">Marca</a>
+        <a href="#apariencia">Apariencia</a>
         <a href="#pagina">Página</a>
         <a href="#dominio">Dominio</a>
       </nav>
 
       <div id="marca" className="mk-seccion">
         <MarcaForm tenant={tenant} />
+      </div>
+
+      <div id="apariencia" className={`mk-seccion ${clasesFuentes}`}>
+        <AparienciaForm tenant={tenant} />
       </div>
 
       <SeccionPagina pagina={pagina} color={tenant.colorPrimario} direccion={direccion} />

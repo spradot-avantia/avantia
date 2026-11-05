@@ -4,6 +4,7 @@
 // tenant_id y solo lee lo publicado (columna `publicado`, cursos publicados).
 import { contenidoDesdeJson, type ContenidoPagina } from "../creador/paginaReglas";
 import { supabaseAdmin } from "../supabase/admin";
+import { formaDe, tipografiaDe } from "../tenant/identidad";
 import { formatearPrecio, type AcademiaSitio, type CursoSitio } from "./tipos";
 
 export interface SitioAcademia {
@@ -21,7 +22,7 @@ function contar(filas: { curso_id: string }[] | null) {
 
 export async function getSitioAcademia(tenantId: string): Promise<SitioAcademia | null> {
   const [t, p, c] = await Promise.all([
-    supabaseAdmin.from("tenants").select("nombre, frase, color_primario, logo_url, logo_modo, moneda").eq("id", tenantId).maybeSingle(),
+    supabaseAdmin.from("tenants").select("nombre, frase, color_primario, logo_url, logo_modo, tipografia, forma, moneda").eq("id", tenantId).maybeSingle(),
     supabaseAdmin.from("paginas_academia").select("publicado").eq("tenant_id", tenantId).maybeSingle(),
     supabaseAdmin
       .from("cursos")
@@ -50,6 +51,8 @@ export async function getSitioAcademia(tenantId: string): Promise<SitioAcademia 
       colorPrimario: t.data.color_primario ?? "#2563eb",
       logoUrl: t.data.logo_url,
       logoModo: t.data.logo_modo === "solo_logo" ? "solo_logo" : "logo_y_nombre",
+      tipografia: tipografiaDe(t.data.tipografia),
+      forma: formaDe(t.data.forma),
     },
     publicado: p.error ? null : contenidoDesdeJson(p.data?.publicado),
     cursos: (c.data ?? []).map((x) => ({

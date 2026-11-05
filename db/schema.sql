@@ -110,6 +110,19 @@ alter table tenants drop constraint if exists tenants_logo_modo_check;
 alter table tenants add constraint tenants_logo_modo_check
   check (logo_modo in ('logo_y_nombre', 'solo_logo'));
 
+-- Identidad visual por academia (ADR 027, migración 0014)
+alter table tenants
+  add column if not exists tipografia text not null default 'clasico',
+  add column if not exists forma text not null default 'suave';
+
+alter table tenants drop constraint if exists tenants_tipografia_check;
+alter table tenants add constraint tenants_tipografia_check
+  check (tipografia in ('clasico', 'moderno', 'cercano', 'editorial'));
+
+alter table tenants drop constraint if exists tenants_forma_check;
+alter table tenants add constraint tenants_forma_check
+  check (forma in ('recta', 'suave'));
+
 alter table tenants drop constraint if exists tenants_color_primario_check;
 alter table tenants add constraint tenants_color_primario_check
   check (color_primario is null or color_primario ~* '^#[0-9a-f]{6}$');

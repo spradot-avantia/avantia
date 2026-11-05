@@ -53,3 +53,24 @@ Fuente: mockup de landing "programa fundador" (Main.dc.html). Implementación: `
 | Estados (publicado, borrador) | `.av-badge--ok`, `--neutral`, `--verify` |
 
 Pasos sugeridos: (1) envolver `(dashboard)/layout.tsx` en `.av-scope`; (2) reemplazar variables legado por alias a `--av-*` en `globals.css`; (3) migrar botones, badges e inputs de `dashboard.module.css` a las clases `.av-*`; (4) la app del alumno (`(public)/[domain]`) usa `--brand` por tenant (color de academia con iniciales, como en el mockup) sobre los mismos neutros; verificar contraste de texto blanco sobre el color elegido por el creador.
+
+## Identidad por academia (ADR 027)
+
+Cada academia elige, además del color y el logo, una **tipografía** y una **forma**; son listas cerradas (`lib/tenant/identidad.ts`) y se guardan en `tenants.tipografia` y `tenants.forma` (migración 0014). Se aplican por clase en el contenedor raíz del sitio de la academia (`.st`), del alumno (`.al`) y de las vistas previas del panel: `tn-tipo-*` y `tn-forma-*` (`styles/identidad-tenant.css`).
+
+| Tipografía | Titulares | Cuerpo |
+|---|---|---|
+| `clasico` (default) | Inter | Inter |
+| `moderno` | Plus Jakarta Sans | Plus Jakarta Sans |
+| `cercano` | Nunito | Nunito |
+| `editorial` | Fraunces (serif) | Inter |
+
+| Forma | `--tn-radio-sm/md/lg` | Efecto |
+|---|---|---|
+| `suave` (default) | 8 / 12 / 20 px | igual que antes: no sobreescribe `--av-radius-*` |
+| `recta` | 4 / 6 / 8 px | sobreescribe `--av-radius-sm/md/lg/xl` dentro del contenedor |
+
+- **Defaults = apariencia de siempre:** `clasico` + `suave` no cambian nada en las academias existentes.
+- **Variables:** `--tn-font-body` y `--tn-font-display` (con respaldo a `--av-font-sans`). Las familias `--font-tn-*` las declara `lib/tenant/fuentes.ts` (next/font, `preload: false`): el navegador solo descarga la fuente que una academia usa. Importar `fuentes.ts` solo desde el sitio del tenant, el alumno y las vistas previas del panel; nunca desde la landing.
+- **Sin marca Avantia** en el sitio de la academia; la validación de servidor (`aparienciaSchema`) es la que manda y el tenant sale de la sesión.
+- **Pendiente de medir:** LCP del sitio del alumno en 4G con cada par (ADR 027, Consecuencias) y contraste AA de cada combinación color × tipografía × forma.

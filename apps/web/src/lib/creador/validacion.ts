@@ -2,6 +2,7 @@
 // para poder probarlo con vitest y reutilizarlo en cliente (validacion en vivo)
 // y servidor (la validacion del servidor es la que manda).
 import { z } from "zod";
+import { FORMAS, TIPOGRAFIAS } from "../tenant/identidad";
 import type { TipoLeccion } from "./types";
 
 // ---------------------------------------------------------------- Curso
@@ -88,6 +89,12 @@ export const colorHex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Usa un color hexa
 export const nombreAcademia = z.string().trim().min(2, "El nombre necesita al menos 2 caracteres.").max(60, "El nombre admite hasta 60 caracteres.");
 export const fraseAcademia = z.string().trim().max(100, "La frase admite hasta 100 caracteres.");
 export const areaAcademia = z.string().trim().max(60, "El área admite hasta 60 caracteres.");
+
+/** Identidad visual (ADR 027): solo valores de la lista cerrada. */
+export const aparienciaSchema = z.object({
+  tipografia: z.enum(TIPOGRAFIAS, { message: "Elige una de las tipografías disponibles." }).optional(),
+  forma: z.enum(FORMAS, { message: "Elige una de las formas disponibles." }).optional(),
+});
 
 export const marcaSchema = z.object({
   nombre: nombreAcademia.optional(),

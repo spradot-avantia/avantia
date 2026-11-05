@@ -40,6 +40,9 @@ const RUTAS_CURSOS = ["/", "/cursos"];
 export async function guardarMarcaAction(input: academia.MarcaInput): Promise<Resultado<TenantCreador>> {
   return seguro(() => academia.actualizarMarca(input), ["/"]);
 }
+export async function guardarAparienciaAction(input: academia.AparienciaInput): Promise<Resultado<TenantCreador>> {
+  return seguro(() => academia.actualizarApariencia(input), ["/"]);
+}
 export async function completarOnboardingAction(input: academia.MarcaInput): Promise<Resultado<TenantCreador>> {
   return seguro(() => academia.completarOnboarding(input), ["/"]);
 }

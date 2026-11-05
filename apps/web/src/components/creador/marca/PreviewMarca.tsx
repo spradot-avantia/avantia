@@ -1,4 +1,5 @@
 import { textoSobre } from "../../../lib/creador/color";
+import { clasesIdentidad, type Forma, type Tipografia } from "../../../lib/tenant/identidad";
 import type { LogoModo } from "../../../lib/creador/types";
 import { TenantMark } from "../TenantMark";
 import "../creador.css";
@@ -10,17 +11,23 @@ interface Props {
   logoUrl: string | null;
   logoModo: LogoModo;
   color: string;
+  /** Identidad visual (ADR 027). Sin valor: la apariencia de siempre. */
+  tipografia?: Tipografia;
+  forma?: Forma;
+  /** Id y texto del título: distintos si la vista previa aparece más de una vez en la página. */
+  idTitulo?: string;
+  titulo?: string;
 }
 
 /** "Así se verá": menú lateral y página del estudiante con la marca elegida. */
-export function PreviewMarca({ nombre, frase, logoUrl, logoModo, color }: Props) {
+export function PreviewMarca({ nombre, frase, logoUrl, logoModo, color, tipografia, forma, idTitulo = "mk-prev-h", titulo = "Así se verá" }: Props) {
   const nom = nombre.trim() || "Tu academia";
   const modo = logoUrl ? logoModo : "logo_y_nombre";
   const estilo = { ["--cr-brand" as string]: color, ["--cr-on-brand" as string]: textoSobre(color) };
   return (
-    <section className="mk-prev" aria-labelledby="mk-prev-h" style={estilo}>
-      <h3 className="mk-prev__t" id="mk-prev-h">
-        Así se verá
+    <section className={`mk-prev ${clasesIdentidad(tipografia, forma)}`} aria-labelledby={idTitulo} style={estilo}>
+      <h3 className="mk-prev__t" id={idTitulo}>
+        {titulo}
       </h3>
       <div className="mk-prev__fila">
         <figure className="mk-prev__caja">

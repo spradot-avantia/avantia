@@ -226,3 +226,8 @@ delay de loading que tenía la versión SPA.
 - **XP y niveles:** derivados del progreso (`lib/alumno/xp.ts`), sin tabla propia. La liberación por fecha (ADR 004) se valida en el servidor (`lib/alumno/liberacion.ts`).
 - **Redirecciones en el sitio de la academia:** no usar `redirect()` dentro de Server Actions (Next resuelve el destino sin la reescritura host → `[domain]` del middleware y entrega 404). Las acciones devuelven `irA` y `FormAccion`/`useIrA` navegan con `window.location.assign`. Tampoco llamar `revalidatePath` en esas acciones: re-pinta la página y desmonta el formulario antes de navegar.
 - **Pruebas E2E:** `apps/web/e2e` (Playwright). `npm run dev` y `npm run test:e2e`; `E2E_TENANT` (por defecto `prueba`) y `E2E_PORT`. Para muchos ingresos desde una IP: `ALUMNO_LIMITE_FACTOR=50` al levantar el servidor (multiplica los limitadores de registro, ingreso y correos).
+
+## Identidad visual por academia (ADR 027, migración 0014)
+
+`tenants` suma `tipografia` (`clasico`, `moderno`, `cercano`, `editorial`) y `forma` (`recta`, `suave`), ambas con `check` y default que reproduce la apariencia anterior. Es configuración del tenant: no hay tablas nuevas y la RLS (`tenants_update_propio`) y los índices por `tenant_id` existentes cubren el cambio. Se lee en servidor desde el host (`resolveTenantByHostname`, `getSitioAcademia`) y se escribe solo desde el panel con sesión (`guardarAparienciaAction`, validación de lista cerrada en `aparienciaSchema`); nunca del body.
+**Orden de despliegue:** aplicar la migración 0014 **antes** de desplegar el código, porque `resolveTenantByHostname` y `getSitioAcademia` seleccionan las columnas nuevas.

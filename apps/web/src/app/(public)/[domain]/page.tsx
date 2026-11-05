@@ -7,6 +7,8 @@ import { textoSobre } from "../../../lib/creador/color";
 import { getAlumnoActual } from "../../../lib/alumno/sesion";
 import { getSitioAcademia } from "../../../lib/sitio/paginaPublica";
 import { construirDatosSitio } from "../../../lib/sitio/tipos";
+import { clasesFuentes } from "../../../lib/tenant/fuentes";
+import { clasesIdentidad } from "../../../lib/tenant/identidad";
 import { resolveTenantByHostname } from "../../../lib/tenant/resolve";
 import "../../../components/sitio/sitio.css";
 
@@ -48,7 +50,7 @@ export default async function SitioAcademiaPage({ params }: { params: { domain: 
   }
 
   return (
-    <main className="st">
+    <main className={`st ${clasesFuentes} ${clasesIdentidad(sitio.academia.tipografia, sitio.academia.forma)}`}>
       <BarraAlumno alumno={alumno} />
       <div className="st-programa">
         <header className="st-barra">

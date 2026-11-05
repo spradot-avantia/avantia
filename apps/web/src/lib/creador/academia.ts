@@ -1,7 +1,7 @@
 // Repo de la academia: marca y onboarding. Filtra siempre por tenant.id.
 import { COLUMNAS_TENANT, mapTenant, requireCreadorContext } from "./tenantActual";
 import type { Resultado, TenantCreador } from "./types";
-import { LOGO_EXT, inspeccionarLogo, marcaSchema } from "./validacion";
+import { LOGO_EXT, aparienciaSchema, inspeccionarLogo, marcaSchema } from "./validacion";
 
 export async function getAcademia(): Promise<TenantCreador> {
   return (await requireCreadorContext()).tenant;
@@ -47,6 +47,32 @@ export async function actualizarMarca(input: MarcaInput): Promise<Resultado<Tena
     .select(COLUMNAS_TENANT)
     .single();
   if (error) return { ok: false, error: "No pudimos guardar los cambios. Inténtalo de nuevo." };
+  return { ok: true, data: mapTenant(data) };
+}
+
+export interface AparienciaInput {
+  tipografia?: string;
+  forma?: string;
+}
+
+/**
+ * Guarda la identidad visual (ADR 027): tipografía y forma, de lista cerrada.
+ * El tenant sale de la sesión, nunca del body; la validación de servidor es la que manda.
+ */
+export async function actualizarApariencia(input: AparienciaInput): Promise<Resultado<TenantCreador>> {
+  const { tenant, db } = await requireCreadorContext();
+  const p = aparienciaSchema.safeParse(input);
+  if (!p.success) {
+    const campos: Record<string, string> = {};
+    for (const i of p.error.issues) campos[String(i.path[0])] = i.message;
+    return { ok: false, error: p.error.issues[0]?.message ?? "Datos inválidos.", campos };
+  }
+  const filas: Record<string, string> = {};
+  if (p.data.tipografia !== undefined) filas.tipografia = p.data.tipografia;
+  if (p.data.forma !== undefined) filas.forma = p.data.forma;
+  if (Object.keys(filas).length === 0) return { ok: true, data: tenant };
+  const { data, error } = await db.from("tenants").update(filas).eq("id", tenant.id).select(COLUMNAS_TENANT).single();
+  if (error) return { ok: false, error: "No pudimos guardar la apariencia. Inténtalo de nuevo." };
   return { ok: true, data: mapTenant(data) };
 }
 

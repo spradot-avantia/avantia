@@ -50,6 +50,8 @@ export async function cargarPaginaCreador(): Promise<CargaPagina> {
           colorPrimario: tenant.colorPrimario,
           logoUrl: tenant.logoUrl,
           logoModo: tenant.logoModo,
+          tipografia: tenant.tipografia,
+          forma: tenant.forma,
         },
         cursos: cursos.map((c) => ({
           id: c.id,

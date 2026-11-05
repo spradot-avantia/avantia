@@ -1,0 +1,39 @@
+/* Identidad visual por academia (ADR 027): tipografía y forma, por clase en el contenedor
+   raíz del sitio de la academia (.st), del alumno (.al) y de las vistas previas del panel.
+   Sin clase (o con clasico + suave) la apariencia es la de siempre: Inter y radios de
+   avantia-tokens.css. Las variables --font-tn-* las declara lib/tenant/fuentes.ts. */
+
+/* ---- Tipografía ---- */
+.tn-tipo-moderno {
+  --tn-font-body: var(--font-tn-jakarta), var(--av-font-sans);
+  --tn-font-display: var(--font-tn-jakarta), var(--av-font-sans);
+}
+.tn-tipo-cercano {
+  --tn-font-body: var(--font-tn-nunito), var(--av-font-sans);
+  --tn-font-display: var(--font-tn-nunito), var(--av-font-sans);
+}
+.tn-tipo-editorial {
+  --tn-font-body: var(--av-font-sans);
+  --tn-font-display: var(--font-tn-fraunces), Georgia, "Times New Roman", serif;
+}
+
+/* ---- Forma: --tn-radio-* y los radios del sistema que usan sitio y alumno ---- */
+.tn-forma-suave {
+  --tn-radio-sm: 8px;
+  --tn-radio-md: 12px;
+  --tn-radio-lg: 20px;
+}
+.tn-forma-recta {
+  --tn-radio-sm: 4px;
+  --tn-radio-md: 6px;
+  --tn-radio-lg: 8px;
+  --av-radius-sm: var(--tn-radio-sm);
+  --av-radius-md: var(--tn-radio-md);
+  --av-radius-lg: var(--tn-radio-lg);
+  --av-radius-xl: 12px;
+}
+
+/* Titulares con la fuente de display (si la identidad no la define, heredan). */
+:is(.tn-tipo-clasico, .tn-tipo-moderno, .tn-tipo-cercano, .tn-tipo-editorial) :is(h1, h2, h3, h4) {
+  font-family: var(--tn-font-display, inherit);
+}

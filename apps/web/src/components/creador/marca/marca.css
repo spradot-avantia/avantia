@@ -585,3 +585,12 @@
   max-width: 880px;
   scroll-margin-top: var(--av-space-5);
 }
+
+/* La vista previa muestra la tipografía de la identidad elegida (ADR 027). */
+.mk-prev .mk-prev__caja--est {
+  font-family: var(--tn-font-body, inherit);
+}
+.mk-prev .mk-prev__caja--est .cr-mark__name,
+.mk-prev .mk-prev__panel .cr-mark__name {
+  font-family: var(--tn-font-display, inherit);
+}

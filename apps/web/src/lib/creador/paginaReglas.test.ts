@@ -139,7 +139,7 @@ const curso = (id: string, extra: Partial<CursoSitio> = {}): CursoSitio => ({
   totalLecciones: 5,
   ...extra,
 });
-const academia = { nombre: "Contratos Mineros", frase: "Frase", colorPrimario: "#0f766e", logoUrl: null, logoModo: "logo_y_nombre" as const };
+const academia = { nombre: "Contratos Mineros", frase: "Frase", colorPrimario: "#0f766e", logoUrl: null, logoModo: "logo_y_nombre" as const, tipografia: "clasico" as const, forma: "suave" as const };
 
 describe("datos del sitio", () => {
   it("la vista previa completa con el ejemplo y lo marca", () => {

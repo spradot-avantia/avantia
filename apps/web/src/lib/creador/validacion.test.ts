@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  aparienciaSchema,
   inspeccionarLogo,
   parsearCorreos,
   sanitizarSvg,
@@ -174,5 +175,19 @@ describe("validarPublicacion", () => {
   it("con fechas exige fechas", () => {
     const r = validarPublicacion(cursoBase({ modalidad: "con_fechas" }));
     expect(r.bloqueos.some((b) => b.paso === "modalidad")).toBe(true);
+  });
+});
+
+describe("apariencia de la academia (ADR 027)", () => {
+  it("acepta tipografías y formas de la lista cerrada", () => {
+    expect(aparienciaSchema.safeParse({ tipografia: "editorial", forma: "recta" }).success).toBe(true);
+    expect(aparienciaSchema.safeParse({}).success).toBe(true);
+  });
+  it("rechaza valores fuera de la lista (el servidor manda)", () => {
+    expect(aparienciaSchema.safeParse({ tipografia: "comic-sans" }).success).toBe(false);
+    expect(aparienciaSchema.safeParse({ forma: "redonda" }).success).toBe(false);
+    expect(aparienciaSchema.safeParse({ tipografia: "clasico'; drop table tenants;--" }).success).toBe(false);
+    const r = aparienciaSchema.safeParse({ forma: "x" });
+    expect(!r.success && r.error.issues[0]?.message).toBe("Elige una de las formas disponibles.");
   });
 });
