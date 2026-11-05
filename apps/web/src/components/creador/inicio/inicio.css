@@ -172,3 +172,15 @@
   font-weight: var(--av-fw-regular, 400);
   color: var(--av-muted);
 }
+
+/* Inicio: franja de métricas y acciones de curso en fila */
+.ci-kpis { flex-direction: row; gap: var(--av-space-3); padding: var(--av-space-3) var(--av-space-4); }
+.ci-kpis__item { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ci-kpis__nota { display: none; color: var(--av-muted); font-size: var(--av-fs-sm); }
+@media (min-width: 700px) {
+  .ci-kpis { padding: var(--av-space-4); }
+  .ci-kpis__nota { display: block; }
+}
+.ci-actions--fila { flex-wrap: nowrap; }
+.ci-actions--fila > * { flex: 1 1 0; justify-content: center; }
+@media (min-width: 560px) { .ci-actions--fila > * { flex: 0 0 auto; } }

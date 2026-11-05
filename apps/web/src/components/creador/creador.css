@@ -70,30 +70,65 @@
   gap: 2px;
   padding: 0 var(--av-space-3);
 }
-.cr-nav a {
+.cr-nav a,
+.cr-nav__salir {
   display: flex;
   align-items: center;
+  gap: var(--av-space-3);
+  width: 100%;
   min-height: var(--av-target);
   padding: 0 var(--av-space-4);
+  border: 0;
   border-radius: var(--av-radius-md);
+  background: transparent;
   color: var(--av-ink-2);
+  font: inherit;
   font-weight: var(--av-fw-medium);
+  text-align: left;
+  cursor: pointer;
 }
-.av-scope .cr-nav a:hover {
+.cr-nav__ico {
+  flex: none;
+  color: var(--av-muted);
+}
+.av-scope .cr-nav a:hover,
+.av-scope .cr-nav__salir:hover {
   background: var(--av-surface-2);
   color: var(--av-ink);
 }
+.cr-nav a:focus-visible,
+.cr-nav__salir:focus-visible,
+.cr-menu-btn:focus-visible {
+  outline: 2px solid var(--av-blue-600);
+  outline-offset: 2px;
+}
 .av-scope .cr-nav a[aria-current="page"] {
-  background: color-mix(in srgb, var(--cr-brand) 12%, #fff);
+  background: color-mix(in srgb, var(--cr-brand) 12%, var(--av-surface));
   color: var(--av-ink);
-  box-shadow: inset 3px 0 0 var(--cr-brand);
+  font-weight: var(--av-fw-semibold);
+}
+.cr-nav a[aria-current="page"] .cr-nav__ico {
+  color: var(--cr-brand);
 }
 .cr-nav__sep {
-  margin: var(--av-space-3) var(--av-space-4) var(--av-space-2);
+  display: block;
+  height: 1px;
+  margin: var(--av-space-3) var(--av-space-4);
+  background: var(--av-line);
+}
+/* Sesión: el correo se trunca; «Cerrar sesión» comparte estilo con los ítems del menú. */
+.cr-side .au-user,
+.cr-drawer .au-user {
+  padding: var(--av-space-3);
+}
+.cr-side .au-user__mail,
+.cr-drawer .au-user__mail {
+  padding: 0 var(--av-space-4);
   font-size: var(--av-fs-xs);
   color: var(--av-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cr-main {

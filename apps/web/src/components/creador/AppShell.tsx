@@ -3,7 +3,7 @@ import { signOutAction } from "../../lib/auth/actions";
 import { textoSobre } from "../../lib/creador/color";
 import type { TenantCreador } from "../../lib/creador/types";
 import { MobileMenu } from "./MobileMenu";
-import { NavLinks, type ItemNav } from "./NavLinks";
+import { IconoSvg, NavLinks, type ItemNav } from "./NavLinks";
 import { TenantMark } from "./TenantMark";
 import "./creador.css";
 import "./auth/auth.css";
@@ -11,10 +11,10 @@ import "./auth/auth.css";
 const FIRMA = "Con la tecnología de Avantia";
 
 const ITEMS: ItemNav[] = [
-  { href: "/inicio", label: "Inicio", exacto: true },
-  { href: "/cursos", label: "Cursos" },
-  { href: "/estudiantes", label: "Estudiantes" },
-  { href: "/mi-academia", label: "Mi academia" },
+  { href: "/inicio", label: "Inicio", exacto: true, icono: "inicio" },
+  { href: "/cursos", label: "Cursos", icono: "cursos" },
+  { href: "/estudiantes", label: "Estudiantes", icono: "estudiantes" },
+  { href: "/mi-academia", label: "Mi academia", icono: "academia" },
 ];
 
 interface Props {
@@ -34,7 +34,7 @@ interface Props {
  */
 export function AppShell({ tenant, mostrarAdmin, usuarioEmail, children }: Props) {
   const color = tenant?.colorPrimario ?? "#2563eb";
-  const items = mostrarAdmin ? [...ITEMS, { href: "/admin", label: "Administración", separador: true }] : ITEMS;
+  const items = mostrarAdmin ? [...ITEMS, { href: "/admin", label: "Administración", separador: true, icono: "admin" as const }] : ITEMS;
   const marca = (
     <TenantMark
       nombre={tenant?.nombre ?? "Mi academia"}
@@ -45,9 +45,14 @@ export function AppShell({ tenant, mostrarAdmin, usuarioEmail, children }: Props
   );
   const sesion = usuarioEmail ? (
     <div className="au-user">
-      <span className="au-user__mail">{usuarioEmail}</span>
+      <span className="au-user__mail" title={usuarioEmail}>
+        {usuarioEmail}
+      </span>
       <form action={signOutAction}>
-        <button type="submit" className="av-btn cr-btn cr-btn--ghost cr-btn--block">
+        <button type="submit" className="cr-nav__salir">
+          <IconoSvg>
+            <path d="M9 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H9M15 8l4 4-4 4M19 12H9" />
+          </IconoSvg>
           Cerrar sesión
         </button>
       </form>

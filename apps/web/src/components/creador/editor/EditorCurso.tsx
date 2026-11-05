@@ -188,7 +188,6 @@ export function EditorCurso({ cursoInicial, pasoInicial, urlPublica }: Props) {
 
       <header className="ed-head">
         <div className="ed-head__body">
-          <p className="ed-kicker">Editar curso</p>
           <h1 className="ed-head__title">{curso.titulo.trim() || "Curso sin título"}</h1>
           <div className="ed-head__meta">
             <BadgeEstadoCurso estado={curso.estado} />

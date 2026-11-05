@@ -28,15 +28,17 @@ export default async function EstudiantesPage({ searchParams }: { searchParams: 
       .sort((a, b) => Number(b.estado === "publicado") - Number(a.estado === "publicado"))
       .map((c) => ({ id: c.id, titulo: c.titulo, estado: c.estado, acceso: c.acceso, url: urlPublicaCurso(tenant, c.slug) }));
     const titulos = new Map(cursos.map((c) => [c.id, c.titulo]));
-    // Una invitación cuyo correo ya tiene inscripción activa en ese curso cuenta como "ya entró"
-    // (la invitación misma queda «pendiente» en la base hasta que se marque como aceptada).
-    const yaEntro = new Set(insc.filter((x) => x.estado === "activa").map((x) => `${x.cursoId}:${x.correo.toLowerCase()}`));
-    filas = inv.map((i) => ({
-      id: i.id,
-      email: i.email,
-      cursoTitulo: titulos.get(i.cursoId) ?? "Curso",
-      estado: i.estado === "pendiente" && yaEntro.has(`${i.cursoId}:${i.email.toLowerCase()}`) ? "aceptada" : i.estado,
-    }));
+    // Quien ya tiene inscripción (en cualquier estado) aparece en la lista de estudiantes de arriba:
+    // «Invitados» muestra solo las invitaciones que aún no crearon su cuenta, para no repetir a nadie.
+    const conInscripcion = new Set(insc.map((x) => `${x.cursoId}:${x.correo.toLowerCase()}`));
+    filas = inv
+      .filter((i) => !conInscripcion.has(`${i.cursoId}:${i.email.toLowerCase()}`))
+      .map((i) => ({
+        id: i.id,
+        email: i.email,
+        cursoTitulo: titulos.get(i.cursoId) ?? "Curso",
+        estado: i.estado,
+      }));
     inscripciones = insc;
     titulosCurso = titulos;
     quiz = await resultadosDelQuiz().catch(() => []);
@@ -68,16 +70,14 @@ export default async function EstudiantesPage({ searchParams }: { searchParams: 
             <RegistrarEstudiantes cursos={opciones} cursoInicial={inicial} />
           </details>
           <InscripcionesAlumnos inscripciones={inscripciones} vistaInicial={searchParams.ver === "por-activar" ? "por-activar" : undefined} />
-          <section className="ci-stack" style={{ gap: "var(--av-space-3)" }} aria-labelledby="ci-reg-t">
-            <h2 className="ci-card__title" id="ci-reg-t">
-              Invitados ({filas.length})
-            </h2>
-            {filas.length === 0 ? (
-              <EmptyState titulo="Aún no registras invitados" descripcion="Pega sus correos arriba y aparecerán aquí." />
-            ) : (
+          {filas.length > 0 && (
+            <section className="ci-stack" style={{ gap: "var(--av-space-3)" }} aria-labelledby="ci-reg-t">
+              <h2 className="ci-card__title" id="ci-reg-t">
+                Invitados que aún no crean su cuenta ({filas.length})
+              </h2>
               <ListaEstudiantes filas={filas} />
-            )}
-          </section>
+            </section>
+          )}
           <ResultadosQuiz resultados={quiz} titulosCurso={titulosCurso} />
         </>
       )}

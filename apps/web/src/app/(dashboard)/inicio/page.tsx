@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Callout, EmptyState, LinkButton, PageHeader, SinAcademia } from "../../../components/creador";
+import { EmptyState, LinkButton, PageHeader, SinAcademia } from "../../../components/creador";
 import { ListaCursos, type CursoConUrl } from "../../../components/creador/cursos/ListaCursos";
 import { Checklist, type PasoChecklist } from "../../../components/creador/inicio/Checklist";
 import { CopiarEnlace } from "../../../components/creador/inicio/CopiarEnlace";
@@ -138,7 +138,6 @@ export default async function InicioPage() {
       <PageHeader titulo={titulo} descripcion={descripcion} />
 
       <section className="ci-card" aria-labelledby="ci-sig-t">
-        <span className="ci-overline">Siguiente paso</span>
         <h2 className="ci-card__title" id="ci-sig-t">
           {siguiente.titulo}
         </h2>
@@ -164,7 +163,7 @@ export default async function InicioPage() {
 
       <Kpis publicados={publicados.length} borradores={borradores.length} estudiantes={estudiantes} avancePromedio={avancePromedio} />
       {!tenant.logoUrl && (
-        <section className="ci-card ci-card--accent" aria-labelledby="ci-logo-t">
+        <section className="ci-card" aria-labelledby="ci-logo-t">
           <h2 className="ci-card__title" id="ci-logo-t">
             Sube el logo de tu academia
           </h2>
@@ -177,12 +176,6 @@ export default async function InicioPage() {
             </LinkButton>
           </div>
         </section>
-      )}
-
-      {hechos === pasos.length && (
-        <Callout tono="success" titulo="Completaste los 4 pasos">
-          Tu piloto está en marcha.
-        </Callout>
       )}
     </div>
   );

@@ -15,7 +15,7 @@ export interface FilaEstudiante {
 }
 
 const ESTADO: Record<EstadoInvitacion, { texto: string; tono: "ok" | "neutral" | "warning" }> = {
-  pendiente: { texto: "Registrado, aún sin entrar", tono: "neutral" },
+  pendiente: { texto: "Aún sin crear su cuenta", tono: "neutral" },
   aceptada: { texto: "Ya entró", tono: "ok" },
   revocada: { texto: "Acceso revocado", tono: "warning" },
 };

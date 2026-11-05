@@ -97,9 +97,12 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
         {ctaPropio ? (
           ctaPropio
         ) : preview || !ctaHref ? (
-          <button type="button" className="fc-cta" disabled aria-disabled="true">
-            {cta}
-          </button>
+          <>
+            <button type="button" className="fc-cta" disabled aria-disabled="true">
+              {cta}
+            </button>
+            {preview && <p className="fc-nota">En la vista previa los botones no navegan.</p>}
+          </>
         ) : (
           <a className="fc-cta" href={ctaHref}>
             {cta}
@@ -134,7 +137,7 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
                     <details className="fc-lec">
                       <summary>
                         <span>{l.titulo}</span>
-                        <span className="fc-tipo">{TIPO[l.tipo]}</span>
+                        {l.tipo !== "texto" && <span className="fc-tipo">{TIPO[l.tipo]}</span>}
                       </summary>
                       <div className="fc-lec__body">
                         <ContenidoLeccion l={l} />
@@ -144,7 +147,7 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
                 ) : (
                   <li key={l.id} className="fc-lec fc-lec--plana">
                     <span>{l.titulo}</span>
-                    <span className="fc-tipo">{TIPO[l.tipo]}</span>
+                    {l.tipo !== "texto" && <span className="fc-tipo">{TIPO[l.tipo]}</span>}
                   </li>
                 ),
               )}

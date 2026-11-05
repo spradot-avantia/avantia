@@ -1,0 +1,42 @@
+/* Estudiantes: pestañas livianas (control segmentado) */
+.es-tabs {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  padding: 4px;
+  background: var(--av-surface-2);
+  border-radius: var(--av-radius-md);
+  width: 100%;
+}
+@media (min-width: 560px) {
+  .es-tabs {
+    width: auto;
+    grid-auto-columns: auto;
+  }
+}
+.es-tab {
+  min-height: 44px;
+  padding: 0 var(--av-space-4);
+  border: 0;
+  border-radius: var(--av-radius-sm);
+  background: transparent;
+  color: var(--av-muted);
+  font: inherit;
+  font-size: var(--av-fs-sm);
+  font-weight: var(--av-fw-medium);
+  cursor: pointer;
+}
+.es-tab:hover {
+  color: var(--av-ink);
+}
+.es-tab[aria-selected="true"] {
+  background: var(--av-surface);
+  color: var(--av-ink);
+  font-weight: var(--av-fw-semibold);
+  box-shadow: var(--av-shadow-sm);
+}
+.es-tab:focus-visible {
+  outline: 2px solid var(--av-blue-600);
+  outline-offset: 2px;
+}

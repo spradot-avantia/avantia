@@ -63,8 +63,12 @@
   cursor: pointer;
 }
 .fc-cta:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  cursor: default;
+}
+.fc-nota {
+  margin: 0;
+  font-size: var(--av-fs-sm);
+  color: var(--av-muted);
 }
 .fc-sec {
   display: flex;
@@ -101,10 +105,9 @@
   gap: 4px;
 }
 .fc-mod__n {
-  font-size: var(--av-fs-xs);
+  font-size: var(--av-fs-sm);
+  font-weight: var(--av-fw-medium);
   color: var(--av-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   margin: 0;
 }
 .fc-mod__t {

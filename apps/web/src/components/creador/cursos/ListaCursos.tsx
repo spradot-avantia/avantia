@@ -28,9 +28,9 @@ export function ListaCursos({ cursos, compacto }: { cursos: CursoConUrl[]; compa
               )}
             </div>
           </div>
-          <div className="ci-actions">
-            {c.estado === "publicado" && <CopiarEnlace url={c.url} etiqueta="Copiar enlace" />}
-            <LinkButton href={`/cursos/${c.id}/editar`} variante={c.estado === "publicado" ? "secondary" : "primary"}>
+          <div className={`ci-actions${compacto ? " ci-actions--fila" : ""}`}>
+            {c.estado === "publicado" && <CopiarEnlace url={c.url} etiqueta="Copiar enlace" variante={compacto ? "ghost" : "secondary"} />}
+            <LinkButton href={`/cursos/${c.id}/editar`} variante={compacto || c.estado === "publicado" ? "secondary" : "primary"}>
               Editar
             </LinkButton>
           </div>

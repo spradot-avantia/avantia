@@ -8,6 +8,7 @@ import { Badge } from "../Badge";
 import { Button } from "../Button";
 import { Callout } from "../Callout";
 import "../inicio/inicio.css";
+import "./estudiantes.css";
 
 const ORIGEN = { invitacion: "Invitación", anuncio: "Anuncio", pagina: "Tu página" } as const;
 
@@ -76,7 +77,7 @@ export function PorActivar({ filas }: { filas: FilaInscripcion[] }) {
                   {f.cursoTitulo} · {precio(f.precioCentavos)}
                 </span>
                 <span>
-                  {ORIGEN[f.origen]}
+                  Origen: {ORIGEN[f.origen]}
                   {f.campana ? ` · ${f.campana}` : ""} · cuenta creada {cuando(f.creadaEn)}
                 </span>
                 {horasEspera(f.creadaEn) > 24 && <Badge tono="warning">Lleva más de 24 horas esperando</Badge>}
@@ -150,7 +151,7 @@ export function TablaAlumnos({ filas }: { filas: FilaInscripcion[] }) {
               <span>{f.correo}</span>
               <span>{f.cursoTitulo}</span>
               <span>
-                {ORIGEN[f.origen]}
+                Origen: {ORIGEN[f.origen]}
                 {f.campana ? ` · ${f.campana}` : ""}
               </span>
             </div>
@@ -202,22 +203,36 @@ export function InscripcionesAlumnos({
     { id: "estudiantes" as const, texto: `Estudiantes (${alumnos.length})` },
     { id: "por-activar" as const, texto: `Por activar (${porActivar.length})` },
   ];
+  function teclas(e: React.KeyboardEvent<HTMLButtonElement>) {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    e.preventDefault();
+    const otra = vista === "estudiantes" ? "por-activar" : "estudiantes";
+    setVista(otra);
+    document.getElementById(`es-tab-${otra}`)?.focus();
+  }
   return (
     <section className="ci-stack" style={{ gap: "var(--av-space-3)" }} aria-label="Estudiantes con cuenta">
-      <div role="tablist" aria-label="Vista" className="ci-actions">
+      <div role="tablist" aria-label="Vista" className="es-tabs">
         {pestanas.map((p) => (
-          <Button
+          <button
             key={p.id}
+            type="button"
             role="tab"
+            id={`es-tab-${p.id}`}
             aria-selected={vista === p.id}
-            variante={vista === p.id ? "primary" : "secondary"}
+            aria-controls="es-panel"
+            tabIndex={vista === p.id ? 0 : -1}
+            className="es-tab"
             onClick={() => setVista(p.id)}
+            onKeyDown={teclas}
           >
             {p.texto}
-          </Button>
+          </button>
         ))}
       </div>
-      <div role="tabpanel">{vista === "por-activar" ? <PorActivar filas={porActivar} /> : <TablaAlumnos filas={alumnos} />}</div>
+      <div role="tabpanel" id="es-panel" aria-labelledby={`es-tab-${vista}`}>
+        {vista === "por-activar" ? <PorActivar filas={porActivar} /> : <TablaAlumnos filas={alumnos} />}
+      </div>
     </section>
   );
 }
