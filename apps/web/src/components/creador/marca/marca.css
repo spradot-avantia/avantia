@@ -522,10 +522,11 @@
   outline-offset: 2px;
 }
 .mk-seccion {
-  max-width: 760px;
+  max-width: 880px;
   margin-bottom: var(--av-space-5);
   scroll-margin-top: var(--av-space-5);
 }
 #pagina {
+  max-width: 880px;
   scroll-margin-top: var(--av-space-5);
 }

@@ -155,24 +155,31 @@ export function TablaAlumnos({ filas }: { filas: FilaInscripcion[] }) {
               </span>
             </div>
           </div>
-          <div className="ci-row__meta" style={{ justifyContent: "flex-end" }}>
+          <div className="ci-alum__lado">
             {ESTADO[f.estado]}
             {f.estado === "activa" && (
-              <>
-                <span>
-                  Avance <strong>{f.avance} %</strong> ({f.completadas}/{f.totalLecciones})
-                </span>
+              <dl className="ci-stats">
+                <div>
+                  <dt>Avance</dt>
+                  <dd>
+                    {f.avance} %<small> {f.completadas}/{f.totalLecciones}</small>
+                  </dd>
+                </div>
                 {f.dominio && (
-                  <span title="Preguntas de los quizzes que domina: acertadas al primer intento o aprendidas en el repaso.">
-                    Dominio <strong>{f.dominio.pct} %</strong> ({f.dominio.dominadas}/{f.dominio.total})
-                  </span>
+                  <div title="Preguntas de los quizzes que domina: acertadas al primer intento o aprendidas en el repaso.">
+                    <dt>Dominio</dt>
+                    <dd>
+                      {f.dominio.pct} %<small> {f.dominio.dominadas}/{f.dominio.total}</small>
+                    </dd>
+                  </div>
                 )}
-                <span>
-                  <strong>{f.xp}</strong> XP
-                </span>
-                {f.sinActividad && <Badge tono="warning">Sin actividad</Badge>}
-              </>
+                <div>
+                  <dt>XP</dt>
+                  <dd>{f.xp}</dd>
+                </div>
+              </dl>
             )}
+            {f.estado === "activa" && f.sinActividad && <Badge tono="warning">Sin actividad</Badge>}
           </div>
         </li>
       ))}

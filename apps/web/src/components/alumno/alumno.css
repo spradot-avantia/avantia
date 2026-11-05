@@ -723,11 +723,11 @@
   outline-offset: 2px;
 }
 .al-quiz__op--ok {
-  border-color: #1b7f4b;
-  background: #e8f5ee;
+  border-color: var(--av-success);
+  background: var(--av-success-bg);
 }
 .al-quiz__op--mal {
-  border-color: #b3261e;
+  border-color: #b42318;
   background: #fdecea;
 }
 .al-quiz__fb {
@@ -739,12 +739,12 @@
   margin: 4px 0 0;
 }
 .al-quiz__fb.is-ok {
-  background: #e8f5ee;
-  border-color: #1b7f4b;
+  background: var(--av-success-bg);
+  border-color: var(--av-success);
 }
 .al-quiz__fb.is-mal {
   background: #fdecea;
-  border-color: #b3261e;
+  border-color: #b42318;
 }
 
 /* Enlaces dentro de texto: se distinguen por subrayado y no solo por color (WCAG 1.4.1). */

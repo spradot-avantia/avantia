@@ -63,9 +63,11 @@ export default async function EstudiantesPage({ searchParams }: { searchParams: 
         />
       ) : (
         <>
+          <details className="ci-det" open={inscripciones.length === 0 && filas.length === 0}>
+            <summary>Registrar estudiantes por correo</summary>
+            <RegistrarEstudiantes cursos={opciones} cursoInicial={inicial} />
+          </details>
           <InscripcionesAlumnos inscripciones={inscripciones} vistaInicial={searchParams.ver === "por-activar" ? "por-activar" : undefined} />
-          <ResultadosQuiz resultados={quiz} titulosCurso={titulosCurso} />
-          <RegistrarEstudiantes cursos={opciones} cursoInicial={inicial} />
           <section className="ci-stack" style={{ gap: "var(--av-space-3)" }} aria-labelledby="ci-reg-t">
             <h2 className="ci-card__title" id="ci-reg-t">
               Invitados ({filas.length})
@@ -76,6 +78,7 @@ export default async function EstudiantesPage({ searchParams }: { searchParams: 
               <ListaEstudiantes filas={filas} />
             )}
           </section>
+          <ResultadosQuiz resultados={quiz} titulosCurso={titulosCurso} />
         </>
       )}
     </div>

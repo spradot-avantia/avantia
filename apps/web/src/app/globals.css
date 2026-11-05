@@ -1,18 +1,20 @@
 @import "../styles/avantia-tokens.css";
 
 :root {
-  --color-bg: #f4f5f7;
-  --color-surface: #ffffff;
-  --color-border: #e2e4e9;
-  --color-text: #1a1d23;
-  --color-text-muted: #6b7280;
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
-  --color-sidebar-bg: #171923;
-  --color-sidebar-text: #cbd5e1;
-  --color-sidebar-text-active: #ffffff;
-  --radius: 8px;
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  /* Alias de la paleta heredada: apuntan a los tokens de marca (avantia-tokens.css).
+     Los usan solo ui/Button y dashboard.module.css (configuracion/dominio). */
+  --color-bg: var(--av-bg);
+  --color-surface: var(--av-surface);
+  --color-border: var(--av-line-strong);
+  --color-text: var(--av-ink);
+  --color-text-muted: var(--av-muted);
+  --color-primary: var(--av-blue-600);
+  --color-primary-hover: var(--av-blue-700);
+  --color-sidebar-bg: var(--av-ink);
+  --color-sidebar-text: var(--av-line-strong);
+  --color-sidebar-text-active: var(--av-surface);
+  --radius: var(--av-radius-sm);
+  --shadow-sm: var(--av-shadow-sm);
 }
 
 * {
@@ -23,13 +25,13 @@ body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--av-font-sans);
   font-size: 15px;
   line-height: 1.5;
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--av-blue-700);
   text-decoration: none;
 }
 

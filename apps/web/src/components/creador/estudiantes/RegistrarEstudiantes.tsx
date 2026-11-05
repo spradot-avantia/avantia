@@ -43,7 +43,6 @@ export function RegistrarEstudiantes({ cursos, cursoInicial }: { cursos: CursoOp
   return (
     <div className="ci-stack">
       <form className="ci-card ci-form" onSubmit={enviar} noValidate aria-busy={pendiente}>
-        <h2 className="ci-card__title">Registrar estudiantes</h2>
         <Field id="est-curso" label="Curso">
           <Select
             id="est-curso"
