@@ -4,6 +4,7 @@ import { LegalPage, type SeccionLegal } from "@/components/marketing/LegalPage";
 export const metadata: Metadata = {
   title: "Términos y condiciones | Avantia",
   description: "Términos y condiciones de uso de Avantia y del programa fundador.",
+  robots: { index: false, follow: true },
 };
 
 const SECCIONES: SeccionLegal[] = [

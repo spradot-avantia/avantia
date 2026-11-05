@@ -4,6 +4,7 @@ import { LegalPage, type SeccionLegal } from "@/components/marketing/LegalPage";
 export const metadata: Metadata = {
   title: "Política de privacidad | Avantia",
   description: "Cómo Avantia trata los datos de creadores, postulantes y alumnos.",
+  robots: { index: false, follow: true },
 };
 
 const SECCIONES: SeccionLegal[] = [

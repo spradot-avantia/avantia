@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -6,6 +7,9 @@ import "../../components/creador/creador.css";
 import "../../components/creador/auth/auth.css";
 
 export const dynamic = "force-dynamic";
+
+// Pantallas de acceso: no deben aparecer como resultados propios en Google.
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 // Layout sin menú para las pantallas de acceso. La sesión del creador vive solo
 // en el host del panel (ADR 003): en cualquier otro host se redirige allí.
