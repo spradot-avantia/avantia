@@ -119,6 +119,14 @@
 .md-dur {
   max-width: 160px;
 }
+.md-autoalto {
+  resize: none;
+  overflow: hidden;
+  line-height: 1.45;
+}
+textarea.cr-input.md-autoalto--linea {
+  min-height: 56px;
+}
 .md-objetivos {
   display: grid;
   gap: var(--av-space-3);

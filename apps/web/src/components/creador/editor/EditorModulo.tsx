@@ -4,7 +4,7 @@
 // Mismo patrón de autoguardado que el editor de curso: cada cambio se valida en el
 // cliente, se programa con debounce y se serializa en una sola cola.
 import { useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { nombreModulo } from "../../../lib/alumno/formato";
 import { actualizarModuloAction, obtenerCursoAction } from "../../../lib/creador/actionsEditor";
 import type { CursoCompleto, Modulo } from "../../../lib/creador/types";
@@ -33,6 +33,12 @@ interface Props {
   cursoInicial: CursoCompleto;
   moduloId: string;
   urlPublica: string;
+}
+
+/** Hace que un textarea crezca con su contenido (sin barra de desplazamiento interna). */
+function ajustarAlto(el: HTMLTextAreaElement) {
+  el.style.height = "auto";
+  el.style.height = `${el.scrollHeight + 2}px`;
 }
 
 export function EditorModulo({ cursoInicial, moduloId, urlPublica }: Props) {
@@ -76,6 +82,15 @@ export function EditorModulo({ cursoInicial, moduloId, urlPublica }: Props) {
     salir,
     urlPublica,
   };
+
+  // Los campos de texto largo crecen con su contenido (y se reajustan si cambia el ancho).
+  const textoLargo = `${modulo?.descripcion ?? ""}|${(modulo?.objetivos ?? []).join("|")}`;
+  useLayoutEffect(() => {
+    const ajustar = () => document.querySelectorAll<HTMLTextAreaElement>(".md-autoalto").forEach(ajustarAlto);
+    ajustar();
+    window.addEventListener("resize", ajustar);
+    return () => window.removeEventListener("resize", ajustar);
+  }, [textoLargo, quizAbierto]);
 
   if (!modulo) return null;
 
@@ -237,10 +252,14 @@ export function EditorModulo({ cursoInicial, moduloId, urlPublica }: Props) {
               id="mod-desc"
               value={modulo.descripcion ?? ""}
               rows={4}
+              className="md-autoalto"
               maxLength={DESCRIPCION_MODULO_MAX}
               conAyuda
               invalido={!!eDesc}
-              onChange={(e) => cambiarDescripcion(e.target.value)}
+              onChange={(e) => {
+                ajustarAlto(e.currentTarget);
+                cambiarDescripcion(e.target.value);
+              }}
             />
           </Field>
 
@@ -258,14 +277,21 @@ export function EditorModulo({ cursoInicial, moduloId, urlPublica }: Props) {
                     <label className="av-sr-only" htmlFor={`mod-obj-${i}`}>
                       Punto {i + 1}
                     </label>
-                    <Input
+                    <Textarea
                       id={`mod-obj-${i}`}
                       value={o}
-                      autoComplete="off"
+                      rows={1}
+                      className="md-autoalto md-autoalto--linea"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") e.preventDefault();
+                      }}
                       placeholder={`Punto ${i + 1}, por ejemplo: “Limpiar una tabla de datos”`}
                       maxLength={OBJETIVO_MODULO_MAX + 20}
                       invalido={!!eObjetivos[i]}
-                      onChange={(e) => cambiarObjetivo(i, e.target.value)}
+                      onChange={(e) => {
+                        ajustarAlto(e.currentTarget);
+                        cambiarObjetivo(i, e.target.value.replace(/\s*[\r\n]+\s*/g, " "));
+                      }}
                     />
                     {eObjetivos[i] && (
                       <span className="cr-field__error" role="alert">
