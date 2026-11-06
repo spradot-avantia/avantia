@@ -121,10 +121,11 @@ export interface LeccionPatch {
 /** Actualiza titulo, tipo o contenido. Valida URL contra la lista blanca. */
 export async function actualizarLeccion(leccionId: string, patch: LeccionPatch): Promise<Resultado> {
   const { tenant, db } = await requireCreadorContext();
-  const { data: actual } = await db.from("lecciones").select("tipo").eq("tenant_id", tenant.id).eq("id", leccionId).maybeSingle();
+  const { data: actual } = await db.from("lecciones").select("tipo, storage_path").eq("tenant_id", tenant.id).eq("id", leccionId).maybeSingle();
   if (!actual) return { ok: false, error: "Lección no encontrada." };
   const tipo = patch.tipo ?? (actual.tipo as TipoLeccion);
   const fila: Record<string, unknown> = {};
+  let archivoADescartar: string | null = null;
 
   if (patch.titulo !== undefined) {
     const t = tituloLeccion.safeParse(patch.titulo);
@@ -132,14 +133,24 @@ export async function actualizarLeccion(leccionId: string, patch: LeccionPatch):
     fila.titulo = t.data;
   }
   if (patch.tipo !== undefined && patch.tipo !== actual.tipo) {
-    // Cambiar de tipo descarta el contenido del tipo anterior.
+    // Cambiar de tipo descarta el contenido del tipo anterior, incluido el archivo subido (ADR 030).
     fila.tipo = patch.tipo;
     fila.contenido_url = null;
     fila.contenido_texto = null;
+    if (actual.storage_path) {
+      fila.storage_path = null;
+      fila.archivo_nombre = null;
+      fila.contenido_tipo = null;
+      fila.bytes = null;
+      archivoADescartar = actual.storage_path;
+    }
   }
   if (patch.contenidoUrl !== undefined) {
     if (patch.contenidoUrl === null || patch.contenidoUrl.trim() === "") fila.contenido_url = null;
-    else {
+    else if (actual.storage_path && !archivoADescartar) {
+      // Una lección con archivo subido no admite enlace: primero hay que quitar el archivo.
+      return { ok: false, error: "Esta lección tiene un archivo. Quítalo antes de pegar un enlace." };
+    } else {
       const u = validarUrlLeccion(tipo, patch.contenidoUrl);
       if (!u.ok) return { ok: false, error: u.error, campos: { contenidoUrl: u.error } };
       fila.contenido_url = u.url;
@@ -163,7 +174,9 @@ export async function actualizarLeccion(leccionId: string, patch: LeccionPatch):
   }
   if (Object.keys(fila).length === 0) return { ok: true, data: undefined };
   const { error } = await db.from("lecciones").update(fila).eq("tenant_id", tenant.id).eq("id", leccionId);
-  return error ? { ok: false, error: ERR } : { ok: true, data: undefined };
+  if (error) return { ok: false, error: ERR };
+  if (archivoADescartar) await quitarArchivos(db, [archivoADescartar]); // la fila ya no lo referencia
+  return { ok: true, data: undefined };
 }
 
 export async function renombrarLeccion(leccionId: string, titulo: string): Promise<Resultado> {

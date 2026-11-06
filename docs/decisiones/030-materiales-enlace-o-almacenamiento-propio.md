@@ -52,6 +52,11 @@ Lectura:
 - **Servidor privado (E/F):** conviene solo si la descarga masiva de archivos se vuelve el mayor costo o si un cliente exige alojar los datos en su infraestructura. Hoy no se cumple ninguna de las dos, y sumaría trabajo de operación que el equipo no tiene. Se deja como opción futura, no para el MVP.
 - **Ruta de crecimiento propuesta:** Supabase Storage en Free (MVP) → Pro cuando haya academias cobrando → R2 solo si la descarga supera los 250 GB al mes y el costo de egress pesa. Para facilitar un cambio posterior, la app accede a los archivos a través de una sola función (`storage_path` + generación de URL firmada), de modo que cambiar de proveedor no toque la interfaz.
 
+## Nota de implementación (2026-11-06)
+
+- **Materiales (migración 0017):** aplicada; en producción y verificada de punta a punta (ver BACKLOG B-30). Cuota de 100 MB por academia y 25 MB por archivo, validadas en la aplicación y, el tope por archivo y los tipos, también en el bucket.
+- **Lecciones de tipo documento (migración 0018):** una lección de tipo documento admite enlace **o** archivo, igual que un material. Reutiliza `lecciones.storage_path` y `contenido_tipo` (ADR 005) y suma `archivo_nombre` y `bytes`. La cuota se comparte con los materiales. Se abre en pestaña nueva, sin visor incrustado, por una ruta del servidor que firma una URL de 60 s tras comprobar sesión, inscripción activa y lección liberada.
+
 ## Alternativas descartadas
 
 - **Firestore / AWS S3 + RDS:** segundo proveedor y segundo modelo de seguridad; se pierde RLS por tenant y el equipo es pequeño.

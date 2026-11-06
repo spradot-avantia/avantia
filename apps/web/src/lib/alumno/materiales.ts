@@ -35,6 +35,20 @@ export async function materialDeArchivo(tenantId: string, cursoId: string, mater
   return { material: aMaterialAlumno(fila), storagePath: fila.storage_path as string };
 }
 
+/** Archivo propio de una lección de tipo documento (ADR 030). Null si no existe en ese tenant y curso. */
+export async function archivoDeLeccion(tenantId: string, cursoId: string, leccionId: string) {
+  const { data } = await supabaseAdmin
+    .from("lecciones")
+    .select("storage_path")
+    .eq("tenant_id", tenantId)
+    .eq("curso_id", cursoId)
+    .eq("id", leccionId)
+    .eq("tipo", "documento")
+    .not("storage_path", "is", null)
+    .maybeSingle();
+  return data?.storage_path ? { storagePath: data.storage_path as string } : null;
+}
+
 /** URL firmada de corta duración (no se guarda ni se cachea). */
 export async function firmarArchivo(storagePath: string): Promise<string | null> {
   const { data, error } = await supabaseAdmin.storage.from(BUCKET).createSignedUrl(storagePath, SEGUNDOS_URL);

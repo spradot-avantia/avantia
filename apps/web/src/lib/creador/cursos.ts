@@ -46,6 +46,8 @@ export function mapLeccion(r: any): Leccion {
     contenidoTexto: r.contenido_texto,
     storagePath: r.storage_path,
     contenidoTipo: r.contenido_tipo,
+    archivoNombre: r.archivo_nombre ?? null,
+    bytes: r.bytes ?? null,
     descripcion: r.descripcion ?? null,
     duracionMin: r.duracion_min ?? null,
     orden: r.orden,
@@ -112,7 +114,7 @@ export async function getCurso(cursoId: string): Promise<CursoCompleto | null> {
     db.from("modulos").select("id, curso_id, titulo, orden, descripcion, objetivos, duracion_min").eq("tenant_id", tenant.id).eq("curso_id", cursoId).order("orden"),
     db
       .from("lecciones")
-      .select("id, modulo_id, curso_id, titulo, tipo, contenido_url, contenido_texto, storage_path, contenido_tipo, descripcion, duracion_min, orden")
+      .select("id, modulo_id, curso_id, titulo, tipo, contenido_url, contenido_texto, storage_path, contenido_tipo, archivo_nombre, bytes, descripcion, duracion_min, orden")
       .eq("tenant_id", tenant.id)
       .eq("curso_id", cursoId)
       .order("orden"),

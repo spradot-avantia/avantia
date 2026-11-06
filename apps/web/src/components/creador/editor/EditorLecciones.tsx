@@ -9,7 +9,15 @@ import {
   eliminarLeccionAction,
   moverLeccionAction,
 } from "../../../lib/creador/actions";
+import {
+  confirmarSubidaLeccionAction,
+  prepararSubidaLeccionAction,
+  quitarArchivoLeccionAction,
+  urlDeDescargaLeccionAction,
+} from "../../../lib/creador/actionsEditor";
+import { ACCEPT_ARCHIVOS, ARCHIVO_MAX_BYTES, EXTENSIONES_LEGIBLES, formatearBytes } from "../../../lib/creador/archivosReglas";
 import { leccionLista } from "../../../lib/creador/reglasPublicacion";
+import { subirArchivoAlBucket } from "../../../lib/creador/subidaCliente";
 import type { Leccion, Modulo, TipoLeccion } from "../../../lib/creador/types";
 import {
   AVISO_ENLACE_DOCUMENTO,
@@ -29,6 +37,7 @@ import { Acciones } from "./AccionesFila";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { EditorMateriales } from "./EditorMateriales";
 import type { EditorCtx } from "./contexto";
+import "./materiales.css";
 
 const TIPOS: ReadonlyArray<{ id: TipoLeccion; label: string }> = [
   { id: "video", label: "Video" },
@@ -43,7 +52,7 @@ type Pendiente = { k: "leccion"; l: Leccion } | { k: "tipo"; l: Leccion; tipo: T
 type Borrador = { tipo: TipoLeccion; url: string; texto: string };
 
 function tieneContenido(l: Leccion) {
-  return !!(l.contenidoUrl?.trim() || l.contenidoTexto?.trim());
+  return !!(l.contenidoUrl?.trim() || l.contenidoTexto?.trim() || l.archivoNombre);
 }
 
 export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modulo }) {
@@ -55,6 +64,10 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
   const [tocUrl, setTocUrl] = useState<Record<string, boolean>>({});
   const [verTexto, setVerTexto] = useState<Record<string, boolean>>({});
   const [borrador, setBorrador] = useState<Record<string, Borrador>>({});
+  // Archivo propio en lecciones de tipo documento (ADR 030).
+  const [verArchivo, setVerArchivo] = useState<Record<string, boolean>>({});
+  const [subida, setSubida] = useState<Record<string, { msg: string; error?: boolean }>>({});
+  const [quitarLec, setQuitarLec] = useState<Leccion | null>(null);
 
   useEffect(() => {
     if (!foco) return;
@@ -95,6 +108,8 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
           contenidoTexto: null,
           storagePath: null,
           contenidoTipo: null,
+          archivoNombre: null,
+          bytes: null,
           descripcion: null,
           duracionMin: null,
           orden: x.lecciones.length,
@@ -187,6 +202,53 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
     setFoco(`ed-add-leccion-${l.moduloId}`);
   };
 
+  const estadoSubida = (id: string, v: { msg: string; error?: boolean } | null) =>
+    setSubida((st) => {
+      const { [id]: _previo, ...resto } = st;
+      return v ? { ...resto, [id]: v } : resto;
+    });
+
+  /** Copia a la lección solo lo del archivo: no pisa lo que el creador esté escribiendo. */
+  const aplicarArchivo = (id: string, nueva: Leccion) =>
+    mapLec(id, (x) => ({
+      ...x,
+      contenidoUrl: nueva.contenidoUrl,
+      storagePath: nueva.storagePath,
+      archivoNombre: nueva.archivoNombre,
+      bytes: nueva.bytes,
+      contenidoTipo: nueva.contenidoTipo,
+    }));
+
+  const subirArchivoLec = async (l: Leccion, elegido: File) => {
+    auto.cancelar(`lec:${l.id}:url`); // un enlace a medio guardar no debe llegar después del archivo
+    const r = await subirArchivoAlBucket(elegido, {
+      estado: (msg) => estadoSubida(l.id, { msg }),
+      preparar: (archivo) => auto.encolar(null, () => prepararSubidaLeccionAction(l.id, archivo)),
+      confirmar: (ruta, nombre) => auto.encolar(null, () => confirmarSubidaLeccionAction(l.id, ruta, nombre)),
+    });
+    if (!r.ok) return estadoSubida(l.id, { msg: r.error, error: true });
+    aplicarArchivo(l.id, r.data.leccion);
+    estadoSubida(l.id, null);
+    ctx.anunciar(r.anuncio);
+  };
+
+  const quitarArchivoLec = async (l: Leccion) => {
+    setQuitarLec(null);
+    setTrabajando(true);
+    const r = await auto.encolar(null, () => quitarArchivoLeccionAction(l.id));
+    setTrabajando(false);
+    if (!r.ok) return ctx.avisar(r.error);
+    aplicarArchivo(l.id, r.data.leccion);
+    setVerArchivo((v) => ({ ...v, [l.id]: false }));
+    ctx.anunciar("Archivo quitado");
+  };
+
+  const abrirArchivoLec = async (l: Leccion) => {
+    const r = await urlDeDescargaLeccionAction(l.id);
+    if (!r.ok) return ctx.avisar(r.error);
+    window.open(r.data.url, "_blank", "noopener,noreferrer");
+  };
+
   const cambiarDescripcion = (l: Leccion, valor: string) => {
     mapLec(l.id, (x) => ({ ...x, descripcion: valor }));
     if (!descripcionLeccion.safeParse(valor).success) return auto.cancelar(`lec:${l.id}:desc`);
@@ -210,6 +272,10 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
             ? { ...lGuardada, tipo: b.tipo, contenidoUrl: b.url, contenidoTexto: b.texto }
             : lGuardada;
           const lista = leccionLista(lGuardada);
+          // El archivo solo se sube con el formato Documento YA guardado (no en un borrador de formato).
+          const puedeArchivo = l.tipo === "documento" && !b;
+          const modoArchivo = puedeArchivo && (!!lGuardada.archivoNombre || !!verArchivo[l.id]);
+          const sub = subida[l.id];
           const abiertaAhora = abierta === l.id;
           const panelId = `ed-lec-panel-${l.id}`;
           const eTitulo = tituloLeccion.safeParse(l.titulo);
@@ -329,7 +395,79 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
                       )}
                     </div>
                   ) : (
-                    <Field
+                    <>
+                      {puedeArchivo && (
+                        <fieldset className="ed-formato">
+                          <legend className="cr-field__label">Origen del documento</legend>
+                          <div className="ed-formato__opts">
+                            {[
+                              { id: "enlace", label: "Enlace" },
+                              { id: "archivo", label: "Subir archivo" },
+                            ].map((o) => (
+                              <label key={o.id} className={`ed-opt${(o.id === "archivo") === modoArchivo ? " ed-opt--sel" : ""}`}>
+                                <input
+                                  type="radio"
+                                  name={`ed-origen-${l.id}`}
+                                  checked={(o.id === "archivo") === modoArchivo}
+                                  onChange={() => {
+                                    if (o.id === "archivo") return setVerArchivo((v) => ({ ...v, [l.id]: true }));
+                                    if (lGuardada.archivoNombre) return setQuitarLec(lGuardada); // quitar el archivo exige confirmar
+                                    setVerArchivo((v) => ({ ...v, [l.id]: false }));
+                                  }}
+                                />
+                                <span>{o.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </fieldset>
+                      )}
+
+                      {modoArchivo ? (
+                        <div className="mt-archivo">
+                          {lGuardada.archivoNombre && (
+                            <p className="mt-archivo__info">
+                              <strong>{lGuardada.archivoNombre}</strong>
+                              <span> · {formatearBytes(lGuardada.bytes ?? 0)}</span>
+                            </p>
+                          )}
+                          <div className="mt-archivo__acciones">
+                            <label className={`av-btn cr-btn av-btn--secondary mt-archivo__elegir${sub && !sub.error ? " is-disabled" : ""}`}>
+                              {lGuardada.archivoNombre ? "Reemplazar archivo" : "Elegir archivo"}
+                              <input
+                                type="file"
+                                className="av-sr-only"
+                                accept={ACCEPT_ARCHIVOS}
+                                disabled={!!sub && !sub.error}
+                                onChange={(e) => {
+                                  const f = e.target.files?.[0];
+                                  e.target.value = "";
+                                  if (f) void subirArchivoLec(lGuardada, f);
+                                }}
+                              />
+                            </label>
+                            {lGuardada.archivoNombre && (
+                              <>
+                                <Button variante="ghost" onClick={() => void abrirArchivoLec(lGuardada)}>
+                                  Abrir
+                                </Button>
+                                <Button variante="ghost" onClick={() => setQuitarLec(lGuardada)}>
+                                  Quitar archivo
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                          <p className="cr-field__hint">
+                            {EXTENSIONES_LEGIBLES}. Máximo {formatearBytes(ARCHIVO_MAX_BYTES)} por archivo. Las imágenes se reducen
+                            automáticamente para ahorrar espacio.
+                          </p>
+                          {sub && (
+                            <p className={sub.error ? "cr-field__error" : "mt-archivo__estado"} role={sub.error ? "alert" : "status"}>
+                              {sub.msg}
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <Field
                       id={`ed-lec-url-${l.id}`}
                       label={l.tipo === "video" ? "Enlace del video" : "Enlace del documento"}
                       ayuda={
@@ -352,11 +490,16 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
                         onBlur={() => setTocUrl((t) => ({ ...t, [l.id]: true }))}
                       />
                     </Field>
-                  )}
-                  {l.tipo === "documento" && (
-                    <Callout tono="warning">
-                      {AVISO_ENLACE_DOCUMENTO} Si el documento es privado, tus estudiantes verán un error al abrirlo.
-                    </Callout>
+                      )}
+                      {l.tipo === "documento" && !modoArchivo && (
+                        <Callout tono="warning">
+                          {AVISO_ENLACE_DOCUMENTO} Si el documento es privado, tus estudiantes verán un error al abrirlo.
+                        </Callout>
+                      )}
+                      {l.tipo === "documento" && b && (
+                        <p className="cr-field__hint">Guarda el cambio de formato para poder subir un archivo.</p>
+                      )}
+                    </>
                   )}
 
                   <Field
@@ -439,7 +582,18 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
         }}
       >
         {pendiente?.k === "leccion" && <p>Se eliminará con su contenido. Esta acción no se puede deshacer.</p>}
-        {pendiente?.k === "tipo" && <p>Al guardar, el enlace o texto del formato anterior se borrará. Esta acción no se puede deshacer.</p>}
+        {pendiente?.k === "tipo" && <p>Al guardar, el enlace, texto o archivo del formato anterior se borrará. Esta acción no se puede deshacer.</p>}
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        abierto={!!quitarLec}
+        peligro
+        titulo={quitarLec ? `¿Quitar el archivo de “${quitarLec.titulo}”?` : ""}
+        confirmar="Quitar archivo"
+        onCancelar={() => setQuitarLec(null)}
+        onConfirmar={() => quitarLec && void quitarArchivoLec(quitarLec)}
+      >
+        <p>El archivo se eliminará de la academia y tus estudiantes dejarán de verlo. Esta acción no se puede deshacer.</p>
       </ConfirmDialog>
     </div>
   );

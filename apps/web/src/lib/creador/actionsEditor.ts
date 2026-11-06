@@ -8,7 +8,7 @@ import { actualizarModulo, crearModulo, type ModuloPatch } from "./estructura";
 import * as materiales from "./materiales";
 import type { PreguntaQuiz } from "./quiz";
 import { guardarQuiz } from "./quizzes";
-import type { CursoCompleto, Material, Resultado, TipoMaterial } from "./types";
+import type { CursoCompleto, Leccion, Material, Resultado, TipoMaterial } from "./types";
 
 const SUGERIDA = ["Contexto", "Casos reales", "Aplicación"];
 
@@ -96,4 +96,25 @@ export async function quitarArchivoAction(materialId: string): Promise<Resultado
 }
 export async function urlDeDescargaAction(materialId: string): Promise<Resultado<{ url: string }>> {
   return seguro(() => archivos.urlDeDescarga(materialId));
+}
+
+// ---- Archivo propio en una lección de tipo documento (ADR 030) -----------------------------
+export async function prepararSubidaLeccionAction(
+  leccionId: string,
+  archivo: { nombre: string; bytes: number },
+): Promise<Resultado<{ ruta: string; token: string; mime: string }>> {
+  return seguro(() => archivos.prepararSubidaLeccion(leccionId, archivo));
+}
+export async function confirmarSubidaLeccionAction(
+  leccionId: string,
+  ruta: string,
+  nombreOriginal: string,
+): Promise<Resultado<{ leccion: Leccion; uso: archivos.Uso }>> {
+  return seguro(() => archivos.confirmarSubidaLeccion(leccionId, ruta, nombreOriginal));
+}
+export async function quitarArchivoLeccionAction(leccionId: string): Promise<Resultado<{ leccion: Leccion; uso: archivos.Uso }>> {
+  return seguro(() => archivos.quitarArchivoLeccion(leccionId));
+}
+export async function urlDeDescargaLeccionAction(leccionId: string): Promise<Resultado<{ url: string }>> {
+  return seguro(() => archivos.urlDeDescargaLeccion(leccionId));
 }

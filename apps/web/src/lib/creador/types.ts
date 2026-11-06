@@ -60,6 +60,13 @@ export interface Leccion {
   /** Reservado (ADR 005): archivo en bucket privado "materiales"; no se usa en MVP. */
   storagePath: string | null;
   contenidoTipo: string | null;
+  /**
+   * Archivo propio en una lección de tipo documento (ADR 030): nombre original y tamaño. El
+   * nombre es lo que indica que HAY archivo (`storagePath` solo lo ve el creador; al alumno
+   * nunca le llega). Con archivo no hay `contenidoUrl`.
+   */
+  archivoNombre: string | null;
+  bytes: number | null;
   /** Descripción breve de la lección (ADR 029); opcional. */
   descripcion: string | null;
   /** Duración estimada en minutos (ADR 029); opcional. */

@@ -9,14 +9,25 @@ const BUCKET = "materiales";
 
 export type AlcanceMateriales = { cursoId: string } | { moduloId: string } | { leccionId: string };
 
-/** Rutas de los archivos subidos que cuelgan de un curso, módulo o lección del tenant. */
+/**
+ * Rutas de los archivos subidos que cuelgan de un curso, módulo o lección del tenant: los de sus
+ * materiales y los de las propias lecciones de tipo documento (ADR 030).
+ */
 export async function rutasDeArchivos(db: SupabaseClient, tenantId: string, alcance: AlcanceMateriales): Promise<string[]> {
-  let q = db.from("materiales").select("storage_path").eq("tenant_id", tenantId).eq("origen", "archivo").not("storage_path", "is", null);
-  if ("cursoId" in alcance) q = q.eq("curso_id", alcance.cursoId);
-  else if ("moduloId" in alcance) q = q.eq("modulo_id", alcance.moduloId);
-  else q = q.eq("leccion_id", alcance.leccionId);
-  const { data } = await q;
-  return (data ?? []).map((r) => r.storage_path as string);
+  let mats = db.from("materiales").select("storage_path").eq("tenant_id", tenantId).eq("origen", "archivo").not("storage_path", "is", null);
+  let lecs = db.from("lecciones").select("storage_path").eq("tenant_id", tenantId).not("storage_path", "is", null);
+  if ("cursoId" in alcance) {
+    mats = mats.eq("curso_id", alcance.cursoId);
+    lecs = lecs.eq("curso_id", alcance.cursoId);
+  } else if ("moduloId" in alcance) {
+    mats = mats.eq("modulo_id", alcance.moduloId);
+    lecs = lecs.eq("modulo_id", alcance.moduloId);
+  } else {
+    mats = mats.eq("leccion_id", alcance.leccionId);
+    lecs = lecs.eq("id", alcance.leccionId);
+  }
+  const [m, l] = await Promise.all([mats, lecs]);
+  return [...(m.data ?? []), ...(l.data ?? [])].map((r) => r.storage_path as string);
 }
 
 /** Quita los objetos del bucket. Un fallo aquí no debe deshacer el borrado ya hecho: solo se registra. */

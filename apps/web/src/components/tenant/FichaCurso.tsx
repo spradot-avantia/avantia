@@ -1,4 +1,5 @@
 import { nombreModulo, sinTituloRepetido } from "../../lib/alumno/formato";
+import { rotuloMaterial } from "../../lib/alumno/materialesReglas";
 import type { ReactNode } from "react";
 import { leccionLista } from "../../lib/creador/reglasPublicacion";
 import { textoSobre } from "../../lib/creador/color";
@@ -23,7 +24,7 @@ function plural(n: number, uno: string, varios: string) {
   return `${n} ${n === 1 ? uno : varios}`;
 }
 
-export function ContenidoLeccion({ l }: { l: Leccion }) {
+export function ContenidoLeccion({ l, vistaPrevia = false }: { l: Leccion; vistaPrevia?: boolean }) {
   if (!leccionLista(l)) return <p className="fc-lec__vacio">Esta lección aún no tiene contenido.</p>;
   if (l.tipo === "texto") return <MarkdownMinimo texto={sinTituloRepetido(l.contenidoTexto ?? "", l.titulo)} />;
   if (l.tipo === "video") {
@@ -41,6 +42,24 @@ export function ContenidoLeccion({ l }: { l: Leccion }) {
       </div>
     ) : (
       <p className="fc-lec__vacio">No pudimos mostrar este video.</p>
+    );
+  }
+  if (l.archivoNombre) {
+    // Documento subido a la plataforma (ADR 030): el alumno lo abre por una ruta que firma la URL.
+    const rotulo = rotuloMaterial({ origen: "archivo", archivoNombre: l.archivoNombre, bytes: l.bytes });
+    return vistaPrevia ? (
+      <p>
+        <strong>{l.archivoNombre}</strong> <span className="fc-muted">({rotulo}). Tus estudiantes lo abren desde su lección.</span>
+      </p>
+    ) : (
+      <p>
+        <a href={`/aprender/${l.cursoId}/leccion/${l.id}/archivo`} target="_blank" rel="noopener noreferrer">
+          Abrir documento
+        </a>{" "}
+        <span className="fc-muted">
+          ({l.archivoNombre} · {rotulo}; se abre en una pestaña nueva)
+        </span>
+      </p>
     );
   }
   return (
@@ -155,7 +174,7 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
                         {l.tipo !== "texto" && <span className="fc-tipo">{TIPO[l.tipo]}</span>}
                       </summary>
                       <div className="fc-lec__body">
-                        <ContenidoLeccion l={l} />
+                        <ContenidoLeccion l={l} vistaPrevia />
                       </div>
                     </details>
                   </li>

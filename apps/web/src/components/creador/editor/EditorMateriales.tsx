@@ -16,8 +16,7 @@ import {
   usoAlmacenamientoAction,
 } from "../../../lib/creador/actionsEditor";
 import { ACCEPT_ARCHIVOS, ARCHIVO_MAX_BYTES, EXTENSIONES_LEGIBLES, formatearBytes } from "../../../lib/creador/archivosReglas";
-import { prepararArchivo } from "../../../lib/creador/comprimir";
-import { createSupabaseBrowserClient } from "../../../lib/supabase/client";
+import { subirArchivoAlBucket } from "../../../lib/creador/subidaCliente";
 import type { Material, Modulo, TipoMaterial } from "../../../lib/creador/types";
 import {
   MATERIALES_MODULO_MAX,
@@ -125,27 +124,16 @@ export function EditorMateriales({
 
   /** Comprime (imágenes), valida en el servidor, sube directo al bucket y enlaza el archivo. */
   const subirArchivo = async (m: Material, elegido: File) => {
-    estadoSubida(m.id, { msg: "Preparando el archivo…" });
-    const { archivo, bytesOriginal, comprimido } = await prepararArchivo(elegido);
-    const prep = await auto.encolar(null, () => prepararSubidaAction(m.id, { nombre: archivo.name, bytes: archivo.size }));
-    if (!prep.ok) return estadoSubida(m.id, { msg: prep.error, error: true });
-
-    estadoSubida(m.id, { msg: `Subiendo ${formatearBytes(archivo.size)}…` });
-    const { error } = await createSupabaseBrowserClient()
-      .storage.from("materiales")
-      .uploadToSignedUrl(prep.data.ruta, prep.data.token, archivo, { contentType: prep.data.mime });
-    if (error) return estadoSubida(m.id, { msg: "No pudimos subir el archivo. Revisa tu conexión e inténtalo de nuevo.", error: true });
-
-    const fin = await auto.encolar(null, () => confirmarSubidaAction(m.id, prep.data.ruta, elegido.name));
-    if (!fin.ok) return estadoSubida(m.id, { msg: fin.error, error: true });
-    mapMat(m.id, () => fin.data.material);
-    setUso(fin.data.uso);
+    const r = await subirArchivoAlBucket(elegido, {
+      estado: (msg) => estadoSubida(m.id, { msg }),
+      preparar: (archivo) => auto.encolar(null, () => prepararSubidaAction(m.id, archivo)),
+      confirmar: (ruta, nombre) => auto.encolar(null, () => confirmarSubidaAction(m.id, ruta, nombre)),
+    });
+    if (!r.ok) return estadoSubida(m.id, { msg: r.error, error: true });
+    mapMat(m.id, () => r.data.material);
+    setUso(r.data.uso);
     estadoSubida(m.id, null);
-    ctx.anunciar(
-      comprimido
-        ? `Archivo subido. La imagen pasó de ${formatearBytes(bytesOriginal)} a ${formatearBytes(archivo.size)}.`
-        : "Archivo subido.",
-    );
+    ctx.anunciar(r.anuncio);
   };
 
   const quitarArchivo = async (m: Material) => {

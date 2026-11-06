@@ -82,7 +82,7 @@ const curso = (quiz: PreguntaQuiz[] | undefined): CursoCompleto => ({
       duracionMin: null,
       quiz,
       lecciones: [
-        { id: "l", moduloId: "m", cursoId: "c", titulo: "L", tipo: "texto", contenidoUrl: null, contenidoTexto: "Hola", storagePath: null, contenidoTipo: null, descripcion: null, duracionMin: null, orden: 0 },
+        { id: "l", moduloId: "m", cursoId: "c", titulo: "L", tipo: "texto", contenidoUrl: null, contenidoTexto: "Hola", storagePath: null, contenidoTipo: null, archivoNombre: null, bytes: null, descripcion: null, duracionMin: null, orden: 0 },
       ],
     },
   ],

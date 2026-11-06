@@ -255,9 +255,17 @@ create table if not exists lecciones (
   tipo text not null default 'video' check (tipo in ('video', 'texto', 'documento')),
   contenido_url text,
   contenido_texto text,
-  -- Evolucion a archivos (ADR 005): ruta en bucket privado 'materiales' (no usado en MVP).
+  -- Archivo propio en lecciones de tipo documento (ADR 030, migracion 0018): ruta en el bucket
+  -- privado 'materiales', tipo MIME, nombre original y tamano (cuenta en la cuota de la academia).
   storage_path text,
   contenido_tipo text,
+  archivo_nombre text,
+  bytes integer check (bytes is null or bytes between 1 and 26214400),
+  constraint lecciones_archivo_coherente check (
+    (storage_path is null and archivo_nombre is null and bytes is null)
+    or (storage_path is not null and archivo_nombre is not null and bytes is not null
+        and tipo = 'documento' and contenido_url is null)
+  ),
   -- Datos de la leccion (ADR 029, migracion 0015): opcionales.
   descripcion text check (descripcion is null or char_length(descripcion) <= 400),
   duracion_min integer check (duracion_min is null or duracion_min between 1 and 1440),

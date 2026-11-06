@@ -3,9 +3,13 @@ import { estadoQuiz } from "./quiz";
 import type { Bloqueo, CursoCompleto, Leccion, ResultadoValidacionPublicacion } from "./types";
 import { DESCRIPCION_MAX, DESCRIPCION_MIN, TITULO_MAX, TITULO_MIN, validarFechas, validarUrlLeccion } from "./validacion";
 
-export function leccionLista(l: Pick<Leccion, "tipo" | "contenidoUrl" | "contenidoTexto" | "titulo">): boolean {
+export function leccionLista(
+  l: Pick<Leccion, "tipo" | "contenidoUrl" | "contenidoTexto" | "titulo"> & Partial<Pick<Leccion, "archivoNombre">>,
+): boolean {
   if (!l.titulo.trim()) return false;
   if (l.tipo === "texto") return !!l.contenidoTexto?.trim();
+  // Un documento puede ser un archivo subido (ADR 030): `archivoNombre` indica que lo hay.
+  if (l.tipo === "documento" && l.archivoNombre) return true;
   return !!l.contenidoUrl && validarUrlLeccion(l.tipo, l.contenidoUrl).ok;
 }
 

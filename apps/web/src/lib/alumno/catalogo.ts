@@ -60,7 +60,7 @@ export async function cargarCurso(
     supabaseAdmin.from("modulos").select("id, curso_id, titulo, orden, descripcion, objetivos, duracion_min").eq("tenant_id", tenantId).eq("curso_id", c.id).order("orden"),
     supabaseAdmin
       .from("lecciones")
-      .select("id, modulo_id, curso_id, titulo, tipo, contenido_url, contenido_texto, storage_path, contenido_tipo, descripcion, duracion_min, orden, dia_liberacion")
+      .select("id, modulo_id, curso_id, titulo, tipo, contenido_url, contenido_texto, storage_path, contenido_tipo, archivo_nombre, bytes, descripcion, duracion_min, orden, dia_liberacion")
       .eq("tenant_id", tenantId)
       .eq("curso_id", c.id)
       .order("orden"),
@@ -71,7 +71,8 @@ export async function cargarCurso(
   for (const l of lecs.data ?? []) {
     dia.set(l.id, l.dia_liberacion ?? null);
     const lista = porModulo.get(l.modulo_id) ?? [];
-    lista.push(mapLeccion(l));
+    // La ruta interna del bucket nunca viaja en lo que ve el alumno: queda `archivoNombre`.
+    lista.push({ ...mapLeccion(l), storagePath: null });
     porModulo.set(l.modulo_id, lista);
   }
   return {

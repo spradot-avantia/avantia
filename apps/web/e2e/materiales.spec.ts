@@ -36,8 +36,10 @@ const CREADOR_LOCAL = PANEL.startsWith("http://localhost") && E.ALLOW_DEMO_TENAN
 const sufijo = randomUUID().slice(0, 8);
 const D = {
   tenantId: "",
-  A: { curso: "", slug: "", modulo: "", lec1: "", lec2: "" },
-  B: { curso: "", modulo: "", lec1: "", lec2: "" },
+  A: { curso: "", slug: "", modulo: "", lec1: "", lec2: "", lecDoc: { id: "", ruta: "" } },
+  B: { curso: "", modulo: "", lec1: "", lec2: "", lecDoc: { id: "", ruta: "" } },
+  /** Migración 0018 aplicada: las pruebas de archivos en lecciones de tipo documento se saltan si no. */
+  hayLeccionArchivo: false,
   mat: {} as Record<string, { id: string; ruta: string }>,
   alumno: {} as Record<"x" | "y" | "z", { id: string; token: string }>,
 };
@@ -87,6 +89,31 @@ async function crearMaterialArchivo(
     },
   });
   expect(r.status, `crear material ${titulo}`).toBe(201);
+  return { id: r.data[0].id as string, ruta };
+}
+
+/** Lección de tipo documento con un PDF propio (ADR 030). `dia` = día de liberación del curso con fechas. */
+async function crearLeccionDocumento(curso: string, modulo: string, titulo: string, orden: number, dia: number | null = null) {
+  const ruta = `${D.tenantId}/${curso}/${randomUUID()}.pdf`;
+  await subirObjeto(ruta);
+  rutas.push(ruta);
+  const r = await rest("lecciones", {
+    method: "POST",
+    body: {
+      tenant_id: D.tenantId,
+      curso_id: curso,
+      modulo_id: modulo,
+      titulo,
+      tipo: "documento",
+      storage_path: ruta,
+      archivo_nombre: "Documento.pdf",
+      contenido_tipo: "application/pdf",
+      bytes: PDF_PRUEBA.length,
+      orden,
+      ...(dia !== null ? { dia_liberacion: dia } : {}),
+    },
+  });
+  expect(r.status, `crear lección documento ${titulo}`).toBe(201);
   return { id: r.data[0].id as string, ruta };
 }
 
@@ -162,6 +189,13 @@ test.beforeAll(async () => {
   D.mat.b1 = await crearMaterialArchivo(D.B.curso, D.B.modulo, D.B.lec1, "Material de B1 (liberada)", 0);
   D.mat.b2 = await crearMaterialArchivo(D.B.curso, D.B.modulo, D.B.lec2, "Material de B2 (sin liberar)", 1);
   D.mat.bMod = await crearMaterialArchivo(D.B.curso, D.B.modulo, null, "Material del módulo B", 2);
+
+  // Lecciones de tipo documento con archivo propio (requiere la migración 0018).
+  D.hayLeccionArchivo = (await rest("lecciones", { query: "select=archivo_nombre&limit=1" })).status === 200;
+  if (D.hayLeccionArchivo) {
+    D.A.lecDoc = await crearLeccionDocumento(D.A.curso, D.A.modulo, "Lección documento A", 3);
+    D.B.lecDoc = await crearLeccionDocumento(D.B.curso, D.B.modulo, "Lección documento B sin liberar", 3, 10);
+  }
 
   // Alumnos: X inscrito en A y B; Y solo en A; Z con inscripción cancelada en A.
   D.alumno.x = await crearAlumno("X", `e2e-x-${sufijo}@example.com`, D.A.curso, "activa", { curso: D.B.curso, estado: "activa" });
@@ -333,6 +367,99 @@ test("página pública del curso: muestra la presentación del módulo y NO los 
   await ctx.close();
 });
 
+// ---- Archivo propio en lecciones de tipo documento (ADR 030) ----
+
+const rutaLec = (curso: string, leccion: string) => `/aprender/${curso}/leccion/${leccion}/archivo`;
+
+test("lección documento: el alumno inscrito recibe 302 a una URL firmada que entrega el PDF", async ({ browser, baseURL }, info) => {
+  escritorio(info);
+  test.skip(!D.hayLeccionArchivo, "la migración 0018 no está aplicada en esta base");
+  const ctx = await conSesion(browser, baseURL, D.alumno.x.token);
+  const r = await ctx.request.get(rutaLec(D.A.curso, D.A.lecDoc.id), { maxRedirects: 0 });
+  const loc = r.headers()["location"] ?? "";
+  expect(r.status()).toBe(302);
+  expect(loc).toContain("/storage/v1/object/sign/materiales/");
+  expect(r.headers()["cache-control"]).toContain("no-store");
+  const archivo = await fetch(loc);
+  expect(archivo.status).toBe(200);
+  expect(archivo.headers.get("content-type")).toContain("pdf");
+  expect((await archivo.arrayBuffer()).byteLength).toBe(PDF_PRUEBA.length);
+  expect((await fetch(urlPublica(D.A.lecDoc.ruta))).status).toBeGreaterThanOrEqual(400);
+  await ctx.close();
+});
+
+test("lección documento: sin sesión, sin inscripción, inscripción cancelada e ids inválidos no obtienen el archivo", async ({ browser, baseURL }, info) => {
+  escritorio(info);
+  test.skip(!D.hayLeccionArchivo, "la migración 0018 no está aplicada en esta base");
+  const sin = await conSesion(browser, baseURL);
+  const r1 = await sin.request.get(rutaLec(D.A.curso, D.A.lecDoc.id), { maxRedirects: 0 });
+  expect(redirige(r1.status())).toBe(true);
+  expect(r1.headers()["location"]).toContain("/ingresar");
+  await sin.close();
+
+  const y = await conSesion(browser, baseURL, D.alumno.y.token); // Y no está inscrito en B
+  const r2 = await y.request.get(rutaLec(D.B.curso, D.B.lecDoc.id), { maxRedirects: 0 });
+  expect(redirige(r2.status())).toBe(true);
+  expect(r2.headers()["location"]).toContain("/mis-cursos");
+  await y.close();
+
+  const z = await conSesion(browser, baseURL, D.alumno.z.token);
+  const r3 = await z.request.get(rutaLec(D.A.curso, D.A.lecDoc.id), { maxRedirects: 0 });
+  expect(redirige(r3.status())).toBe(true);
+  expect(r3.headers()["location"]).toContain("/mis-cursos");
+  await z.close();
+
+  const x = await conSesion(browser, baseURL, D.alumno.x.token);
+  for (const [curso, lec] of [
+    [D.A.curso, "no-es-un-uuid"],
+    ["no-es-un-uuid", D.A.lecDoc.id],
+    [D.A.curso, "00000000-0000-0000-0000-000000000000"],
+  ]) {
+    expect((await x.request.get(rutaLec(curso, lec), { maxRedirects: 0 })).status(), `${curso} / ${lec}`).toBe(404);
+  }
+  await x.close();
+});
+
+test("lección documento: de otro curso, sin archivo o sin liberar da 404", async ({ browser, baseURL }, info) => {
+  escritorio(info);
+  test.skip(!D.hayLeccionArchivo, "la migración 0018 no está aplicada en esta base");
+  const ctx = await conSesion(browser, baseURL, D.alumno.x.token); // X está inscrito en A y B
+  const get = (curso: string, lec: string) => ctx.request.get(rutaLec(curso, lec), { maxRedirects: 0 });
+  expect((await get(D.A.curso, D.B.lecDoc.id)).status(), "lección de otro curso").toBe(404);
+  expect((await get(D.A.curso, D.A.lec1)).status(), "lección de texto, sin archivo").toBe(404);
+  expect((await get(D.B.curso, D.B.lecDoc.id)).status(), "lección aún no liberada").toBe(404);
+  await ctx.close();
+});
+
+test("lección documento: el alumno ve «Abrir documento» y la página no expone la ruta del bucket", async ({ browser, baseURL }, info) => {
+  escritorio(info);
+  test.skip(!D.hayLeccionArchivo, "la migración 0018 no está aplicada en esta base");
+  const ctx = await conSesion(browser, baseURL, D.alumno.x.token);
+  const page = await ctx.newPage();
+  await page.goto(`/aprender/${D.A.curso}/${D.A.lecDoc.id}`);
+  const enlace = page.getByRole("link", { name: "Abrir documento" });
+  await expect(enlace).toHaveAttribute("href", rutaLec(D.A.curso, D.A.lecDoc.id));
+  await expect(enlace).toHaveAttribute("rel", /noopener/);
+  await expect(page.getByText(/Documento\.pdf · PDF · 193 B/)).toBeVisible();
+  const html = await page.content();
+  expect(html).not.toContain(D.A.lecDoc.ruta);
+  expect(html).not.toContain(`${D.tenantId}/${D.A.curso}`);
+  expect(html).not.toContain("storage_path");
+  await ctx.close();
+});
+
+test("lección documento: la página pública del curso no enlaza el archivo", async ({ browser, baseURL }, info) => {
+  escritorio(info);
+  test.skip(!D.hayLeccionArchivo, "la migración 0018 no está aplicada en esta base");
+  const ctx = await conSesion(browser, baseURL);
+  const page = await ctx.newPage();
+  await page.goto(`/curso/${D.A.slug}`);
+  const html = await page.content();
+  expect(html).not.toContain("/archivo");
+  expect(html).not.toContain(D.A.lecDoc.ruta);
+  await ctx.close();
+});
+
 test("móvil y escritorio: la lección con materiales no desborda horizontalmente", async ({ browser, baseURL, viewport }) => {
   const ctx = await conSesion(browser, baseURL, D.alumno.x.token, viewport);
   const page = await ctx.newPage();
@@ -436,5 +563,72 @@ test.describe("creador: archivos desde el editor", () => {
     await page.getByRole("button", { name: "Eliminar", exact: true }).last().click();
     await expect.poll(async () => (await rest("modulos", { query: `select=id&id=eq.${mm.data[0].id}` })).data.length, { timeout: 15_000 }).toBe(0);
     await expect.poll(() => existeObjeto(m.ruta), { timeout: 15_000 }).toBe(false);
+  });
+
+  test("sube un archivo a una lección de tipo documento desde el editor", async ({ page }, info) => {
+    escritorio(info);
+    test.skip(!D.hayLeccionArchivo, "la migración 0018 no está aplicada en esta base");
+    const l = await rest("lecciones", { method: "POST", body: { tenant_id: D.tenantId, curso_id: D.A.curso, modulo_id: mod.id, titulo: "Documento del creador", tipo: "documento", orden: 20 } });
+    const id = l.data[0].id as string;
+    await page.goto(urlModulo());
+    const lec = page.locator(".ed-lec", { hasText: "Documento del creador" });
+    await lec.locator(".ed-lec__toggle").click();
+    await lec.getByRole("radio", { name: "Subir archivo" }).first().check();
+    await lec.locator("input[type=file]").first().setInputFiles({ name: "doc.pdf", mimeType: "application/pdf", buffer: PDF_PRUEBA });
+    await expect(lec.locator(".mt-archivo__info strong").first()).toHaveText("doc.pdf", { timeout: 30_000 });
+
+    const [f] = (await rest("lecciones", { query: `select=tipo,contenido_url,storage_path,archivo_nombre,bytes,contenido_tipo&id=eq.${id}` })).data;
+    expect(f).toMatchObject({ tipo: "documento", contenido_url: null, archivo_nombre: "doc.pdf", bytes: PDF_PRUEBA.length, contenido_tipo: "application/pdf" });
+    expect(f.storage_path).toMatch(new RegExp(`^${D.tenantId}/${D.A.curso}/[0-9a-f-]{36}\\.pdf$`));
+    rutas.push(f.storage_path);
+    expect(await existeObjeto(f.storage_path)).toBe(true);
+
+    // Quitar el archivo lo elimina del bucket y deja la lección sin contenido.
+    await lec.getByRole("button", { name: "Quitar archivo" }).click();
+    await page.getByRole("button", { name: "Quitar archivo" }).last().click();
+    await expect.poll(async () => (await rest("lecciones", { query: `select=storage_path&id=eq.${id}` })).data[0].storage_path, { timeout: 15_000 }).toBeNull();
+    await expect.poll(() => existeObjeto(f.storage_path), { timeout: 15_000 }).toBe(false);
+    const [despues] = (await rest("lecciones", { query: `select=tipo,archivo_nombre,bytes&id=eq.${id}` })).data;
+    expect(despues).toEqual({ tipo: "documento", archivo_nombre: null, bytes: null });
+  });
+
+  test("cambiar el formato de una lección con archivo lo elimina del bucket", async ({ page }, info) => {
+    escritorio(info);
+    test.skip(!D.hayLeccionArchivo, "la migración 0018 no está aplicada en esta base");
+    const l = await crearLeccionDocumento(D.A.curso, mod.id, "Documento a cambiar de formato", 21);
+    await page.goto(urlModulo());
+    const lec = page.locator(".ed-lec", { hasText: "Documento a cambiar de formato" });
+    await lec.locator(".ed-lec__toggle").click();
+    expect(await existeObjeto(l.ruta)).toBe(true);
+    await lec.getByRole("radio", { name: "Texto", exact: true }).check();
+    await lec.getByRole("button", { name: "Guardar cambios" }).click();
+    await page.getByRole("button", { name: "Guardar y descartar" }).click();
+    await expect.poll(async () => (await rest("lecciones", { query: `select=tipo,storage_path&id=eq.${l.id}` })).data[0], { timeout: 15_000 }).toEqual({ tipo: "texto", storage_path: null });
+    await expect.poll(() => existeObjeto(l.ruta), { timeout: 15_000 }).toBe(false);
+  });
+
+  test("borrar una lección de tipo documento elimina su archivo", async ({ page }, info) => {
+    escritorio(info);
+    test.skip(!D.hayLeccionArchivo, "la migración 0018 no está aplicada en esta base");
+    const l = await crearLeccionDocumento(D.A.curso, mod.id, "Documento a borrar", 22);
+    expect(await existeObjeto(l.ruta)).toBe(true);
+    await page.goto(urlModulo());
+    await page.getByRole("button", { name: "Eliminar lección Documento a borrar" }).click();
+    await page.getByRole("button", { name: "Eliminar", exact: true }).last().click();
+    await expect.poll(async () => (await rest("lecciones", { query: `select=id&id=eq.${l.id}` })).data.length, { timeout: 15_000 }).toBe(0);
+    await expect.poll(() => existeObjeto(l.ruta), { timeout: 15_000 }).toBe(false);
+  });
+
+  test("borrar un módulo con una lección de tipo documento elimina su archivo", async ({ page }, info) => {
+    escritorio(info);
+    test.skip(!D.hayLeccionArchivo, "la migración 0018 no está aplicada en esta base");
+    const mm = await rest("modulos", { method: "POST", body: { tenant_id: D.tenantId, curso_id: D.A.curso, titulo: "Módulo con documento a borrar", orden: 9 } });
+    const l = await crearLeccionDocumento(D.A.curso, mm.data[0].id, "Documento del módulo a borrar", 0);
+    expect(await existeObjeto(l.ruta)).toBe(true);
+    await page.goto(`${PANEL}/cursos/${D.A.curso}/editar?paso=estructura`);
+    await page.getByRole("button", { name: "Eliminar módulo Módulo con documento a borrar" }).click();
+    await page.getByRole("button", { name: "Eliminar", exact: true }).last().click();
+    await expect.poll(async () => (await rest("modulos", { query: `select=id&id=eq.${mm.data[0].id}` })).data.length, { timeout: 15_000 }).toBe(0);
+    await expect.poll(() => existeObjeto(l.ruta), { timeout: 15_000 }).toBe(false);
   });
 });

@@ -167,7 +167,7 @@ function cursoBase(over: Partial<CursoCompleto> = {}): CursoCompleto {
         materiales: [],
         duracionMin: null,
         lecciones: [
-          { id: "l", moduloId: "m", cursoId: "c", titulo: "L1", tipo: "texto", contenidoUrl: null, contenidoTexto: "hola", storagePath: null, contenidoTipo: null, descripcion: null, duracionMin: null, orden: 0 },
+          { id: "l", moduloId: "m", cursoId: "c", titulo: "L1", tipo: "texto", contenidoUrl: null, contenidoTexto: "hola", storagePath: null, contenidoTipo: null, archivoNombre: null, bytes: null, descripcion: null, duracionMin: null, orden: 0 },
         ],
       },
     ],
@@ -245,7 +245,7 @@ describe("módulos enriquecidos (ADR 029)", () => {
         {
           id: "m", cursoId: "c", titulo: "M1", orden: 0, descripcion: null, objetivos: [], duracionMin: null, materiales: [],
           lecciones: [
-            { id: "l", moduloId: "m", cursoId: "c", titulo: "L1", tipo: "texto", contenidoUrl: null, contenidoTexto: "hola", storagePath: null, contenidoTipo: null, descripcion: null, duracionMin: null, orden: 0 },
+            { id: "l", moduloId: "m", cursoId: "c", titulo: "L1", tipo: "texto", contenidoUrl: null, contenidoTexto: "hola", storagePath: null, contenidoTipo: null, archivoNombre: null, bytes: null, descripcion: null, duracionMin: null, orden: 0 },
           ],
         },
       ],
