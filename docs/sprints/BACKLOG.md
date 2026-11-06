@@ -20,7 +20,6 @@ Estados: `Pendiente` · `En curso` · `Bloqueado` · `Hecho`.
 | B-03 | Tests del fix de host del middleware (`endsWith`) | RQ-03 | Pendiente | El fix está (`8f36ed6`), faltan los tests |
 | B-05 | Auth con Google (hoy correo + contraseña) | RQ-01 | Pendiente | ADR 003 lo deja como "después" |
 | B-06 | Migrar `configuracion/dominio` y `/api/tenants/domain` a tenant por sesión | RQ-04 | Pendiente | Mismo patrón que `generar-curso` |
-| B-08 | Resolver historia de git: `main` remoto no comparte historia con `dev` (bloquea el PR y por tanto el job `rls`) | RQ-31 | Bloqueado por decisión de Samuel | Opciones: reemplazar `main`, merge con `--allow-unrelated-histories`, o disparar CI con push |
 | B-09 | Landing V3 en producción: activar Google en Supabase Auth (+ Redirect URL `https://app.avantia.app/auth/callback`) y probar el flujo `/postular` de punta a punta | RQ-28 | Pendiente (Samuel) | 2026-10-20: Samuel aplicó `0004_postulaciones` en Supabase y creó la agenda de Google Calendar (`NEXT_PUBLIC_AGENDA_URL`). Código en `dev` (ADR 011, Propuesta) |
 | B-10 | Revisar landing V3, `/postular` y legales en móvil real (360–390 px) y escritorio | RQ-28 | Pendiente | La captura headless no baja de ~500 px; no se verificó a 360 px |
 | B-11 | Avisar por correo a contacto@goavantia.com cuando llega una postulación | RQ-28 | Pendiente | Hoy solo `/admin/postulaciones` |
@@ -70,6 +69,7 @@ Q3 MFA propio (recomendado: no) · Q4 registro por aplicación en H1 (hoy la pos
 
 | Fecha | Ítem |
 |---|---|
+| 2026-11-06 | B-08 cerrado: la rama productiva es `master` (no `main`) y `dev` desciende de ella, así que se integra por PR o avance rápido sin unir historias. `main` remoto solo tiene el commit inicial y queda sin uso. `master` quedó en `fa565a5` (ADR 032 y 033 en producción). CLAUDE.md y el diagrama de arquitectura corregidos |
 | 2026-11-05 | Cambiar el formato de una lección ya no borra el contenido anterior hasta pulsar «Guardar cambios» (antes se borraba al confirmar; ahora hay borrador local con «Descartar»). Botón numérico de los pasos del editor ya es círculo (`flex: 0 0 28px`). Almacenamiento de objetos: [ADR 030](../decisiones/030-materiales-enlace-o-almacenamiento-propio.md) aceptado (Supabase Storage; enlace o archivo) |
 | 2026-11-03 | Merge de `github/dev` (Vicente: página de la academia y dominio, ADR 021) con las cuentas de alumno. Renumerados lo de Vicente: migración `0007_pagina_academia` → `0008_pagina_academia` (la tabla ya existe en Supabase) y su ADR 018 → [021](../decisiones/021-pagina-publica-de-la-academia.md); mis pantallas de alumno van en `(public)/[domain]/(alumno)` con su encabezado, y el inicio `/` sigue siendo la plantilla del creador con una barra de acceso. `test:rls` 79 ok, vitest 108 ok, Playwright 63 ok |
 | 2026-11-03 | Migración `0007` aplicada en Supabase por MCP y verificada (RLS sin acceso `anon`; `test:rls` 69 ok; Playwright 60 ok en móvil 360/390 y escritorio, flujo completo con datos reales y limpieza posterior). Hallazgo: `redirect()` en Server Actions da 404 en dominios de academia (reescritos por middleware); las acciones del alumno devuelven `irA` y el cliente navega (`FormAccion`) |

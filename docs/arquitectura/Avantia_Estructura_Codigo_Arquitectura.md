@@ -167,7 +167,7 @@ graph LR
     D -->|Sí| E["apps/web: proyecto Next.js\ndesplegado en Vercel\n(edge + serverless)"]
     D -->|No| F[Comentario en el PR\ncon los cambios sugeridos]
     E --> G[Revisión humana del equipo]
-    G -->|Aprobado, merge a main| H[Deploy a producción]
+    G -->|Aprobado, merge a master| H[Deploy a producción]
     H --> I[("Supabase Postgres\nen producción")]
     B -.->|"migraciones en\ndb/migrations"| I
 ```

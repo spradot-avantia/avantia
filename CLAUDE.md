@@ -52,7 +52,7 @@ Ver `docs/Revision_Flujos_Creador_Alumno_2026-10-12.md`. Resumen: postulación p
 
 ## Flujo de trabajo
 
-- Ramas cortas + PR; Vercel genera preview por PR y `main` despliega a producción. El workflow `pr-review.yml` revisa cada PR (incluye la regla de RLS).
+- Ramas cortas + PR; Vercel genera preview por PR y `master` despliega a producción (`main` en GitHub solo tiene el commit inicial y no se usa). El workflow `pr-review.yml` revisa cada PR (incluye la regla de RLS).
 - Commits en español, imperativo, un cambio lógico por commit. No commitear ni pushear sin que Samuel lo pida.
 - El árbol puede tener cambios sin commit de otras personas: **no los reviertas ni los incluyas** en tus commits; stagea archivos por nombre.
 - Antes de dar algo por hecho: `npm run lint` y `npm run build`; para UI, revisar en móvil y escritorio. Si no se pudo verificar algo, dilo.
