@@ -62,3 +62,44 @@
   font-weight: var(--av-fw-semibold, 600);
   color: var(--av-ink);
 }
+
+/* Material con archivo propio (ADR 030) */
+.mt-archivo {
+  display: grid;
+  gap: var(--av-space-2);
+}
+.mt-archivo__info {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.mt-archivo__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--av-space-2);
+}
+.mt-archivo__elegir {
+  cursor: pointer;
+}
+.mt-archivo__elegir:focus-within {
+  box-shadow: var(--av-ring);
+}
+.mt-archivo__elegir.is-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.mt-archivo__estado {
+  margin: 0;
+  color: var(--av-muted);
+  font-size: var(--av-fs-sm);
+}
+.mt-uso {
+  display: grid;
+  gap: var(--av-space-1);
+}
+.mt-uso__barra {
+  width: 100%;
+  max-width: 320px;
+  height: 8px;
+  accent-color: var(--av-blue-600);
+}

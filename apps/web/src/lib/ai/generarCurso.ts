@@ -3,12 +3,21 @@ export interface GenerarCursoInput {
   materialCrudo: string;
 }
 
+/**
+ * Contrato de la salida (ADR 029, F3). Además de la estructura, la IA propone la presentación de
+ * cada módulo (descripción, «Qué aprenderás», duración) y la descripción y duración de cada
+ * lección. NO propone materiales ni enlaces: esas URLs las aporta el creador. Todo lo que
+ * devuelva el modelo debe pasar por `normalizarCursoGenerado` antes de guardarse.
+ */
 export interface CursoGenerado {
   titulo: string;
   descripcion: string;
   modulos: Array<{
     titulo: string;
-    lecciones: Array<{ titulo: string; resumen: string }>;
+    descripcion: string | null;
+    objetivos: string[];
+    duracionMin: number | null;
+    lecciones: Array<{ titulo: string; resumen: string; descripcion: string | null; duracionMin: number | null }>;
   }>;
 }
 

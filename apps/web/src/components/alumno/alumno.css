@@ -901,3 +901,60 @@
 .al-reglas-det[open] summary::after {
   transform: rotate(-135deg);
 }
+
+/* Materiales de la lección (ADR 029 F3 / ADR 030) */
+.al-mats-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-4);
+}
+.al-mats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-2);
+}
+.al-mats__t {
+  margin: 0;
+  font-size: var(--av-fs-md);
+  font-weight: var(--av-fw-semibold);
+}
+.al-mats__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--av-line);
+  border-radius: var(--av-radius-md);
+  background: var(--av-surface);
+}
+.al-mat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px var(--av-space-3);
+  min-height: var(--av-target);
+  padding: 10px var(--av-space-4);
+}
+.al-mat + .al-mat {
+  border-top: 1px solid var(--av-line);
+}
+.al-mat__enlace {
+  font-weight: var(--av-fw-medium);
+  overflow-wrap: anywhere;
+}
+.al-mat__meta {
+  font-size: var(--av-fs-xs);
+  color: var(--av-muted);
+}
+.al-mat__nota {
+  flex-basis: 100%;
+  font-size: var(--av-fs-sm);
+  color: var(--av-ink-2);
+}
+.al-leccion__desc {
+  margin: 0;
+  color: var(--av-ink-2);
+  font-size: var(--av-fs-md);
+  line-height: var(--av-lh-body);
+}

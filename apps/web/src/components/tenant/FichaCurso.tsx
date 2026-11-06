@@ -131,6 +131,20 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
               Módulo {i + 1} · {plural(m.lecciones.length, "lección", "lecciones")}
             </p>
             <h4 className="fc-mod__t">{nombreModulo(m.titulo)}</h4>
+            {m.duracionMin ? <p className="fc-mod__dur">Duración aproximada: {m.duracionMin} min</p> : null}
+            {m.descripcion && <p className="fc-mod__desc">{m.descripcion}</p>}
+            {m.objetivos.length > 0 && (
+              <>
+                <p className="fc-mod__sub" id={`fc-mod-obj-${m.id}`}>
+                  Qué aprenderás
+                </p>
+                <ul className="fc-obj fc-obj--mod" aria-labelledby={`fc-mod-obj-${m.id}`}>
+                  {m.objetivos.map((o, k) => (
+                    <li key={k}>{o}</li>
+                  ))}
+                </ul>
+              </>
+            )}
             <ul className="fc-lecs">
               {m.lecciones.map((l) =>
                 preview ? (
@@ -148,7 +162,11 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
                 ) : (
                   <li key={l.id} className="fc-lec fc-lec--plana">
                     <span>{l.titulo}</span>
-                    {l.tipo !== "texto" && <span className="fc-tipo">{TIPO[l.tipo]}</span>}
+                    {(l.tipo !== "texto" || l.duracionMin) && (
+                      <span className="fc-tipo">
+                        {[l.tipo !== "texto" ? TIPO[l.tipo] : null, l.duracionMin ? `${l.duracionMin} min` : null].filter(Boolean).join(" · ")}
+                      </span>
+                    )}
                   </li>
                 ),
               )}

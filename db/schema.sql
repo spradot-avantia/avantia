@@ -290,11 +290,21 @@ create table if not exists materiales (
   tipo text not null default 'enlace' check (tipo in ('documento', 'enlace')),
   nota text check (nota is null or char_length(nota) <= 200),
   orden integer not null default 0,
+  -- Archivo propio (ADR 030, migración 0017): bucket privado 'materiales', ruta {tenant}/{curso}/{uuid}.{ext}.
+  origen text not null default 'enlace' check (origen in ('enlace', 'archivo')),
+  storage_path text,
+  archivo_nombre text,
+  mime text,
+  bytes integer check (bytes is null or bytes between 1 and 26214400),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   foreign key (curso_id, tenant_id) references cursos (id, tenant_id) on delete cascade,
   foreign key (modulo_id, tenant_id) references modulos (id, tenant_id) on delete cascade,
-  foreign key (leccion_id, tenant_id) references lecciones (id, tenant_id) on delete cascade
+  foreign key (leccion_id, tenant_id) references lecciones (id, tenant_id) on delete cascade,
+  constraint materiales_archivo_coherente check (
+    (origen = 'enlace' and storage_path is null and archivo_nombre is null and mime is null and bytes is null)
+    or (origen = 'archivo' and url is null)
+  )
 );
 create index if not exists materiales_tenant_modulo_orden_idx on materiales (tenant_id, modulo_id, orden);
 create index if not exists materiales_tenant_curso_idx on materiales (tenant_id, curso_id);
@@ -1442,3 +1452,31 @@ revoke all on function quiz_resumen_por_alumno(uuid, uuid[]) from public, anon;
 revoke all on function quiz_respuestas_para_repaso_lote(uuid, uuid[], int) from public, anon;
 grant execute on function quiz_resumen_por_alumno(uuid, uuid[]) to authenticated, service_role;
 grant execute on function quiz_respuestas_para_repaso_lote(uuid, uuid[], int) to authenticated, service_role;
+
+-- ---------------------------------------------------------------------------
+-- Storage: bucket privado 'materiales' (ADR 030, migración 0017). Ruta: {tenant_id}/{curso_id}/<uuid>.<ext>.
+-- ---------------------------------------------------------------------------
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'materiales', 'materiales', false, 26214400,
+  array[
+    'application/pdf', 'image/png', 'image/jpeg', 'image/webp', 'text/plain',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+  ]
+)
+on conflict (id) do update
+  set public = excluded.public,
+      file_size_limit = excluded.file_size_limit,
+      allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists materiales_obj_select on storage.objects;
+create policy materiales_obj_select on storage.objects
+  for select using (bucket_id = 'materiales' and (storage.foldername(name))[1] = auth_tenant_id()::text);
+drop policy if exists materiales_obj_insert on storage.objects;
+create policy materiales_obj_insert on storage.objects
+  for insert with check (bucket_id = 'materiales' and (storage.foldername(name))[1] = auth_tenant_id()::text);
+drop policy if exists materiales_obj_delete on storage.objects;
+create policy materiales_obj_delete on storage.objects
+  for delete using (bucket_id = 'materiales' and (storage.foldername(name))[1] = auth_tenant_id()::text);

@@ -1,6 +1,7 @@
 // Repo de modulos y lecciones. Filtra siempre por tenant.id.
 // Reordenar = intercambiar con el vecino y renormalizar 0..n (sin transaccion:
 // son pocas filas y el orden es idempotente; ver ADR 006).
+import { quitarArchivos, rutasDeArchivos } from "./limpiezaArchivos";
 import { requireCreadorContext } from "./tenantActual";
 import type { Resultado, TipoLeccion } from "./types";
 import {
@@ -85,8 +86,11 @@ export async function moverModulo(moduloId: string, direccion: "subir" | "bajar"
 
 export async function eliminarModulo(moduloId: string): Promise<Resultado> {
   const { tenant, db } = await requireCreadorContext();
+  const rutas = await rutasDeArchivos(db, tenant.id, { moduloId });
   const { error } = await db.from("modulos").delete().eq("tenant_id", tenant.id).eq("id", moduloId);
-  return error ? { ok: false, error: ERR } : { ok: true, data: undefined };
+  if (error) return { ok: false, error: ERR };
+  await quitarArchivos(db, rutas); // las filas de materiales ya se fueron en cascada
+  return { ok: true, data: undefined };
 }
 
 export async function crearLeccion(moduloId: string, input: { titulo: string; tipo: TipoLeccion }): Promise<Resultado<{ id: string }>> {
@@ -177,8 +181,11 @@ export async function moverLeccion(leccionId: string, direccion: "subir" | "baja
 
 export async function eliminarLeccion(leccionId: string): Promise<Resultado> {
   const { tenant, db } = await requireCreadorContext();
+  const rutas = await rutasDeArchivos(db, tenant.id, { leccionId });
   const { error } = await db.from("lecciones").delete().eq("tenant_id", tenant.id).eq("id", leccionId);
-  return error ? { ok: false, error: ERR } : { ok: true, data: undefined };
+  if (error) return { ok: false, error: ERR };
+  await quitarArchivos(db, rutas);
+  return { ok: true, data: undefined };
 }
 
 async function reordenar(tabla: "modulos" | "lecciones", ids: string[], id: string, dir: "subir" | "bajar"): Promise<Resultado> {

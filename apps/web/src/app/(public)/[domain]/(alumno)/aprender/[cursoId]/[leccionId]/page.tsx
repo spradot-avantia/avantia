@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FormAccion } from "../../../../../../../components/alumno/FormAccion";
 import { ContenidoLeccion } from "../../../../../../../components/tenant/FichaCurso";
+import { MaterialesLeccion } from "../../../../../../../components/alumno/MaterialesLeccion";
 import { ToastXp } from "../../../../../../../components/alumno/ToastXp";
 import { nombreModulo } from "../../../../../../../lib/alumno/formato";
 import { estadoQuizzes } from "../../../../../../../lib/alumno/quiz";
@@ -11,6 +12,8 @@ import { completarLeccionAction } from "../../../../../../../lib/alumno/actions"
 import { leccionesEnOrden } from "../../../../../../../lib/alumno/catalogo";
 import { exigirCursoActivo } from "../../../../../../../lib/alumno/guardia";
 import { fechaLiberacion, hoyEnZona, leccionLiberada } from "../../../../../../../lib/alumno/liberacion";
+import { materialesDeCurso } from "../../../../../../../lib/alumno/materiales";
+import { materialesDeLeccion } from "../../../../../../../lib/alumno/materialesReglas";
 import { marcarAcceso } from "../../../../../../../lib/alumno/progreso";
 import { porcentaje } from "../../../../../../../lib/alumno/xp";
 
@@ -44,6 +47,9 @@ export default async function LeccionPage({
   const hecha = completadas.has(leccion.id);
   if (liberada && !hecha) await marcarAcceso(tenant.id, alumno.id, curso.id, leccion.id);
 
+  // Los materiales solo se leen (y se muestran) con la lección liberada y la inscripción ya comprobada.
+  const materiales = liberada ? materialesDeLeccion(await materialesDeCurso(tenant.id, curso.id), leccion.moduloId, leccion.id) : null;
+
   const pct = porcentaje(completadas.size, orden.length);
   const quizzes = await estadoQuizzes(tenant.id, alumno.id, curso.id);
   const modActual = curso.modulos.find((m) => m.id === leccion.moduloId);
@@ -63,10 +69,12 @@ export default async function LeccionPage({
         <p className="al-muted al-meta">
           <span>
             Módulo {leccion.moduloNum} · Lección {leccion.num} · {TIPO[leccion.tipo]}
+            {leccion.duracionMin ? ` · ${leccion.duracionMin} min` : ""}
           </span>
           {hecha && <span className="al-badge al-badge--ok">✓ Completada</span>}
         </p>
         <h1>{leccion.titulo}</h1>
+        {leccion.descripcion && <p className="al-leccion__desc">{leccion.descripcion}</p>}
 
         {Number.isFinite(ganaste) && ganaste > 0 && (
           <ToastXp xp={ganaste} />
@@ -78,7 +86,12 @@ export default async function LeccionPage({
         )}
 
         {liberada ? (
-          <ContenidoLeccion l={leccion} />
+          <>
+            <ContenidoLeccion l={leccion} />
+            {materiales && (
+              <MaterialesLeccion cursoId={curso.id} deLaLeccion={materiales.deLaLeccion} delModulo={materiales.delModulo} />
+            )}
+          </>
         ) : (
           <p className="al-alert" role="status">
             Esta lección se abre el <strong>{fechaLib ? fechaCorta(fechaLib) : "próximamente"}</strong>. Vuelve ese día.

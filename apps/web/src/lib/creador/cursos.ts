@@ -1,5 +1,6 @@
 // Repo de cursos. Toda query filtra por tenant.id (ademas de RLS).
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { quitarArchivos, rutasDeArchivos } from "./limpiezaArchivos";
 import { preguntasPorModulo } from "./quizzes";
 import { requireCreadorContext } from "./tenantActual";
 import type {
@@ -62,6 +63,10 @@ export function mapMaterial(r: any): Material {
     tipo: r.tipo,
     nota: r.nota ?? null,
     orden: r.orden,
+    origen: r.origen ?? "enlace",
+    archivoNombre: r.archivo_nombre ?? null,
+    mime: r.mime ?? null,
+    bytes: r.bytes ?? null,
   };
 }
 
@@ -113,7 +118,7 @@ export async function getCurso(cursoId: string): Promise<CursoCompleto | null> {
       .order("orden"),
     db
       .from("materiales")
-      .select("id, curso_id, modulo_id, leccion_id, titulo, url, tipo, nota, orden")
+      .select("id, curso_id, modulo_id, leccion_id, titulo, url, tipo, nota, orden, origen, archivo_nombre, mime, bytes")
       .eq("tenant_id", tenant.id)
       .eq("curso_id", cursoId)
       .order("orden"),
@@ -243,6 +248,9 @@ export async function updatePaso(cursoId: string, paso: PasoEditor, datos: Parti
 
 export async function eliminarCurso(cursoId: string): Promise<Resultado> {
   const { tenant, db } = await requireCreadorContext();
+  const rutas = await rutasDeArchivos(db, tenant.id, { cursoId });
   const { error } = await db.from("cursos").delete().eq("tenant_id", tenant.id).eq("id", cursoId);
-  return error ? { ok: false, error: "No pudimos eliminar el curso." } : { ok: true, data: undefined };
+  if (error) return { ok: false, error: "No pudimos eliminar el curso." };
+  await quitarArchivos(db, rutas); // los materiales se borraron en cascada; sus archivos, aparte
+  return { ok: true, data: undefined };
 }

@@ -47,7 +47,6 @@
 |---|---|---|
 | Onboarding de Mercado Pago Connect | No hay documentado cómo un tenant conecta su cuenta para recibir el split payment, ni qué pasa si no lo hace | — |
 | Separación de rol "equipo de Avantia" vs. "dueño de una academia" | Hay sesión y `STAFF_EMAILS` protege `/admin`, pero ambos paneles (el interno de Avantia y el de cada tenant) conviven en el mismo host de panel sin ninguna distinción de acceso | `app/(dashboard)/page.tsx` |
-| Bucket privado `materiales` con URLs firmadas para documentos subidos | Modelo preparado (`lecciones.storage_path`, `contenido_tipo`); MVP solo usa enlaces | [ADR 005](../decisiones/005-almacenamiento-logo.md) |
 | Sesiones en vivo y actividades en el Espacio del Creador | "Próximamente" en la UI; sin backend | [Reconciliación](../producto/Reconciliacion_Diseno_Creador.md) filas 12 y 21 |
 | Migraciones `0001`–`0003` sin confirmar como aplicadas en la base remota | Verificar en Supabase y probar RLS/Storage | `db/migrations/` |
 | Proveedor Google sin confirmar en Supabase Auth (la migración `0004_postulaciones` ya se aplicó el 2026-10-20) | Necesario para que `/postular` funcione en producción | [ADR 011](../decisiones/011-postulacion-con-google.md) |

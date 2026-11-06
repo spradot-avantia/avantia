@@ -115,6 +115,23 @@
   font-weight: var(--av-fw-medium);
   margin: 0 0 var(--av-space-2);
 }
+.fc-mod__dur {
+  margin: 0;
+  font-size: var(--av-fs-sm);
+  color: var(--av-muted);
+}
+.fc-mod__desc {
+  margin: var(--av-space-1) 0 0;
+  color: var(--av-ink-2);
+}
+.fc-mod__sub {
+  margin: var(--av-space-2) 0 0;
+  font-size: var(--av-fs-sm);
+  font-weight: var(--av-fw-semibold);
+}
+.fc-obj--mod {
+  margin-bottom: var(--av-space-2);
+}
 .fc-lecs {
   display: flex;
   flex-direction: column;

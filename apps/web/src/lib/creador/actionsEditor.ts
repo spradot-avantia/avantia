@@ -2,6 +2,7 @@
 
 // Server Actions propias del editor de curso (complementan actions.ts, que no
 // se toca). Ninguna recibe tenant_id: sale de la sesion (tenantActual.ts).
+import * as archivos from "./archivos";
 import { getCurso } from "./cursos";
 import { actualizarModulo, crearModulo, type ModuloPatch } from "./estructura";
 import * as materiales from "./materiales";
@@ -71,4 +72,28 @@ export async function moverMaterialAction(materialId: string, direccion: "subir"
 }
 export async function eliminarMaterialAction(materialId: string): Promise<Resultado> {
   return seguro(() => materiales.eliminarMaterial(materialId));
+}
+
+// ---- Archivos propios como material (ADR 030) -------------------------------
+export async function usoAlmacenamientoAction(): Promise<Resultado<archivos.Uso>> {
+  return seguro(() => archivos.usoAlmacenamiento());
+}
+export async function prepararSubidaAction(
+  materialId: string,
+  archivo: { nombre: string; bytes: number },
+): Promise<Resultado<{ ruta: string; token: string; mime: string }>> {
+  return seguro(() => archivos.prepararSubida(materialId, archivo));
+}
+export async function confirmarSubidaAction(
+  materialId: string,
+  ruta: string,
+  nombreOriginal: string,
+): Promise<Resultado<{ material: Material; uso: archivos.Uso }>> {
+  return seguro(() => archivos.confirmarSubida(materialId, ruta, nombreOriginal));
+}
+export async function quitarArchivoAction(materialId: string): Promise<Resultado<{ material: Material; uso: archivos.Uso }>> {
+  return seguro(() => archivos.quitarArchivo(materialId));
+}
+export async function urlDeDescargaAction(materialId: string): Promise<Resultado<{ url: string }>> {
+  return seguro(() => archivos.urlDeDescarga(materialId));
 }

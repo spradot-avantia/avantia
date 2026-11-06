@@ -790,3 +790,10 @@
     align-items: center;
   }
 }
+
+.ed-lec__borrador {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--av-space-2);
+  margin-top: var(--av-space-2);
+}

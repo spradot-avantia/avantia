@@ -68,6 +68,8 @@ export interface Leccion {
 }
 
 export type TipoMaterial = "documento" | "enlace";
+/** De dónde sale el material: un enlace https o un archivo subido a la plataforma (ADR 030). */
+export type OrigenMaterial = "enlace" | "archivo";
 
 /** Material de un módulo o de una lección (ADR 029, F2): enlace https con título y nota. */
 export interface Material {
@@ -82,6 +84,11 @@ export interface Material {
   tipo: TipoMaterial;
   nota: string | null;
   orden: number;
+  origen: OrigenMaterial;
+  /** Solo con origen «archivo»: nombre original, MIME y tamaño en bytes. La ruta interna no sale del servidor. */
+  archivoNombre: string | null;
+  mime: string | null;
+  bytes: number | null;
 }
 
 export interface Modulo {

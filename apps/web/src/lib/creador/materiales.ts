@@ -2,6 +2,7 @@
 // (además de RLS) y nunca recibe el tenant desde la request. Reordenar = intercambiar con el
 // vecino y renormalizar 0..n, como en estructura.ts.
 import { mapMaterial } from "./cursos";
+import { quitarArchivos } from "./limpiezaArchivos";
 import { requireCreadorContext } from "./tenantActual";
 import type { Material, Resultado, TipoMaterial } from "./types";
 import {
@@ -13,7 +14,7 @@ import {
 } from "./validacion";
 
 const ERR = "No pudimos guardar el cambio. Inténtalo de nuevo.";
-const COLS = "id, curso_id, modulo_id, leccion_id, titulo, url, tipo, nota, orden";
+export const COLS_MATERIAL = "id, curso_id, modulo_id, leccion_id, titulo, url, tipo, nota, orden, origen, archivo_nombre, mime, bytes";
 
 /** Agrega un material vacío al módulo (o a una de sus lecciones); el creador lo completa luego. */
 export async function crearMaterial(
@@ -52,7 +53,7 @@ export async function crearMaterial(
       tipo: tipo.data,
       orden,
     })
-    .select(COLS)
+    .select(COLS_MATERIAL)
     .single();
   return error || !data ? { ok: false, error: ERR } : { ok: true, data: mapMaterial(data) };
 }
@@ -73,6 +74,11 @@ export async function actualizarMaterial(materialId: string, patch: MaterialPatc
     fila.titulo = t.data;
   }
   if (patch.url !== undefined) {
+    if (patch.url !== null && patch.url.trim() !== "") {
+      // Un material con archivo no admite enlace: primero hay que quitar el archivo.
+      const { data: act } = await db.from("materiales").select("origen").eq("tenant_id", tenant.id).eq("id", materialId).maybeSingle();
+      if (act?.origen === "archivo") return { ok: false, error: "Este material tiene un archivo. Quítalo antes de pegar un enlace." };
+    }
     if (patch.url === null || patch.url.trim() === "") fila.url = null;
     else {
       const u = validarUrlMaterial(patch.url);
@@ -124,6 +130,10 @@ export async function moverMaterial(materialId: string, direccion: "subir" | "ba
 
 export async function eliminarMaterial(materialId: string): Promise<Resultado> {
   const { tenant, db } = await requireCreadorContext();
+  const { data: previo } = await db.from("materiales").select("storage_path").eq("tenant_id", tenant.id).eq("id", materialId).maybeSingle();
   const { error } = await db.from("materiales").delete().eq("tenant_id", tenant.id).eq("id", materialId);
-  return error ? { ok: false, error: ERR } : { ok: true, data: undefined };
+  if (error) return { ok: false, error: ERR };
+  // Primero la fila: si fallara quitar el objeto, queda huérfano pero ya no cuenta en la cuota.
+  if (previo?.storage_path) await quitarArchivos(db, [previo.storage_path]);
+  return { ok: true, data: undefined };
 }

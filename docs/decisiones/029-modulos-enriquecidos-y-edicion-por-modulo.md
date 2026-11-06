@@ -38,6 +38,10 @@ Referencias (**no verificadas con fuente primaria; hipótesis de producto a cont
 
 La migración se separó en dos para desplegar por fases: `0015` (columnas `modulos.descripcion/objetivos/duracion_min` y `lecciones.descripcion/duracion_min`, con checks de largo y rango) ya está aplicada; `0016` (tabla `materiales`) llega con la F2. Los campos son opcionales y no bloquean la publicación. Ruta nueva: `/cursos/[cursoId]/modulos/[moduloId]`.
 
+## Nota de implementación (F3, 2026-11-05)
+
+Vista del alumno e IA, sin migración nueva. La lección muestra descripción, duración y materiales; la ficha del curso, la presentación de cada módulo. Los materiales solo se leen en páginas con guardia de inscripción y **no** aparecen en la página pública. Los archivos subidos (ADR 030) se entregan con URL firmada de 60 s tras comprobar sesión, inscripción activa y lección liberada. IA: el endpoint `generar-curso` aún no llama a ningún modelo; se dejó fijado el contrato y un saneador (`normalizarCursoGenerado`) que aplica los límites del editor y elimina cualquier enlace.
+
 ## Nota de implementación (F2, 2026-11-05)
 
 Migración `0016` aplicada: tabla `materiales` tal como describe el punto 4. Detalles que el texto no fijaba: la `url` es nula mientras el material está incompleto (el creador lo agrega y luego pega el enlace; mismo patrón que las lecciones), el tope es de **10 materiales por módulo contando los de sus lecciones**, y `leccion_id` nulo significa material del módulo. Aislamiento verificado con dos academias reales (lectura, inserción con tenant ajeno, referencia a módulo ajeno, URL http, update y delete cruzados). Los alumnos no los ven hasta la F3.

@@ -39,6 +39,9 @@ const TEXTO_MAX = 20000;
 
 type Pendiente = { k: "leccion"; l: Leccion } | { k: "tipo"; l: Leccion; tipo: TipoLeccion };
 
+/** Cambio de formato aún no guardado: el contenido original sigue intacto hasta «Guardar cambios». */
+type Borrador = { tipo: TipoLeccion; url: string; texto: string };
+
 function tieneContenido(l: Leccion) {
   return !!(l.contenidoUrl?.trim() || l.contenidoTexto?.trim());
 }
@@ -51,6 +54,7 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
   const [trabajando, setTrabajando] = useState(false);
   const [tocUrl, setTocUrl] = useState<Record<string, boolean>>({});
   const [verTexto, setVerTexto] = useState<Record<string, boolean>>({});
+  const [borrador, setBorrador] = useState<Record<string, Borrador>>({});
 
   useEffect(() => {
     if (!foco) return;
@@ -108,23 +112,39 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
     auto.programar(`lec:${l.id}:titulo`, () => actualizarLeccionAction(l.id, { titulo: valor }));
   };
 
-  const aplicarTipo = (l: Leccion, tipo: TipoLeccion) => {
-    // El contenido anterior se descarta, pero no el título: si se cambia el formato justo
-    // después de escribirlo, cancelar todo el prefijo `lec:<id>:` perdía el título pendiente.
+  const quitarBorrador = (id: string) =>
+    setBorrador((b) => {
+      const { [id]: _omitido, ...resto } = b;
+      return resto;
+    });
+
+  /** Aplica el cambio de formato y recién ahí descarta el contenido anterior (guardado explícito). */
+  const guardarFormato = (l: Leccion, b: Borrador) => {
     auto.cancelar(`lec:${l.id}:url`);
     auto.cancelar(`lec:${l.id}:texto`);
-    mapLec(l.id, (x) => ({ ...x, tipo, contenidoUrl: null, contenidoTexto: null }));
+    const url = b.tipo === "texto" ? "" : b.url.trim();
+    const texto = b.tipo === "texto" ? b.texto : "";
+    mapLec(l.id, (x) => ({ ...x, tipo: b.tipo, contenidoUrl: url || null, contenidoTexto: texto.trim() ? texto : null }));
+    quitarBorrador(l.id);
     setTocUrl((t) => ({ ...t, [l.id]: false }));
-    void auto.encolar(`lec:${l.id}:tipo`, () => actualizarLeccionAction(l.id, { tipo }));
+    void auto.encolar(`lec:${l.id}:tipo`, async () => {
+      const r = await actualizarLeccionAction(l.id, { tipo: b.tipo });
+      if (!r.ok) return r;
+      if (url) return actualizarLeccionAction(l.id, { contenidoUrl: url });
+      if (texto.trim()) return actualizarLeccionAction(l.id, { contenidoTexto: texto });
+      return r;
+    });
+    ctx.anunciar("Formato de la lección guardado");
   };
 
   const cambiarTipo = (l: Leccion, tipo: TipoLeccion) => {
-    if (tipo === l.tipo) return;
-    if (tieneContenido(l)) setPendiente({ k: "tipo", l, tipo });
-    else aplicarTipo(l, tipo);
+    if (tipo === l.tipo) return quitarBorrador(l.id); // volver al formato original no pierde nada
+    setBorrador((b) => ({ ...b, [l.id]: b[l.id]?.tipo === tipo ? b[l.id] : { tipo, url: "", texto: "" } }));
+    setTocUrl((t) => ({ ...t, [l.id]: false }));
   };
 
   const cambiarUrl = (l: Leccion, valor: string) => {
+    if (borrador[l.id]) return setBorrador((b) => ({ ...b, [l.id]: { ...b[l.id], url: valor } }));
     mapLec(l.id, (x) => ({ ...x, contenidoUrl: valor }));
     if (!valor.trim()) return auto.programar(`lec:${l.id}:url`, () => actualizarLeccionAction(l.id, { contenidoUrl: null }));
     if (!validarUrlLeccion(l.tipo, valor).ok) return auto.cancelar(`lec:${l.id}:url`);
@@ -132,6 +152,7 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
   };
 
   const cambiarTexto = (l: Leccion, valor: string) => {
+    if (borrador[l.id]) return setBorrador((b) => ({ ...b, [l.id]: { ...b[l.id], texto: valor } }));
     mapLec(l.id, (x) => ({ ...x, contenidoTexto: valor }));
     auto.programar(`lec:${l.id}:texto`, () => actualizarLeccionAction(l.id, { contenidoTexto: valor }));
   };
@@ -183,8 +204,12 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
     <div className="ed-form">
       {modulo.lecciones.length === 0 && <p className="ed-vacio">Este módulo aún no tiene lecciones.</p>}
       <ul className="ed-lecs">
-        {modulo.lecciones.map((l, j) => {
-          const lista = leccionLista(l);
+        {modulo.lecciones.map((lGuardada, j) => {
+          const b = borrador[lGuardada.id];
+          const l: Leccion = b
+            ? { ...lGuardada, tipo: b.tipo, contenidoUrl: b.url, contenidoTexto: b.texto }
+            : lGuardada;
+          const lista = leccionLista(lGuardada);
           const abiertaAhora = abierta === l.id;
           const panelId = `ed-lec-panel-${l.id}`;
           const eTitulo = tituloLeccion.safeParse(l.titulo);
@@ -207,7 +232,7 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
                 >
                   <span className="ed-lec__titulo">{l.titulo.trim() || "Lección sin título"}</span>
                   <span className="ed-lec__chips">
-                    <Badge tono="neutral">{TIPOS.find((t) => t.id === l.tipo)?.label}</Badge>
+                    <Badge tono="neutral">{TIPOS.find((t) => t.id === lGuardada.tipo)?.label}</Badge>
                     <Badge tono={lista ? "ok" : "warning"}>{lista ? "Listo" : "Falta contenido"}</Badge>
                   </span>
                 </button>
@@ -253,6 +278,25 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
                       ))}
                     </div>
                   </fieldset>
+                  {b && (
+                    <Callout tono="warning">
+                      <p>
+                        Cambiaste el formato a <strong>{TIPOS.find((t) => t.id === b.tipo)?.label}</strong>. El contenido anterior se
+                        conserva hasta que guardes los cambios.
+                      </p>
+                      <div className="ed-lec__borrador">
+                        <Button
+                          disabled={l.tipo !== "texto" && !!l.contenidoUrl?.trim() && !validarUrlLeccion(l.tipo, l.contenidoUrl).ok}
+                          onClick={() => (tieneContenido(lGuardada) ? setPendiente({ k: "tipo", l: lGuardada, tipo: b.tipo }) : guardarFormato(lGuardada, b))}
+                        >
+                          Guardar cambios
+                        </Button>
+                        <Button variante="secondary" onClick={() => quitarBorrador(l.id)}>
+                          Descartar
+                        </Button>
+                      </div>
+                    </Callout>
+                  )}
 
                   {l.tipo === "texto" ? (
                     <div className="ed-texto">
@@ -381,7 +425,7 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
               ? "¿Cambiar el formato de la lección?"
               : ""
         }
-        confirmar={pendiente?.k === "tipo" ? "Cambiar formato" : "Eliminar"}
+        confirmar={pendiente?.k === "tipo" ? "Guardar y descartar" : "Eliminar"}
         onCancelar={() => setPendiente(null)}
         onConfirmar={() => {
           const p = pendiente;
@@ -389,12 +433,13 @@ export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modul
           if (p.k === "leccion") void eliminarLeccion(p.l);
           else {
             setPendiente(null);
-            aplicarTipo(p.l, p.tipo);
+            const bp = borrador[p.l.id];
+            if (bp) guardarFormato(p.l, bp);
           }
         }}
       >
         {pendiente?.k === "leccion" && <p>Se eliminará con su contenido. Esta acción no se puede deshacer.</p>}
-        {pendiente?.k === "tipo" && <p>El enlace o texto que escribiste en el formato anterior se descartará.</p>}
+        {pendiente?.k === "tipo" && <p>Al guardar, el enlace o texto del formato anterior se borrará. Esta acción no se puede deshacer.</p>}
       </ConfirmDialog>
     </div>
   );

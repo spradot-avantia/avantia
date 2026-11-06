@@ -6,10 +6,18 @@
 import { useEffect, useState } from "react";
 import {
   actualizarMaterialAction,
+  confirmarSubidaAction,
   crearMaterialAction,
   eliminarMaterialAction,
   moverMaterialAction,
+  prepararSubidaAction,
+  quitarArchivoAction,
+  urlDeDescargaAction,
+  usoAlmacenamientoAction,
 } from "../../../lib/creador/actionsEditor";
+import { ACCEPT_ARCHIVOS, ARCHIVO_MAX_BYTES, EXTENSIONES_LEGIBLES, formatearBytes } from "../../../lib/creador/archivosReglas";
+import { prepararArchivo } from "../../../lib/creador/comprimir";
+import { createSupabaseBrowserClient } from "../../../lib/supabase/client";
 import type { Material, Modulo, TipoMaterial } from "../../../lib/creador/types";
 import {
   MATERIALES_MODULO_MAX,
@@ -47,6 +55,19 @@ export function EditorMateriales({
   const [pendiente, setPendiente] = useState<Material | null>(null);
   const [trabajando, setTrabajando] = useState(false);
   const [tocUrl, setTocUrl] = useState<Record<string, boolean>>({});
+  // Material cuyo origen elegido en pantalla es «Archivo» aunque aún no tenga uno subido.
+  const [verArchivo, setVerArchivo] = useState<Record<string, boolean>>({});
+  const [subida, setSubida] = useState<Record<string, { msg: string; error?: boolean }>>({});
+  const [quitar, setQuitar] = useState<Material | null>(null);
+  const [uso, setUso] = useState<{ usado: number; limite: number } | null>(null);
+
+  useEffect(() => {
+    let vivo = true;
+    void usoAlmacenamientoAction().then((r) => vivo && r.ok && setUso(r.data));
+    return () => {
+      vivo = false;
+    };
+  }, []);
 
   const lista = modulo.materiales.filter((m) => m.leccionId === leccionId);
   const sufijo = leccionId ?? "mod";
@@ -96,6 +117,55 @@ export function EditorMateriales({
     void auto.encolar(`mat:${m.id}:tipo`, () => actualizarMaterialAction(m.id, { tipo }));
   };
 
+  const estadoSubida = (id: string, v: { msg: string; error?: boolean } | null) =>
+    setSubida((s) => {
+      const { [id]: _previo, ...resto } = s;
+      return v ? { ...resto, [id]: v } : resto;
+    });
+
+  /** Comprime (imágenes), valida en el servidor, sube directo al bucket y enlaza el archivo. */
+  const subirArchivo = async (m: Material, elegido: File) => {
+    estadoSubida(m.id, { msg: "Preparando el archivo…" });
+    const { archivo, bytesOriginal, comprimido } = await prepararArchivo(elegido);
+    const prep = await auto.encolar(null, () => prepararSubidaAction(m.id, { nombre: archivo.name, bytes: archivo.size }));
+    if (!prep.ok) return estadoSubida(m.id, { msg: prep.error, error: true });
+
+    estadoSubida(m.id, { msg: `Subiendo ${formatearBytes(archivo.size)}…` });
+    const { error } = await createSupabaseBrowserClient()
+      .storage.from("materiales")
+      .uploadToSignedUrl(prep.data.ruta, prep.data.token, archivo, { contentType: prep.data.mime });
+    if (error) return estadoSubida(m.id, { msg: "No pudimos subir el archivo. Revisa tu conexión e inténtalo de nuevo.", error: true });
+
+    const fin = await auto.encolar(null, () => confirmarSubidaAction(m.id, prep.data.ruta, elegido.name));
+    if (!fin.ok) return estadoSubida(m.id, { msg: fin.error, error: true });
+    mapMat(m.id, () => fin.data.material);
+    setUso(fin.data.uso);
+    estadoSubida(m.id, null);
+    ctx.anunciar(
+      comprimido
+        ? `Archivo subido. La imagen pasó de ${formatearBytes(bytesOriginal)} a ${formatearBytes(archivo.size)}.`
+        : "Archivo subido.",
+    );
+  };
+
+  const quitarArchivo = async (m: Material) => {
+    setQuitar(null);
+    setTrabajando(true);
+    const r = await auto.encolar(null, () => quitarArchivoAction(m.id));
+    setTrabajando(false);
+    if (!r.ok) return ctx.avisar(r.error);
+    mapMat(m.id, () => r.data.material);
+    setUso(r.data.uso);
+    setVerArchivo((v) => ({ ...v, [m.id]: false }));
+    ctx.anunciar("Archivo quitado");
+  };
+
+  const abrirArchivo = async (m: Material) => {
+    const r = await urlDeDescargaAction(m.id);
+    if (!r.ok) return ctx.avisar(r.error);
+    window.open(r.data.url, "_blank", "noopener,noreferrer");
+  };
+
   const mover = async (m: Material, dir: "subir" | "bajar") => {
     const i = lista.findIndex((x) => x.id === m.id);
     const j = dir === "subir" ? i - 1 : i + 1;
@@ -142,13 +212,16 @@ export function EditorMateriales({
             const eUrl = tocUrl[m.id] && vUrl && !vUrl.ok ? vUrl.error : undefined;
             const nt = notaMaterial.safeParse(m.nota ?? "");
             const eNota = nt.success ? undefined : nt.error.issues[0].message;
-            const completo = !!vUrl?.ok;
+            const esArchivo = m.origen === "archivo";
+            const modoArchivo = esArchivo || !!verArchivo[m.id];
+            const completo = esArchivo || !!vUrl?.ok;
+            const sub = subida[m.id];
             return (
               <li key={m.id} className="mt-item">
                 <div className="mt-item__cab">
                   <span className="mt-item__num">
                     Material {i + 1}
-                    {!completo && <span className="mt-item__falta"> · Falta el enlace</span>}
+                    {!completo && <span className="mt-item__falta"> · {modoArchivo ? "Falta el archivo" : "Falta el enlace"}</span>}
                   </span>
                   <Acciones
                     nombre={`material ${m.titulo || i + 1}`}
@@ -173,16 +246,88 @@ export function EditorMateriales({
                       onChange={(e) => cambiarTitulo(m, e.target.value)}
                     />
                   </Field>
-                  <Field id={`mat-tipo-${m.id}`} label="Tipo">
-                    <Select id={`mat-tipo-${m.id}`} value={m.tipo} onChange={(e) => cambiarTipo(m, e.target.value as TipoMaterial)}>
-                      {TIPOS.map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {t.label}
-                        </option>
-                      ))}
-                    </Select>
-                  </Field>
+                  {!modoArchivo && (
+                    <Field id={`mat-tipo-${m.id}`} label="Tipo">
+                      <Select id={`mat-tipo-${m.id}`} value={m.tipo} onChange={(e) => cambiarTipo(m, e.target.value as TipoMaterial)}>
+                        {TIPOS.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.label}
+                          </option>
+                        ))}
+                      </Select>
+                    </Field>
+                  )}
                 </div>
+
+                <fieldset className="ed-formato">
+                  <legend className="cr-field__label">Origen</legend>
+                  <div className="ed-formato__opts">
+                    {[
+                      { id: "enlace", label: "Enlace" },
+                      { id: "archivo", label: "Subir archivo" },
+                    ].map((o) => (
+                      <label key={o.id} className={`ed-opt${(o.id === "archivo") === modoArchivo ? " ed-opt--sel" : ""}`}>
+                        <input
+                          type="radio"
+                          name={`mat-origen-${m.id}`}
+                          checked={(o.id === "archivo") === modoArchivo}
+                          onChange={() => {
+                            if (o.id === "archivo") return setVerArchivo((v) => ({ ...v, [m.id]: true }));
+                            if (esArchivo) return setQuitar(m); // quitar el archivo exige confirmar
+                            setVerArchivo((v) => ({ ...v, [m.id]: false }));
+                          }}
+                        />
+                        <span>{o.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+
+                {modoArchivo ? (
+                  <div className="mt-archivo">
+                    {esArchivo && (
+                      <p className="mt-archivo__info">
+                        <strong>{m.archivoNombre}</strong>
+                        <span> · {formatearBytes(m.bytes ?? 0)}</span>
+                      </p>
+                    )}
+                    <div className="mt-archivo__acciones">
+                      <label className={`av-btn cr-btn av-btn--secondary mt-archivo__elegir${sub && !sub.error ? " is-disabled" : ""}`}>
+                        {esArchivo ? "Reemplazar archivo" : "Elegir archivo"}
+                        <input
+                          type="file"
+                          className="av-sr-only"
+                          accept={ACCEPT_ARCHIVOS}
+                          disabled={!!sub && !sub.error}
+                          onChange={(e) => {
+                            const f = e.target.files?.[0];
+                            e.target.value = "";
+                            if (f) void subirArchivo(m, f);
+                          }}
+                        />
+                      </label>
+                      {esArchivo && (
+                        <>
+                          <Button variante="ghost" onClick={() => void abrirArchivo(m)}>
+                            Abrir
+                          </Button>
+                          <Button variante="ghost" onClick={() => setQuitar(m)}>
+                            Quitar archivo
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                    <p className="cr-field__hint">
+                      {EXTENSIONES_LEGIBLES}. Máximo {formatearBytes(ARCHIVO_MAX_BYTES)} por archivo. Las imágenes se reducen
+                      automáticamente para ahorrar espacio.
+                    </p>
+                    {sub && (
+                      <p className={sub.error ? "cr-field__error" : "mt-archivo__estado"} role={sub.error ? "alert" : "status"}>
+                        {sub.msg}
+                      </p>
+                    )}
+                  </div>
+                ) : (
                 <Field
                   id={`mat-url-${m.id}`}
                   label="Enlace"
@@ -202,6 +347,7 @@ export function EditorMateriales({
                     onBlur={() => setTocUrl((t) => ({ ...t, [m.id]: true }))}
                   />
                 </Field>
+                )}
                 <Field
                   id={`mat-nota-${m.id}`}
                   label="Nota"
@@ -236,6 +382,31 @@ export function EditorMateriales({
           </span>
         )}
       </div>
+
+      {uso && (
+        <div className="mt-uso">
+          <progress
+            className="mt-uso__barra"
+            value={uso.usado}
+            max={uso.limite}
+            aria-label={`Espacio de archivos usado: ${formatearBytes(uso.usado)} de ${formatearBytes(uso.limite)}`}
+          />
+          <span className="ed-vacio">
+            Espacio de archivos de tu academia: {formatearBytes(uso.usado)} de {formatearBytes(uso.limite)}.
+          </span>
+        </div>
+      )}
+
+      <ConfirmDialog
+        abierto={!!quitar}
+        peligro
+        titulo={quitar ? `¿Quitar el archivo “${quitar.archivoNombre ?? ""}”?` : ""}
+        confirmar="Quitar archivo"
+        onCancelar={() => setQuitar(null)}
+        onConfirmar={() => quitar && void quitarArchivo(quitar)}
+      >
+        <p>El archivo se borra de la plataforma y se libera su espacio. Esta acción no se puede deshacer.</p>
+      </ConfirmDialog>
 
       <ConfirmDialog
         abierto={!!pendiente}

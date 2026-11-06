@@ -454,6 +454,7 @@ select.cr-input {
   font-weight: var(--av-fw-medium);
 }
 .cr-step__n {
+  flex: 0 0 28px; /* sin esto el flex lo encoge a óvalo cuando la etiqueta ocupa dos líneas */
   width: 28px;
   height: 28px;
   border-radius: 50%;
