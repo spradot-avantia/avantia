@@ -7,6 +7,7 @@ import type { CursoCompleto, Leccion, TenantCreador } from "../../lib/creador/ty
 import { urlEmbebible } from "../../lib/creador/validacion";
 import { TenantMark } from "../creador/TenantMark";
 import { MarkdownMinimo } from "./MarkdownMinimo";
+import { DescripcionModulo, ObjetivosModulo } from "./PresentacionModulo";
 import "./ficha-curso.css";
 
 type TenantFicha = Pick<TenantCreador, "nombre" | "logoUrl" | "logoModo" | "colorPrimario">;
@@ -151,19 +152,8 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
             </p>
             <h4 className="fc-mod__t">{nombreModulo(m.titulo)}</h4>
             {m.duracionMin ? <p className="fc-mod__dur">Duración aproximada: {m.duracionMin} min</p> : null}
-            {m.descripcion && <p className="fc-mod__desc">{m.descripcion}</p>}
-            {m.objetivos.length > 0 && (
-              <>
-                <p className="fc-mod__sub" id={`fc-mod-obj-${m.id}`}>
-                  Qué aprenderás
-                </p>
-                <ul className="fc-obj fc-obj--mod" aria-labelledby={`fc-mod-obj-${m.id}`}>
-                  {m.objetivos.map((o, k) => (
-                    <li key={k}>{o}</li>
-                  ))}
-                </ul>
-              </>
-            )}
+            <DescripcionModulo texto={m.descripcion} className="fc-mod__desc" />
+            <ObjetivosModulo modulo={m} variante="ficha" />
             <ul className="fc-lecs">
               {m.lecciones.map((l) =>
                 preview ? (

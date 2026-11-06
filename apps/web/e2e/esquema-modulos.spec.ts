@@ -18,7 +18,7 @@ const PANEL = process.env.E2E_PANEL_URL ?? `http://localhost:${PUERTO}`;
 const CREADOR_LOCAL = PANEL.startsWith("http://localhost") && E.ALLOW_DEMO_TENANT === "true" && E.DEMO_TENANT_SLUG === SUB;
 
 const sufijo = randomUUID().slice(0, 8);
-const D = { tenantId: "", curso: "", m1: "", m2: "", l1: "", l2: "", l3: "", alumno: { id: "", token: "" }, larga: { curso: "", modulo: "", leccion: "" } };
+const D = { tenantId: "", slug: "", curso: "", m1: "", m2: "", l1: "", l2: "", l3: "", alumno: { id: "", token: "" }, larga: { curso: "", modulo: "", leccion: "" } };
 
 test.describe.configure({ mode: "serial" });
 
@@ -28,9 +28,10 @@ test.beforeAll(async () => {
   D.tenantId = t.data?.[0]?.id;
   test.skip(!D.tenantId, `no existe la academia ${SUB}`);
 
+  D.slug = `e2e-esq-${sufijo}`;
   const c = await rest("cursos", {
     method: "POST",
-    body: { tenant_id: D.tenantId, slug: `e2e-esq-${sufijo}`, titulo: `Curso E2E esquema ${sufijo}`, descripcion: "Curso de prueba automática del flujo curso, módulo y lección.", estado: "publicado", acceso: "enlace", published_at: new Date().toISOString() },
+    body: { tenant_id: D.tenantId, slug: D.slug, titulo: `Curso E2E esquema ${sufijo}`, descripcion: "Curso de prueba automática del flujo curso, módulo y lección.", estado: "publicado", acceso: "enlace", published_at: new Date().toISOString() },
   });
   D.curso = c.data[0].id;
   const mods = await rest("modulos", {
@@ -246,6 +247,51 @@ test("una lección sin títulos no muestra índice", async ({ page, baseURL }) =
   await expect(page.getByRole("navigation", { name: "En esta lección" })).toHaveCount(0);
 });
 
+// ---- Ficha pública: presentación del módulo compartida con la pantalla del alumno (ADR 032, punto 9) ----
+
+test("ficha pública del curso: muestra la presentación del módulo con «Qué aprenderás»", async ({ page }, info) => {
+  escritorio(info);
+  await page.goto(`/curso/${D.slug}`);
+  await expect(page.getByText("Presentación del primer módulo de prueba.")).toBeVisible();
+  await expect(page.getByText("Qué aprenderás")).toBeVisible();
+  await expect(page.getByRole("list", { name: "Qué aprenderás" }).getByRole("listitem")).toHaveText(["Entender A", "Aplicar B"]);
+});
+
+// ---- Teclado: los paneles plegables y el acordeón se operan sin ratón ----
+
+test("teclado: el panel del syllabus y el índice se abren y cierran con Enter y el acordeón con Espacio", async ({ page, baseURL }) => {
+  await conSesion(page, baseURL);
+  await page.goto(`/aprender/${D.larga.curso}/${D.larga.leccion}`);
+  const ancho = (page.viewportSize()?.width ?? 0) >= 900;
+  if (!ancho) {
+    const boton = page.getByRole("button", { name: "Contenido del curso" });
+    await boton.focus();
+    await page.keyboard.press("Enter");
+    await expect(boton).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Enter");
+    await expect(boton).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByRole("navigation", { name: "Contenido del curso" })).toBeHidden();
+    await boton.focus();
+    await page.keyboard.press("Enter");
+  }
+  const resumen = page.locator("details.al-syl__mod > summary").first();
+  await resumen.focus();
+  await expect(page.locator("details.al-syl__mod").first()).toHaveAttribute("open", "");
+  await page.keyboard.press("Space");
+  await expect(page.locator("details.al-syl__mod").first()).not.toHaveAttribute("open", "");
+  await page.keyboard.press("Space");
+  await expect(page.locator("details.al-syl__mod").first()).toHaveAttribute("open", "");
+  // Un enlace del índice se activa con Enter.
+  if (!ancho || (page.viewportSize()?.width ?? 0) < 1180) {
+    const t = page.getByRole("button", { name: "En esta lección" });
+    await t.focus();
+    await page.keyboard.press("Enter");
+  }
+  await page.getByRole("navigation", { name: "En esta lección" }).getByRole("link", { name: "Cierre" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#sec-cierre$/);
+});
+
 // ============================ 2. Creador (solo local, modo demo) ============================
 
 test.describe("creador: esquema del curso", () => {
@@ -280,6 +326,38 @@ test.describe("creador: esquema del curso", () => {
     await expect(page).toHaveURL(new RegExp(`/modulos/${D.m1}\\?leccion=${D.l2}$`));
     await expect(page.locator(`#ed-lec-panel-${D.l2}`)).toBeVisible();
     await expect(page.locator(`#ed-lec-titulo-${D.l2}`)).toBeFocused();
+  });
+
+  test("plantilla: un módulo vacío recibe Introducción, Desarrollo, Ejercicio y Resumen", async ({ page }, info) => {
+    const m = await rest("modulos", { method: "POST", body: { tenant_id: D.tenantId, curso_id: D.curso, titulo: "Módulo vacío", orden: 9, descripcion: null, objetivos: [], duracion_min: null } });
+    const vacio = m.data[0].id as string;
+    await page.goto(urlEsquema());
+    if (info.project.name !== "escritorio") await page.getByRole("button", { name: "Desplegar el módulo 3" }).click();
+    await page.getByRole("button", { name: /^Usar plantilla de lecciones/ }).click();
+    await expect(page.getByLabel(/Título de la lección 1 del módulo 3/)).toHaveValue("Introducción", { timeout: 15_000 });
+    const filas = await rest("lecciones", { query: `select=titulo,tipo&tenant_id=eq.${D.tenantId}&modulo_id=eq.${vacio}&order=orden` });
+    expect(filas.data).toEqual([
+      { titulo: "Introducción", tipo: "texto" },
+      { titulo: "Desarrollo", tipo: "texto" },
+      { titulo: "Ejercicio", tipo: "texto" },
+      { titulo: "Resumen", tipo: "texto" },
+    ]);
+    // Con lecciones ya creadas, el botón desaparece: no se puede duplicar.
+    await expect(page.getByRole("button", { name: /^Usar plantilla de lecciones/ })).toHaveCount(0);
+    await rest("modulos", { method: "DELETE", query: `tenant_id=eq.${D.tenantId}&id=eq.${vacio}` });
+  });
+
+  test("lección anterior y siguiente cruzan de un módulo a otro", async ({ page }) => {
+    const ultima = (await rest("lecciones", { query: `select=id&tenant_id=eq.${D.tenantId}&modulo_id=eq.${D.m1}&order=orden.desc&limit=1` })).data[0].id as string;
+    await page.goto(`${PANEL}/cursos/${D.curso}/modulos/${D.m1}?leccion=${ultima}`);
+    await expect(page.locator(`#ed-lec-panel-${ultima}`)).toBeVisible();
+    await page.getByRole("button", { name: /^Lección siguiente →/ }).click();
+    await expect(page).toHaveURL(new RegExp(`/modulos/${D.m2}\\?leccion=${D.l3}$`));
+    await expect(page.locator(`#ed-lec-panel-${D.l3}`)).toBeVisible();
+    await expect(page.locator(`#ed-lec-titulo-${D.l3}`)).toBeFocused();
+    await expect(page.getByRole("button", { name: /^Lección siguiente →/ })).toHaveCount(0); // es la última del curso
+    await page.getByRole("button", { name: /^← Lección anterior/ }).click();
+    await expect(page).toHaveURL(new RegExp(`/modulos/${D.m1}\\?leccion=${ultima}$`));
   });
 
   test("un ?leccion= ajeno al módulo se ignora", async ({ page }) => {

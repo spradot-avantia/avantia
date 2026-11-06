@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { DescripcionModulo, ObjetivosModulo } from "../../../../../../../../components/tenant/PresentacionModulo";
 import { ShellCurso } from "../../../../../../../../components/alumno/ShellCurso";
 import { SyllabusCurso } from "../../../../../../../../components/alumno/SyllabusCurso";
 import { Barra } from "../../../../../../../../components/alumno/Piezas";
@@ -63,19 +64,10 @@ export default async function ModuloAlumnoPage({ params }: { params: { cursoId: 
         </p>
         <h1>{nombre}</h1>
         <p className="al-muted">{resumen}</p>
-        {modulo.descripcion && <p className="al-mp__desc">{modulo.descripcion}</p>}
+        <DescripcionModulo texto={modulo.descripcion} className="al-mp__desc" />
       </header>
 
-      {modulo.objetivos.length > 0 && (
-        <section className="al-card al-mp__aprenderas" aria-labelledby="al-mp-obj">
-          <h2 id="al-mp-obj">Qué aprenderás</h2>
-          <ul>
-            {modulo.objetivos.map((o, i) => (
-              <li key={i}>{o}</li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <ObjetivosModulo modulo={modulo} variante="alumno" />
 
       <section className="al-card al-mp__progreso" aria-label="Tu avance en el módulo">
         <Barra etiqueta="Tu avance en este módulo" pct={r.pct} detalle={`${r.hechas} de ${r.total}`} />
