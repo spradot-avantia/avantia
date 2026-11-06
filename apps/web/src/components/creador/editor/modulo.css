@@ -165,3 +165,98 @@ textarea.cr-input.md-autoalto--linea {
     flex: 0 0 auto;
   }
 }
+
+/* ---- Esquema del curso (ADR 032, F2) ---- */
+.md-card--esq {
+  flex-direction: column;
+  align-items: stretch;
+}
+.esq-cab {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--av-space-2);
+  flex-wrap: wrap;
+}
+.esq-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--av-space-1);
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 var(--av-space-2);
+  border: 0;
+  border-radius: var(--av-radius-md);
+  background: transparent;
+  color: var(--av-ink-2);
+  cursor: pointer;
+}
+.esq-toggle:hover {
+  background: var(--av-surface-2);
+}
+.esq-chev {
+  font-size: var(--av-fs-base);
+}
+.esq-titulo,
+.esq-lec__titulo {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: grid;
+  gap: var(--av-space-1);
+}
+.esq-panel {
+  display: grid;
+  gap: var(--av-space-3);
+  padding-top: var(--av-space-3);
+  border-top: 1px solid var(--av-line);
+}
+.esq-lecs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--av-space-3);
+}
+.esq-lec {
+  display: grid;
+  gap: var(--av-space-2);
+  padding: var(--av-space-3);
+  background: var(--av-surface-2);
+  border-radius: var(--av-radius-md);
+}
+.esq-lec__meta,
+.esq-lec__acc,
+.esq-pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--av-space-2) var(--av-space-3);
+}
+.esq-lec__acc {
+  justify-content: space-between;
+}
+@media (min-width: 900px) {
+  .esq-lec {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+  }
+}
+
+/* Móvil: menos relleno en el esquema para que «Editar» y las flechas queden en una sola fila. */
+@media (max-width: 699px) {
+  .md-card--esq {
+    padding: var(--av-space-3);
+  }
+  .esq-lec {
+    padding: var(--av-space-2);
+  }
+  .esq-lec__acc,
+  .esq-cab {
+    flex-wrap: nowrap;
+  }
+  .esq-cab {
+    flex-wrap: wrap;
+  }
+  .esq-lec__acc .ed-acc {
+    gap: var(--av-space-1);
+  }
+}

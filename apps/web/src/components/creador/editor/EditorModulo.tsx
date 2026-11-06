@@ -34,6 +34,8 @@ interface Props {
   cursoInicial: CursoCompleto;
   moduloId: string;
   urlPublica: string;
+  /** Lección que se abre al llegar desde el esquema del curso (ADR 032). */
+  leccionInicial?: string;
 }
 
 /** Hace que un textarea crezca con su contenido (sin barra de desplazamiento interna). */
@@ -42,7 +44,7 @@ function ajustarAlto(el: HTMLTextAreaElement) {
   el.style.height = `${el.scrollHeight + 2}px`;
 }
 
-export function EditorModulo({ cursoInicial, moduloId, urlPublica }: Props) {
+export function EditorModulo({ cursoInicial, moduloId, urlPublica, leccionInicial }: Props) {
   const router = useRouter();
   const auto = useAutosave();
   const [curso, setCurso] = useState<CursoCompleto>(cursoInicial);
@@ -332,7 +334,7 @@ export function EditorModulo({ cursoInicial, moduloId, urlPublica }: Props) {
         <h2 id="md-lec-t" className="ed-card__title">
           Lecciones
         </h2>
-        <EditorLecciones ctx={ctx} modulo={modulo} />
+        <EditorLecciones ctx={ctx} modulo={modulo} abiertaInicial={leccionInicial} />
       </section>
 
       <section className="ed-card" aria-labelledby="md-mat-t">

@@ -9,7 +9,13 @@ export const metadata = { title: "Editar módulo" };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Pantalla de un módulo (ADR 029): el módulo debe pertenecer al curso del tenant de la sesión. */
-export default async function EditarModuloPage({ params }: { params: { cursoId: string; moduloId: string } }) {
+export default async function EditarModuloPage({
+  params,
+  searchParams,
+}: {
+  params: { cursoId: string; moduloId: string };
+  searchParams: { leccion?: string };
+}) {
   if (!UUID.test(params.moduloId)) notFound();
   const carga = await cargarCursoParaEditor(params.cursoId);
 
@@ -26,5 +32,10 @@ export default async function EditarModuloPage({ params }: { params: { cursoId: 
   }
   if (!carga.curso.modulos.some((m) => m.id === params.moduloId)) notFound();
 
-  return <EditorModulo cursoInicial={carga.curso} moduloId={params.moduloId} urlPublica={carga.urlPublica} />;
+  // ?leccion=<id> (desde el esquema del curso, ADR 032): abre esa lección; un id ajeno al módulo se ignora.
+  const modulo = carga.curso.modulos.find((m) => m.id === params.moduloId);
+  const pedida = searchParams.leccion;
+  const leccionInicial = pedida && UUID.test(pedida) && modulo?.lecciones.some((l) => l.id === pedida) ? pedida : undefined;
+
+  return <EditorModulo cursoInicial={carga.curso} moduloId={params.moduloId} urlPublica={carga.urlPublica} leccionInicial={leccionInicial} />;
 }

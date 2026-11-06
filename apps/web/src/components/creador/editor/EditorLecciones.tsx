@@ -55,10 +55,11 @@ function tieneContenido(l: Leccion) {
   return !!(l.contenidoUrl?.trim() || l.contenidoTexto?.trim() || l.archivoNombre);
 }
 
-export function EditorLecciones({ ctx, modulo }: { ctx: EditorCtx; modulo: Modulo }) {
+export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCtx; modulo: Modulo; abiertaInicial?: string }) {
   const { curso, setCurso, auto } = ctx;
-  const [abierta, setAbierta] = useState<string | null>(null);
-  const [foco, setFoco] = useState<string | null>(null);
+  const [abierta, setAbierta] = useState<string | null>(abiertaInicial ?? null);
+  // Si se llega desde el esquema del curso, el foco va al título de esa lección.
+  const [foco, setFoco] = useState<string | null>(abiertaInicial ? `ed-lec-titulo-${abiertaInicial}` : null);
   const [pendiente, setPendiente] = useState<Pendiente | null>(null);
   const [trabajando, setTrabajando] = useState(false);
   const [tocUrl, setTocUrl] = useState<Record<string, boolean>>({});
