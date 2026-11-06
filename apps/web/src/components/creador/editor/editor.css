@@ -442,6 +442,111 @@
 .ed-texto .cr-field {
   width: 100%;
 }
+.ed-texto > * {
+  max-width: 100%;
+}
+.ed-texto__cols {
+  width: 100%;
+  display: grid;
+  gap: var(--av-space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+.ed-texto__cols > * {
+  min-width: 0;
+}
+/* Con espacio suficiente, la vista previa va al lado del texto. */
+@media (min-width: 1100px) {
+  .ed-texto__cols--dos {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .ed-texto__cols--dos .ed-md-prev {
+    position: sticky;
+    top: var(--av-space-4);
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+/* ---- Barra de formato del texto (ADR 035) ---- */
+.ed-barra {
+  width: 100%;
+  display: flex;
+  gap: var(--av-space-4);
+  overflow-x: auto;
+  padding: var(--av-space-2);
+  border: 1px solid var(--av-line-strong);
+  border-radius: var(--av-radius-md);
+  background: var(--av-surface-2);
+}
+.ed-barra__grupo {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-1);
+}
+.ed-barra__nombre {
+  font-size: var(--av-fs-xs);
+  font-weight: 700;
+  color: var(--av-muted);
+}
+.ed-barra__botones {
+  display: flex;
+  gap: var(--av-space-2);
+}
+.ed-barra__btn {
+  min-height: var(--av-target);
+  min-width: var(--av-target);
+  padding: 0 var(--av-space-3);
+  border: 1px solid var(--av-line-strong);
+  border-radius: var(--av-radius-sm);
+  background: var(--av-surface);
+  color: var(--av-ink);
+  font: inherit;
+  font-size: var(--av-fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ed-barra__btn:hover {
+  border-color: var(--av-blue-600);
+  color: var(--av-blue-700);
+}
+.ed-barra__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--av-ring);
+}
+.ed-guia {
+  width: 100%;
+  font-size: var(--av-fs-sm);
+}
+.ed-guia summary {
+  min-height: var(--av-target);
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ed-guia summary:focus-visible {
+  outline: none;
+  box-shadow: var(--av-ring);
+}
+.ed-guia table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ed-guia th,
+.ed-guia td {
+  padding: var(--av-space-2) var(--av-space-3);
+  border-bottom: 1px solid var(--av-line);
+  text-align: left;
+  vertical-align: top;
+}
+.ed-guia code {
+  font-family: var(--av-font-mono);
+  font-size: var(--av-fs-xs);
+  overflow-wrap: anywhere;
+}
 .ed-md-prev {
   width: 100%;
   padding: var(--av-space-4);
@@ -796,4 +901,16 @@
   flex-wrap: wrap;
   gap: var(--av-space-2);
   margin-top: var(--av-space-2);
+}
+
+/* La barra de formato se desplaza dentro de su caja: ningún contenedor puede ensancharse por ella. */
+.ed-card,
+.ed-form,
+.ed-lecs,
+.ed-lec,
+.ed-lec__panel,
+.ed-texto,
+.ed-barra {
+  min-width: 0;
+  max-width: 100%;
 }

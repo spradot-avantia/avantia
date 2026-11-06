@@ -28,6 +28,7 @@ import {
   tituloLeccion,
   validarUrlLeccion,
 } from "../../../lib/creador/validacion";
+import { BarraTexto, GuiaFormato, atajosTexto } from "./BarraTexto";
 import { MarkdownMinimo } from "../../tenant/MarkdownMinimo";
 import { Badge } from "../Badge";
 import { Button } from "../Button";
@@ -375,21 +376,30 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
 
                   {l.tipo === "texto" ? (
                     <div className="ed-texto">
-                      <Field
-                        id={`ed-lec-texto-${l.id}`}
-                        label="Texto de la lección"
-                        ayuda="Admite **negrita**, *cursiva*, títulos con #, listas con - o 1. y enlaces [texto](https://…)."
-                        contador={`${texto.length}/${TEXTO_MAX}`}
-                      >
-                        <Textarea
+                      <BarraTexto textareaId={`ed-lec-texto-${l.id}`} maximo={TEXTO_MAX} onCambio={(v) => cambiarTexto(l, v)} />
+                      <div className={`ed-texto__cols${verTexto[l.id] ? " ed-texto__cols--dos" : ""}`}>
+                        <Field
                           id={`ed-lec-texto-${l.id}`}
-                          value={texto}
-                          rows={8}
-                          maxLength={TEXTO_MAX}
-                          conAyuda
-                          onChange={(e) => cambiarTexto(l, e.target.value)}
-                        />
-                      </Field>
+                          label="Texto de la lección"
+                          ayuda="Usa la barra de arriba o escribe Markdown: **negrita**, # títulos, tablas, avisos, pestañas y más (ver la guía)."
+                          contador={`${texto.length}/${TEXTO_MAX}`}
+                        >
+                          <Textarea
+                            id={`ed-lec-texto-${l.id}`}
+                            value={texto}
+                            rows={12}
+                            maxLength={TEXTO_MAX}
+                            conAyuda
+                            onChange={(e) => cambiarTexto(l, e.target.value)}
+                            onKeyDown={(e) => atajosTexto(e, (v) => cambiarTexto(l, v), TEXTO_MAX)}
+                          />
+                        </Field>
+                        {verTexto[l.id] && (
+                          <div className="ed-md-prev" aria-label="Así se verá el texto">
+                            {texto.trim() ? <MarkdownMinimo texto={texto} /> : <p className="ed-vacio">Aún no escribes nada.</p>}
+                          </div>
+                        )}
+                      </div>
                       <Button
                         variante="ghost"
                         aria-pressed={!!verTexto[l.id]}
@@ -397,11 +407,7 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
                       >
                         {verTexto[l.id] ? "Ocultar cómo se ve" : "Ver cómo se ve"}
                       </Button>
-                      {verTexto[l.id] && (
-                        <div className="ed-md-prev" aria-label="Así se verá el texto">
-                          {texto.trim() ? <MarkdownMinimo texto={texto} /> : <p className="ed-vacio">Aún no escribes nada.</p>}
-                        </div>
-                      )}
+                      <GuiaFormato />
                     </div>
                   ) : (
                     <>

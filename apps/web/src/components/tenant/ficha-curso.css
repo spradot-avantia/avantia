@@ -219,6 +219,274 @@
 .fc-md h4 {
   font-size: var(--av-fs-base);
 }
+/* ---- Markdown ampliado (ADR 035): código, citas, avisos, tablas, pestañas, tarjetas ---- */
+.fc-md code {
+  font-family: var(--av-font-mono);
+  font-size: 0.92em;
+  padding: 1px 5px;
+  border-radius: 6px;
+  background: var(--av-surface-2);
+  overflow-wrap: anywhere;
+}
+.fc-md mark {
+  background: var(--av-warning-bg);
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+.fc-md hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--av-line-strong);
+  margin: var(--av-space-2) 0;
+}
+.fc-md blockquote {
+  margin: 0;
+  padding: var(--av-space-1) 0 var(--av-space-1) var(--av-space-4);
+  border-left: 3px solid var(--av-line-strong);
+  color: var(--av-ink-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-3);
+}
+.fc-md .fc-codigo {
+  margin: 0;
+  border: 1px solid var(--av-line-strong);
+  border-radius: var(--av-radius-md);
+  background: var(--av-surface-2);
+  overflow: hidden;
+}
+.fc-md .fc-codigo figcaption {
+  padding: var(--av-space-2) var(--av-space-4);
+  border-bottom: 1px solid var(--av-line-strong);
+  font-family: var(--av-font-mono);
+  font-size: var(--av-fs-xs);
+  color: var(--av-muted);
+}
+.fc-md .fc-codigo pre {
+  margin: 0;
+  padding: var(--av-space-3) var(--av-space-4);
+  overflow-x: auto;
+  font-family: var(--av-font-mono);
+  font-size: var(--av-fs-sm);
+  line-height: 1.55;
+}
+.fc-md .fc-codigo pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+  overflow-wrap: normal;
+}
+.fc-md pre:focus-visible,
+.fc-tabla:focus-visible,
+.fc-tabs__tab:focus-visible,
+.fc-desplegable summary:focus-visible {
+  outline: none;
+  box-shadow: var(--av-ring);
+}
+
+/* Listas de tareas: casillas de solo lectura */
+.fc-md .fc-tareas {
+  list-style: none;
+  padding-left: 0;
+}
+.fc-md .fc-tareas li {
+  display: flex;
+  gap: var(--av-space-3);
+  align-items: baseline;
+}
+.fc-tarea {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--av-muted);
+  border-radius: 4px;
+  align-self: center;
+  position: relative;
+}
+.fc-tarea--hecha {
+  background: var(--av-success);
+  border-color: var(--av-success);
+}
+.fc-tarea--hecha::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Avisos */
+.fc-aviso {
+  --aviso-borde: var(--av-blue-600);
+  --aviso-fondo: var(--av-blue-50);
+  --aviso-tinta: var(--av-blue-700);
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-2);
+  padding: var(--av-space-3) var(--av-space-4);
+  border: 1px solid var(--aviso-borde);
+  border-left-width: 5px;
+  border-radius: var(--av-radius-md);
+  background: var(--aviso-fondo);
+}
+.fc-aviso--consejo {
+  --aviso-borde: var(--av-success);
+  --aviso-fondo: var(--av-success-bg);
+  --aviso-tinta: var(--av-success);
+}
+.fc-aviso--importante {
+  --aviso-borde: var(--av-ink-2);
+  --aviso-fondo: var(--av-surface-2);
+  --aviso-tinta: var(--av-ink);
+}
+.fc-aviso--advertencia {
+  --aviso-borde: var(--av-warning);
+  --aviso-fondo: var(--av-warning-bg);
+  --aviso-tinta: var(--av-warning-ink);
+}
+.fc-md .fc-aviso__t {
+  margin: 0;
+  font-weight: 700;
+  color: var(--aviso-tinta);
+}
+.fc-aviso > :not(.fc-aviso__t) {
+  margin: 0;
+}
+
+/* Tablas: se desplazan en horizontal dentro de su caja, sin romper la página */
+.fc-tabla {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--av-line-strong);
+  border-radius: var(--av-radius-md);
+  background: var(--av-surface);
+}
+.fc-tabla table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--av-fs-sm);
+}
+.fc-tabla th,
+.fc-tabla td {
+  padding: var(--av-space-2) var(--av-space-3);
+  border-bottom: 1px solid var(--av-line);
+  text-align: left;
+  vertical-align: top;
+  min-width: 90px;
+}
+.fc-tabla thead th {
+  background: var(--av-surface-2);
+  border-bottom: 1px solid var(--av-line-strong);
+  font-weight: 700;
+}
+.fc-tabla tbody tr:last-child td {
+  border-bottom: 0;
+}
+.fc-tabla .fc-al-c {
+  text-align: center;
+}
+.fc-tabla .fc-al-d {
+  text-align: right;
+}
+
+/* Pestañas */
+.fc-tabs {
+  border: 1px solid var(--av-line-strong);
+  border-radius: var(--av-radius-md);
+  background: var(--av-surface);
+  overflow: hidden;
+}
+.fc-tabs__lista {
+  display: flex;
+  overflow-x: auto;
+  background: var(--av-surface-2);
+  border-bottom: 1px solid var(--av-line-strong);
+}
+.fc-tabs__tab {
+  flex: none;
+  min-height: var(--av-target);
+  padding: 0 var(--av-space-4);
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--av-muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.fc-tabs__tab[aria-selected="true"] {
+  background: var(--av-surface);
+  color: var(--av-ink);
+  border-bottom-color: var(--al-brand, var(--av-blue-600));
+}
+.fc-tabs__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-3);
+  padding: var(--av-space-4);
+}
+.fc-tabs__panel[hidden] {
+  display: none;
+}
+
+/* Tarjetas */
+.fc-md .fc-tarjetas {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: var(--av-space-3);
+}
+.fc-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-2);
+  padding: var(--av-space-4);
+  border: 1px solid var(--av-line-strong);
+  border-radius: var(--av-radius-md);
+  background: var(--av-surface);
+}
+.fc-md .fc-tarjeta__t {
+  font-weight: 700;
+  font-size: var(--av-fs-lg);
+}
+.fc-tarjeta > :not(.fc-tarjeta__t) {
+  margin: 0;
+  font-size: var(--av-fs-sm);
+}
+
+/* Desplegable */
+.fc-desplegable {
+  border: 1px solid var(--av-line-strong);
+  border-radius: var(--av-radius-md);
+  background: var(--av-surface);
+}
+.fc-desplegable summary {
+  min-height: var(--av-target);
+  padding: var(--av-space-3) var(--av-space-4);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.fc-desplegable__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-3);
+  padding: 0 var(--av-space-4) var(--av-space-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-tabs__tab {
+    transition: none;
+  }
+}
+
 @container ficha (min-width: 720px) {
   .fc {
     padding: var(--av-space-6);
