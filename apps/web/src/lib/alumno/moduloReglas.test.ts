@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Leccion, Modulo } from "../creador/types";
-import { resumirModulo } from "./moduloReglas";
+import { esUltimaDelModulo, resumirModulo } from "./moduloReglas";
 
 const lec = (id: string, duracionMin: number | null = null): Leccion => ({
   id,
@@ -73,5 +73,24 @@ describe("resumirModulo", () => {
   it("módulo sin lecciones: 0 %, sin próxima y sin empezar", () => {
     const r = resumirModulo(modulo([]), ritmo, new Map(), new Set(), "2026-11-06");
     expect(r).toMatchObject({ total: 0, pct: 0, proxima: null, estado: "sin_empezar" });
+  });
+});
+
+describe("esUltimaDelModulo", () => {
+  const orden = [{ moduloId: "a" }, { moduloId: "a" }, { moduloId: "b" }, { moduloId: "b" }, { moduloId: "c" }];
+  it("es la última cuando la siguiente es de otro módulo", () => {
+    expect(esUltimaDelModulo(orden, 1)).toBe(true);
+    expect(esUltimaDelModulo(orden, 3)).toBe(true);
+  });
+  it("no lo es en medio del módulo", () => {
+    expect(esUltimaDelModulo(orden, 0)).toBe(false);
+    expect(esUltimaDelModulo(orden, 2)).toBe(false);
+  });
+  it("la última lección del curso también cierra su módulo", () => {
+    expect(esUltimaDelModulo(orden, 4)).toBe(true);
+  });
+  it("un índice fuera de rango no cuenta", () => {
+    expect(esUltimaDelModulo(orden, -1)).toBe(false);
+    expect(esUltimaDelModulo(orden, 9)).toBe(false);
   });
 });

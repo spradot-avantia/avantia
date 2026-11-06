@@ -95,6 +95,9 @@ export async function completarLeccionAction(_: EstadoForm, fd: FormData): Promi
   const base = `/aprender/${encodeURIComponent(cursoId)}`;
   if (!r.ok) return { ok: false, error: r.error };
   if (r.cursoCompleto) return destino(`${base}/completado`);
+  // Última lección del módulo: el alumno se queda en ella (ya completada) para ver el quiz de
+  // repaso y pasar al módulo siguiente por su presentación (ADR 032, punto 8).
+  if (r.finDeModulo) return destino(`${base}/${encodeURIComponent(leccionId)}?ganaste=${r.xpGanada}`);
   if (r.siguienteId) return destino(`${base}/${encodeURIComponent(r.siguienteId)}?ganaste=${r.xpGanada}`);
   return destino(`${base}/${encodeURIComponent(leccionId)}`);
 }

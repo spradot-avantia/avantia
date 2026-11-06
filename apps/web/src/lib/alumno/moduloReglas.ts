@@ -4,6 +4,15 @@ import type { Modulo, TipoLeccion } from "../creador/types";
 import { fechaLiberacion, leccionLiberada, type ReglaLiberacion } from "./liberacion";
 import { porcentaje } from "./xp";
 
+/**
+ * ¿La lección en `idx` es la última de su módulo? (ADR 032, punto 8). Al completarla, el alumno
+ * se queda en ella para ver el quiz de repaso y pasar al módulo siguiente por su presentación,
+ * en vez de saltar directo a la primera lección del módulo siguiente.
+ */
+export function esUltimaDelModulo(orden: ReadonlyArray<{ moduloId: string }>, idx: number): boolean {
+  return idx >= 0 && idx < orden.length && orden[idx + 1]?.moduloId !== orden[idx].moduloId;
+}
+
 export type EstadoLeccion = "completada" | "disponible" | "bloqueada";
 
 export interface FilaLeccion {

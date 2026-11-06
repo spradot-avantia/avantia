@@ -6,6 +6,7 @@ import { inscripcionDe } from "./inscripciones";
 import { hoyEnZona, leccionLiberada } from "./liberacion";
 import { calcularDominio, type Dominio } from "./dominioReglas";
 import { estadoQuizzes, xpDeQuiz } from "./quiz";
+import { esUltimaDelModulo } from "./moduloReglas";
 import { enRepasoPorCurso } from "./repaso";
 import { calcularXp, porcentaje, type DesgloseXp } from "./xp";
 
@@ -54,7 +55,7 @@ export async function marcarAcceso(tenantId: string, alumnoId: string, cursoId: 
 }
 
 export type ResultadoCompletar =
-  | { ok: true; siguienteId: string | null; cursoCompleto: boolean; xpGanada: number }
+  | { ok: true; siguienteId: string | null; cursoCompleto: boolean; xpGanada: number; finDeModulo: boolean }
   | { ok: false; error: string };
 
 /**
@@ -112,7 +113,13 @@ export async function completarLeccion(
   // La siguiente lección sin completar, empezando por la que viene después de esta.
   const siguiente =
     [...orden.slice(idx + 1), ...orden.slice(0, idx)].find((l) => !despues.has(l.id)) ?? null;
-  return { ok: true, siguienteId: siguiente?.id ?? null, cursoCompleto: d.cursoCompleto, xpGanada: d.xp - xpAntes };
+  return {
+    ok: true,
+    siguienteId: siguiente?.id ?? null,
+    cursoCompleto: d.cursoCompleto,
+    xpGanada: d.xp - xpAntes,
+    finDeModulo: esUltimaDelModulo(orden, idx),
+  };
 }
 
 export interface ResumenCursoAlumno {

@@ -175,6 +175,68 @@ test("al terminar el módulo, la lección ofrece «Siguiente módulo» y el mód
   await sinDesborde(page);
 });
 
+test("recorrido real con clics: del módulo 1 al 2 y hasta el cierre, sin tocar la base de datos", async ({ page, baseURL }) => {
+  await rest("progreso", { method: "DELETE", query: `tenant_id=eq.${D.tenantId}&alumno_id=eq.${D.alumno.id}` });
+  await conSesion(page, baseURL);
+  // Se espera a que React hidrate el formulario: un clic antes envía el formulario de forma nativa
+  // (la acción se ejecuta, pero la página no navega a la lección siguiente).
+  const completar = async () => {
+    await page.waitForFunction(() => {
+      const f = document.querySelector("form");
+      return !!f && Object.keys(f).some((k) => k.startsWith("__reactProps"));
+    });
+    await page.getByRole("button", { name: /Marcar como completada/ }).click();
+  };
+
+  // Entrada: presentación del módulo 1 → primera lección.
+  await page.goto(`/aprender/${D.curso}`);
+  await expect(page).toHaveURL(new RegExp(`/modulo/${D.m1}$`));
+  await page.getByRole("link", { name: "Empezar el módulo" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Lección 1.1");
+
+  // Lección 1.1 → pasa sola a la 1.2 (mismo módulo) y avisa los XP.
+  await completar();
+  await expect(page).toHaveURL(new RegExp(`/aprender/${D.curso}/${D.l2}\\?ganaste=\\d+$`));
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Lección 1.2");
+  await expect(page.getByText(/\+\d+ XP ganados/)).toBeVisible();
+
+  // Lección 1.2 es la última del módulo: NO salta a la 2.1; se queda, ya completada, con «Siguiente módulo».
+  await completar();
+  await expect(page).toHaveURL(new RegExp(`/aprender/${D.curso}/${D.l2}\\?ganaste=\\d+$`));
+  await expect(page.getByText("✓ Completada")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Siguiente →" })).toHaveCount(0);
+  await page.getByRole("link", { name: "Siguiente módulo →" }).click();
+
+  // Presentación del módulo 2, sin avance todavía.
+  await expect(page).toHaveURL(new RegExp(`/modulo/${D.m2}$`));
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Seguir avanzando");
+  await expect(page.getByText("Módulo 2 de 2")).toBeVisible();
+  await expect(page.getByText("Presentación del segundo módulo.")).toBeVisible();
+  await expect(page.locator(".al-bar__row").getByText("0 de 1", { exact: true })).toBeVisible();
+  if ((page.viewportSize()?.width ?? 0) >= 900) {
+    // El syllabus refleja el avance: módulo 1 con 2/2 y plegado; módulo 2 abierto.
+    const mods = page.locator("details.al-syl__mod");
+    await expect(mods.nth(0).locator("summary")).toContainText("2/2");
+    await expect(mods.nth(1)).toHaveAttribute("open", "");
+  }
+  await sinDesborde(page);
+
+  // El módulo 1 quedó completo y ofrece volver a mirarlo.
+  await page.getByRole("link", { name: "← Módulo anterior" }).click();
+  await expect(page.getByText("✓ Módulo completado")).toBeVisible();
+  await page.getByRole("link", { name: "Módulo siguiente →" }).click();
+
+  // Módulo 2: empezar, completar la única lección y llegar al cierre del curso.
+  await page.getByRole("link", { name: "Empezar el módulo" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Lección 2.1");
+  await completar();
+  // La primera visita al cierre en `next dev` compila la ruta: puede tardar más que los 5 s habituales.
+  await expect(page).toHaveURL(new RegExp(`/aprender/${D.curso}/completado$`), { timeout: 30_000 });
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Lo lograste");
+
+  await rest("progreso", { method: "DELETE", query: `tenant_id=eq.${D.tenantId}&alumno_id=eq.${D.alumno.id}` });
+});
+
 test("módulo inexistente o ajeno al curso: 404; sin sesión: ingresar", async ({ page, baseURL, browser }, info) => {
   escritorio(info);
   await conSesion(page, baseURL);
