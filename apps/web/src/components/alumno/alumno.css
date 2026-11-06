@@ -489,6 +489,13 @@
   color: var(--av-muted);
   margin-top: var(--av-space-2);
 }
+.al-mod a {
+  color: inherit;
+  text-decoration: none;
+}
+.al-mod a:hover {
+  text-decoration: underline;
+}
 .al-dot {
   width: 20px;
   height: 20px;

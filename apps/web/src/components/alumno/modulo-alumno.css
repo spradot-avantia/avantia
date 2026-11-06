@@ -1,0 +1,95 @@
+/* Pantalla de módulo del alumno (ADR 032, F1). Solo tokens; mobile-first. */
+.al-mp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-5);
+  max-width: 720px;
+  margin-inline: auto;
+}
+.al-mp__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-2);
+}
+.al-mp__head h1 {
+  margin: 0;
+}
+.al-mp__eyebrow {
+  margin: 0;
+  font-size: var(--av-fs-sm);
+  font-weight: var(--av-fw-semibold, 600);
+  color: var(--av-muted);
+}
+.al-mp__desc {
+  margin: var(--av-space-2) 0 0;
+  white-space: pre-line;
+}
+.al-mp h2 {
+  margin: 0 0 var(--av-space-3);
+  font-size: var(--av-fs-lg);
+}
+.al-mp__aprenderas ul {
+  margin: 0;
+  padding-left: 1.25em;
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-2);
+}
+.al-mp__progreso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-4);
+  align-items: stretch;
+}
+.al-mp__progreso .al-btn {
+  align-self: flex-start;
+}
+.al-mp__progreso .al-badge,
+.al-mp__progreso .al-alert {
+  align-self: flex-start;
+  margin: 0;
+}
+.al-mp__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-2);
+}
+.al-mp__item {
+  display: flex;
+  align-items: center;
+  gap: var(--av-space-3);
+  min-height: 56px;
+  padding: var(--av-space-3);
+  border: 1px solid var(--av-line);
+  border-radius: var(--av-radius-md);
+  background: var(--av-bg, #fff);
+  color: var(--av-ink) !important;
+  text-decoration: none;
+}
+a.al-mp__item:hover {
+  background: var(--av-bg-sunken);
+}
+.al-mp__item--bloq {
+  color: var(--av-muted) !important;
+  background: var(--av-bg-sunken);
+}
+.al-mp__fila {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.al-mp__titulo {
+  font-weight: var(--av-fw-medium);
+  overflow-wrap: anywhere;
+}
+.al-mp__det {
+  font-size: var(--av-fs-sm);
+}
+@media (max-width: 480px) {
+  .al-mp .al-pager > .al-btn {
+    width: 100%;
+  }
+}

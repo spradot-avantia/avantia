@@ -62,6 +62,12 @@ export default async function LeccionPage({
       <article className="al-leccion">
         <p className="al-crumbs">
           <Link href="/mis-cursos">Mis cursos</Link> › {curso.titulo}
+          {modActual && (
+            <>
+              {" "}
+              › <Link href={`/aprender/${curso.id}/modulo/${modActual.id}`}>Módulo {leccion.moduloNum}</Link>
+            </>
+          )}
         </p>
         <div className="al-prog-movil">
           <Barra etiqueta={`Lección ${idx + 1} de ${orden.length}`} pct={pct} detalle={`${pct} % del curso`} />
@@ -124,8 +130,15 @@ export default async function LeccionPage({
           {liberada &&
             (hecha ? (
               siguiente ? (
-                <Link href={`/aprender/${curso.id}/${siguiente.id}`} className="al-btn">
-                  Siguiente →
+                <Link
+                  href={
+                    siguiente.moduloId !== leccion.moduloId
+                      ? `/aprender/${curso.id}/modulo/${siguiente.moduloId}` // ADR 032: al cambiar de módulo se pasa por su presentación
+                      : `/aprender/${curso.id}/${siguiente.id}`
+                  }
+                  className="al-btn"
+                >
+                  {siguiente.moduloId !== leccion.moduloId ? "Siguiente módulo →" : "Siguiente →"}
                 </Link>
               ) : (
                 <Link href={`/aprender/${curso.id}/completado`} className="al-btn">
@@ -149,7 +162,9 @@ export default async function LeccionPage({
         {curso.modulos.map((m, mi) => (
           <div key={m.id}>
             <p className="al-mod">
-              Módulo {mi + 1} · {nombreModulo(m.titulo)}
+              <Link href={`/aprender/${curso.id}/modulo/${m.id}`}>
+                Módulo {mi + 1} · {nombreModulo(m.titulo)}
+              </Link>
             </p>
             <ol>
               {m.lecciones.map((l) => {
