@@ -4,7 +4,6 @@
   flex-direction: column;
   gap: var(--av-space-5);
   max-width: 720px;
-  margin-inline: auto;
 }
 .al-mp__head {
   display: flex;

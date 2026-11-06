@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import "./ficha-curso.css";
-import { parsearMarkdown, type Bloque, type Inline } from "../../lib/creador/markdown";
+import { indiceDeTitulos, parsearMarkdown, type Bloque, type Inline } from "../../lib/creador/markdown";
 
 function inline(nodos: Inline[]): ReactNode[] {
   return nodos.map((n, i) => {
@@ -15,10 +15,14 @@ function inline(nodos: Inline[]): ReactNode[] {
   });
 }
 
-function bloque(b: Bloque, i: number): ReactNode {
+function bloque(b: Bloque, i: number, idTitulo?: string): ReactNode {
   if (b.t === "titulo") {
     const H = `h${b.nivel}` as "h2" | "h3" | "h4";
-    return <H key={i}>{inline(b.v)}</H>;
+    return (
+      <H key={i} id={idTitulo}>
+        {inline(b.v)}
+      </H>
+    );
   }
   if (b.t === "lista") {
     const L = b.ordenada ? "ol" : "ul";
@@ -35,5 +39,9 @@ function bloque(b: Bloque, i: number): ReactNode {
 
 /** Renderiza el Markdown minimo de una leccion como elementos React (sin HTML crudo). */
 export function MarkdownMinimo({ texto }: { texto: string }) {
-  return <div className="fc-md">{parsearMarkdown(texto).map(bloque)}</div>;
+  const bloques = parsearMarkdown(texto);
+  // Los títulos llevan el mismo id que el índice de la lección (ADR 033).
+  const ids = indiceDeTitulos(bloques).map((e) => e.id);
+  let k = 0;
+  return <div className="fc-md">{bloques.map((b, i) => bloque(b, i, b.t === "titulo" ? ids[k++] : undefined))}</div>;
 }

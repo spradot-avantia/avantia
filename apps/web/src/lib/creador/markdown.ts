@@ -115,3 +115,45 @@ export function parsearMarkdown(texto: string): Bloque[] {
   cerrarLista();
   return bloques;
 }
+
+// ---------------------------------------------------------------------------
+// Índice de títulos (ADR 033). Puro: el mismo árbol que se renderiza da los ids,
+// así el índice y los títulos de la página nunca se desalinean.
+
+export interface EntradaIndice {
+  id: string;
+  nivel: 2 | 3 | 4;
+  texto: string;
+}
+
+/** Texto sin formato de un fragmento inline (para el índice y los ids). */
+export function textoPlano(nodos: Inline[]): string {
+  return nodos.map((n) => (n.t === "texto" ? n.v : textoPlano(n.v))).join("");
+}
+
+function slug(texto: string): string {
+  const base = texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60)
+    .replace(/-+$/g, "");
+  return base || "seccion";
+}
+
+/** Títulos del texto, en orden, con un id único dentro de la lección («sec-<slug>», «-2», «-3»…). */
+export function indiceDeTitulos(bloques: Bloque[]): EntradaIndice[] {
+  const usados = new Map<string, number>();
+  const salida: EntradaIndice[] = [];
+  for (const b of bloques) {
+    if (b.t !== "titulo") continue;
+    const texto = textoPlano(b.v).trim();
+    const base = `sec-${slug(texto)}`;
+    const n = (usados.get(base) ?? 0) + 1;
+    usados.set(base, n);
+    salida.push({ id: n === 1 ? base : `${base}-${n}`, nivel: b.nivel, texto });
+  }
+  return salida;
+}

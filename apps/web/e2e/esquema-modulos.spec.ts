@@ -18,7 +18,7 @@ const PANEL = process.env.E2E_PANEL_URL ?? `http://localhost:${PUERTO}`;
 const CREADOR_LOCAL = PANEL.startsWith("http://localhost") && E.ALLOW_DEMO_TENANT === "true" && E.DEMO_TENANT_SLUG === SUB;
 
 const sufijo = randomUUID().slice(0, 8);
-const D = { tenantId: "", curso: "", m1: "", m2: "", l1: "", l2: "", l3: "", alumno: { id: "", token: "" } };
+const D = { tenantId: "", curso: "", m1: "", m2: "", l1: "", l2: "", l3: "", alumno: { id: "", token: "" }, larga: { curso: "", modulo: "", leccion: "" } };
 
 test.describe.configure({ mode: "serial" });
 
@@ -51,12 +51,37 @@ test.beforeAll(async () => {
   });
   [D.l1, D.l2, D.l3] = lecs.data.map((l: { id: string }) => l.id);
 
+  // Curso con una lección de texto larga y con títulos, para el índice «En esta lección» (ADR 033).
+  const secciones = ["Introducción", "Conceptos clave", "Un caso práctico", "Errores frecuentes", "Cierre"];
+  const relleno = "Texto de relleno para que la lección sea larga y se pueda hacer scroll. ".repeat(4);
+  const texto = secciones
+    .map((t, i) => {
+      const parrafos = Array.from({ length: 6 }, (_, k) => `Párrafo ${k + 1} de ${t}. ${relleno}`);
+      return [`${i === 2 ? "##" : "#"} ${t}`, ...parrafos].join("\n\n");
+    })
+    .join("\n\n");
+  const cL = await rest("cursos", {
+    method: "POST",
+    body: { tenant_id: D.tenantId, slug: `e2e-larga-${sufijo}`, titulo: `Curso E2E lección larga ${sufijo}`, descripcion: "Curso de prueba automática del índice de la lección.", estado: "publicado", acceso: "enlace", published_at: new Date().toISOString() },
+  });
+  D.larga.curso = cL.data[0].id;
+  const mL = await rest("modulos", { method: "POST", body: { tenant_id: D.tenantId, curso_id: D.larga.curso, titulo: "Módulo 1: Lectura", orden: 0 } });
+  D.larga.modulo = mL.data[0].id;
+  const lL = await rest("lecciones", {
+    method: "POST",
+    body: { tenant_id: D.tenantId, curso_id: D.larga.curso, modulo_id: D.larga.modulo, titulo: "Una lección larga", tipo: "texto", contenido_texto: texto, orden: 1 },
+  });
+  D.larga.leccion = lL.data[0].id;
+
   const a = await rest("alumnos", {
     method: "POST",
     body: { tenant_id: D.tenantId, nombre: "Alumno esquema E2E", correo: `e2e-esq-${sufijo}@example.com`, password_hash: "e2e-sin-login", correo_verificado_at: new Date().toISOString() },
   });
   D.alumno.id = a.data[0].id;
-  await rest("inscripciones", { method: "POST", body: { tenant_id: D.tenantId, alumno_id: D.alumno.id, curso_id: D.curso, estado: "activa", origen: "pagina" } });
+  await rest("inscripciones", {
+    method: "POST",
+    body: [D.curso, D.larga.curso].map((c) => ({ tenant_id: D.tenantId, alumno_id: D.alumno.id, curso_id: c, estado: "activa", origen: "pagina" })),
+  });
   const s = nuevaSesion();
   D.alumno.token = s.token;
   await rest("alumno_tokens", {
@@ -68,7 +93,7 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   if (!D.tenantId) return;
   if (D.alumno.id) await rest("alumnos", { method: "DELETE", query: `tenant_id=eq.${D.tenantId}&id=eq.${D.alumno.id}` });
-  if (D.curso) await rest("cursos", { method: "DELETE", query: `tenant_id=eq.${D.tenantId}&id=eq.${D.curso}` });
+  for (const c of [D.curso, D.larga.curso]) if (c) await rest("cursos", { method: "DELETE", query: `tenant_id=eq.${D.tenantId}&id=eq.${c}` });
 });
 
 function escritorio(info: TestInfo) {
@@ -159,6 +184,66 @@ test("módulo inexistente o ajeno al curso: 404; sin sesión: ingresar", async (
   expect([302, 303, 307, 308]).toContain(res.status());
   expect(res.headers()["location"]).toContain("/ingresar");
   await ctx.close();
+});
+
+// ---- Syllabus lateral e índice de la lección (ADR 033) ----
+
+test("syllabus: el módulo actual está abierto, el otro plegado, y la lección actual marcada", async ({ page, baseURL }) => {
+  await conSesion(page, baseURL);
+  await page.goto(`/aprender/${D.curso}/${D.l2}`);
+  const ancho = (page.viewportSize()?.width ?? 0) >= 900;
+  if (!ancho) await page.getByRole("button", { name: "Contenido del curso" }).click();
+  const sil = page.getByRole("navigation", { name: "Contenido del curso" });
+  await expect(sil).toBeVisible();
+  const mods = sil.locator("details.al-syl__mod");
+  await expect(mods).toHaveCount(2);
+  await expect(mods.nth(0)).toHaveAttribute("open", "");
+  await expect(mods.nth(1)).not.toHaveAttribute("open", "");
+  await expect(sil.locator('a[aria-current="page"]')).toHaveText(/Lección 1\.2/);
+  await mods.nth(1).locator("summary").click();
+  await expect(sil.getByRole("link", { name: /Lección 2\.1/ })).toBeVisible();
+  if (ancho) {
+    // A la izquierda del contenido, no a la derecha.
+    const [a, b] = await Promise.all([sil.boundingBox(), page.locator(".al-leccion").boundingBox()]);
+    expect(a!.x + a!.width).toBeLessThanOrEqual(b!.x + 1);
+  }
+  await sinDesborde(page);
+});
+
+test("índice: lista los títulos del texto, se queda fijo al hacer scroll y marca la sección leída", async ({ page, baseURL }) => {
+  await conSesion(page, baseURL);
+  await page.goto(`/aprender/${D.larga.curso}/${D.larga.leccion}`);
+  const ancho3 = (page.viewportSize()?.width ?? 0) >= 1180;
+  if (!ancho3) await page.getByRole("button", { name: "En esta lección" }).click();
+  const toc = page.getByRole("navigation", { name: "En esta lección" });
+  await expect(toc.getByRole("link")).toHaveText(["Introducción", "Conceptos clave", "Un caso práctico", "Errores frecuentes", "Cierre"]);
+  await expect(toc.locator(".al-toc__item--3")).toHaveCount(1); // «##» se muestra como nivel 3
+  await expect(toc.locator('a[aria-current="location"]')).toHaveText("Introducción");
+
+  // Cada enlace apunta a un título real de la página.
+  for (const id of await toc.getByRole("link").evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).hash.slice(1)))) {
+    await expect(page.locator(`#${id}`)).toHaveCount(1);
+  }
+
+  await toc.getByRole("link", { name: "Errores frecuentes" }).click();
+  await expect(page).toHaveURL(/#sec-errores-frecuentes$/);
+  await expect(page.locator("#sec-errores-frecuentes")).toBeInViewport();
+  if (!ancho3) await page.getByRole("button", { name: "En esta lección" }).click(); // el panel se cerró al elegir
+  await expect(toc.locator('a[aria-current="location"]')).toHaveText("Errores frecuentes");
+
+  if (ancho3) {
+    // Sigue visible y fijo después de bajar: su borde superior no se va con el scroll.
+    const caja = await page.locator(".al-shell__toc").boundingBox();
+    expect(caja!.y).toBeGreaterThanOrEqual(0);
+    expect(caja!.y).toBeLessThan(200);
+  }
+  await sinDesborde(page);
+});
+
+test("una lección sin títulos no muestra índice", async ({ page, baseURL }) => {
+  await conSesion(page, baseURL);
+  await page.goto(`/aprender/${D.curso}/${D.l1}`);
+  await expect(page.getByRole("navigation", { name: "En esta lección" })).toHaveCount(0);
 });
 
 // ============================ 2. Creador (solo local, modo demo) ============================

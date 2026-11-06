@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ShellCurso } from "../../../../../../../../components/alumno/ShellCurso";
+import { SyllabusCurso } from "../../../../../../../../components/alumno/SyllabusCurso";
 import { Barra } from "../../../../../../../../components/alumno/Piezas";
 import "../../../../../../../../components/alumno/modulo-alumno.css";
 import { nombreModulo } from "../../../../../../../../lib/alumno/formato";
@@ -37,14 +39,19 @@ export default async function ModuloAlumnoPage({ params }: { params: { cursoId: 
   const anterior = curso.modulos[idx - 1] ?? null;
   const siguiente = curso.modulos[idx + 1] ?? null;
 
-  const r = resumirModulo(modulo, curso, curso.diaLiberacion, completadas, hoyEnZona());
-  const quiz = (await estadoQuizzes(tenant.id, alumno.id, curso.id)).get(modulo.id);
+  const hoy = hoyEnZona();
+  const r = resumirModulo(modulo, curso, curso.diaLiberacion, completadas, hoy);
+  const quizzes = await estadoQuizzes(tenant.id, alumno.id, curso.id);
+  const quiz = quizzes.get(modulo.id);
   const proximaBloqueada = r.filas.find((f) => f.estado === "bloqueada");
   const nombre = nombreModulo(modulo.titulo);
 
   const resumen = [`${r.total} ${r.total === 1 ? "lección" : "lecciones"}`, r.duracionMin ? `${r.duracionMin} min` : null].filter(Boolean).join(" · ");
 
   return (
+    <ShellCurso
+      syllabus={<SyllabusCurso curso={curso} completadas={completadas} hoy={hoy} quizzes={quizzes} actual={{ moduloId: modulo.id }} />}
+    >
     <article className="al-mp">
       <nav aria-label="Ruta" className="al-crumbs">
         <Link href="/mis-cursos">Mis cursos</Link> › {curso.titulo}
@@ -159,5 +166,6 @@ export default async function ModuloAlumnoPage({ params }: { params: { cursoId: 
         )}
       </nav>
     </article>
+    </ShellCurso>
   );
 }

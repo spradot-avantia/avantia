@@ -1,0 +1,222 @@
+/* Marco de aprendizaje: syllabus + contenido + índice (ADR 033). Solo tokens; mobile-first. */
+.al-main:has(.al-shell) {
+  max-width: 1360px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.al-shell) {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Móvil: columna única en el orden de lectura: syllabus, índice, contenido. */
+.al-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--av-space-4);
+  align-items: start;
+}
+.al-shell__sil,
+.al-shell__toc,
+.al-shell__main {
+  min-width: 0;
+}
+
+/* ---- Panel plegable ---- */
+.al-pp {
+  background: var(--av-surface);
+  border: 1px solid var(--av-line);
+  border-radius: var(--av-radius-md);
+}
+.al-pp__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--av-space-3);
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--av-space-4);
+  border: 0;
+  border-radius: var(--av-radius-md);
+  background: transparent;
+  color: var(--av-ink);
+  font: inherit;
+  font-weight: var(--av-fw-semibold);
+  cursor: pointer;
+}
+.al-pp__titulo {
+  display: none;
+  margin: 0;
+  padding: var(--av-space-4) var(--av-space-4) 0;
+  font-size: var(--av-fs-sm);
+  font-weight: var(--av-fw-semibold);
+  color: var(--av-muted);
+}
+.al-pp__cuerpo {
+  display: none;
+  padding: var(--av-space-2) var(--av-space-4) var(--av-space-4);
+}
+.al-pp[data-abierto="true"] .al-pp__cuerpo {
+  display: block;
+}
+
+/* ---- Syllabus ---- */
+.al-syl {
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-3);
+}
+.al-syl__mod {
+  border-top: 1px solid var(--av-line);
+  padding-top: var(--av-space-2);
+}
+.al-syl__mod > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--av-space-2);
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: var(--av-fw-semibold);
+  font-size: var(--av-fs-sm);
+}
+.al-syl__modt {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.al-syl__cnt {
+  flex: none;
+  color: var(--av-muted);
+  font-weight: var(--av-fw-medium);
+}
+.al-syl__mod ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.al-syl__mod li a,
+.al-syl__bloq {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: var(--av-radius-md);
+  color: var(--av-ink) !important;
+  text-decoration: none;
+  font-size: var(--av-fs-sm);
+}
+.al-syl__mod li a:hover {
+  background: var(--av-bg-sunken);
+}
+.al-syl__mod li a[aria-current="page"] {
+  background: var(--av-bg-sunken);
+  font-weight: var(--av-fw-semibold);
+  box-shadow: inset 3px 0 0 var(--al-brand);
+}
+.al-syl__bloq {
+  color: var(--av-muted) !important;
+}
+.al-syl__ico {
+  width: 20px;
+  flex: none;
+  text-align: center;
+  color: var(--av-muted);
+}
+
+/* ---- Índice de la lección ---- */
+.al-toc {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid var(--av-line);
+}
+.al-toc a {
+  display: block;
+  padding: 8px 12px;
+  margin-left: -2px;
+  border-left: 2px solid transparent;
+  color: var(--av-muted) !important;
+  text-decoration: none;
+  font-size: var(--av-fs-sm);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.al-toc a:hover {
+  color: var(--av-ink) !important;
+}
+.al-toc a[aria-current="location"] {
+  color: var(--av-ink) !important;
+  font-weight: var(--av-fw-semibold);
+  border-left-color: var(--al-brand);
+}
+.al-toc__item--3 a {
+  padding-left: 24px;
+}
+.al-toc__item--4 a {
+  padding-left: 36px;
+}
+
+/* Los títulos del texto no quedan tapados por la cabecera fija al saltar a ellos. */
+.al-shell .fc-md :is(h2, h3, h4) {
+  scroll-margin-top: 96px;
+}
+
+/* ---- Escritorio: syllabus a la izquierda; índice como panel sobre el contenido ---- */
+@media (min-width: 900px) {
+  .al-shell {
+    grid-template-columns: 290px minmax(0, 1fr);
+    grid-template-areas: "sil main";
+    gap: var(--av-space-5);
+  }
+  .al-shell--con-indice {
+    grid-template-areas: "sil toc" "sil main";
+    grid-template-rows: auto 1fr;
+  }
+  .al-shell__sil {
+    grid-area: sil;
+    position: sticky;
+    top: 84px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  .al-shell__toc {
+    grid-area: toc;
+  }
+  .al-shell__main {
+    grid-area: main;
+  }
+  .al-pp--sil .al-pp__toggle {
+    display: none;
+  }
+  .al-pp--sil .al-pp__titulo,
+  .al-pp--sil .al-pp__cuerpo {
+    display: block;
+  }
+}
+
+/* ---- Pantalla ancha: tres columnas y el índice fijo a la derecha ---- */
+@media (min-width: 1180px) {
+  .al-shell--con-indice {
+    grid-template-columns: 290px minmax(0, 1fr) 250px;
+    grid-template-areas: "sil main toc";
+    grid-template-rows: auto;
+  }
+  .al-shell__toc {
+    position: sticky;
+    top: 84px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  .al-pp--toc .al-pp__toggle {
+    display: none;
+  }
+  .al-pp--toc .al-pp__titulo,
+  .al-pp--toc .al-pp__cuerpo {
+    display: block;
+  }
+}

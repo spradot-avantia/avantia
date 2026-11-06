@@ -5,7 +5,11 @@ import { FormAccion } from "../../../../../../../components/alumno/FormAccion";
 import { ContenidoLeccion } from "../../../../../../../components/tenant/FichaCurso";
 import { MaterialesLeccion } from "../../../../../../../components/alumno/MaterialesLeccion";
 import { ToastXp } from "../../../../../../../components/alumno/ToastXp";
-import { nombreModulo } from "../../../../../../../lib/alumno/formato";
+import { nombreModulo, sinTituloRepetido } from "../../../../../../../lib/alumno/formato";
+import { indiceDeTitulos, parsearMarkdown } from "../../../../../../../lib/creador/markdown";
+import { IndiceLeccion } from "../../../../../../../components/alumno/IndiceLeccion";
+import { ShellCurso } from "../../../../../../../components/alumno/ShellCurso";
+import { SyllabusCurso } from "../../../../../../../components/alumno/SyllabusCurso";
 import { estadoQuizzes } from "../../../../../../../lib/alumno/quiz";
 import { Barra } from "../../../../../../../components/alumno/Piezas";
 import { completarLeccionAction } from "../../../../../../../lib/alumno/actions";
@@ -56,9 +60,25 @@ export default async function LeccionPage({
   const quizActual = modActual ? quizzes.get(modActual.id) : undefined;
   const esUltimaDelModulo = !!modActual && modActual.lecciones[modActual.lecciones.length - 1]?.id === leccion.id;
   const ganaste = Number(searchParams.ganaste);
+  // Índice «En esta lección» (ADR 033): sale del mismo texto y del mismo parser que lo muestra.
+  const indice =
+    liberada && leccion.tipo === "texto"
+      ? indiceDeTitulos(parsearMarkdown(sinTituloRepetido(leccion.contenidoTexto ?? "", leccion.titulo)))
+      : [];
 
   return (
-    <div className="al-player">
+    <ShellCurso
+      syllabus={
+        <SyllabusCurso
+          curso={curso}
+          completadas={completadas}
+          hoy={hoy}
+          quizzes={quizzes}
+          actual={{ moduloId: leccion.moduloId, leccionId: leccion.id }}
+        />
+      }
+      indice={indice.length >= 2 ? <IndiceLeccion entradas={indice} /> : undefined}
+    >
       <article className="al-leccion">
         <p className="al-crumbs">
           <Link href="/mis-cursos">Mis cursos</Link> › {curso.titulo}
@@ -156,57 +176,6 @@ export default async function LeccionPage({
             ))}
         </div>
       </article>
-
-      <aside className="al-player__side al-card al-temario" aria-label="Contenido del curso">
-        <Barra etiqueta="Tu avance" pct={pct} detalle={`${completadas.size} de ${orden.length}`} />
-        {curso.modulos.map((m, mi) => (
-          <div key={m.id}>
-            <p className="al-mod">
-              <Link href={`/aprender/${curso.id}/modulo/${m.id}`}>
-                Módulo {mi + 1} · {nombreModulo(m.titulo)}
-              </Link>
-            </p>
-            <ol>
-              {m.lecciones.map((l) => {
-                const ok = completadas.has(l.id);
-                const abierta = leccionLiberada(curso, curso.diaLiberacion.get(l.id) ?? null, hoy);
-                const contenido = (
-                  <>
-                    <span className={`al-dot${ok ? " al-dot--ok" : ""}`} aria-hidden="true">
-                      {ok ? "✓" : ""}
-                    </span>
-                    <span>
-                      {l.titulo}
-                      <span className="av-sr-only">{ok ? " (completada)" : abierta ? "" : " (aún no disponible)"}</span>
-                    </span>
-                  </>
-                );
-                return (
-                  <li key={l.id}>
-                    {abierta ? (
-                      <Link href={`/aprender/${curso.id}/${l.id}`} aria-current={l.id === leccion.id ? "page" : undefined}>
-                        {contenido}
-                      </Link>
-                    ) : (
-                      <span>{contenido}</span>
-                    )}
-                  </li>
-                );
-              })}
-              {quizzes.get(m.id) && (
-                <li>
-                  <Link href={`/aprender/${curso.id}/quiz/${m.id}`}>
-                    <span className={`al-dot${quizzes.get(m.id)?.dominado ? " al-dot--ok" : ""}`} aria-hidden="true">
-                      {quizzes.get(m.id)?.dominado ? "✓" : ""}
-                    </span>
-                    <span>Quiz de repaso</span>
-                  </Link>
-                </li>
-              )}
-            </ol>
-          </div>
-        ))}
-      </aside>
-    </div>
+    </ShellCurso>
   );
 }
