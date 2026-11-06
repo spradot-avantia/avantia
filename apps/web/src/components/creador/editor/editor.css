@@ -468,11 +468,11 @@
   }
 }
 
-/* ---- Barra de formato del texto (ADR 035) ---- */
+/* ---- Barra de formato del texto (ADR 035): botones con ícono, agrupados por separadores ---- */
 .ed-barra {
   width: 100%;
   display: flex;
-  gap: var(--av-space-4);
+  gap: var(--av-space-3);
   overflow-x: auto;
   padding: var(--av-space-2);
   border: 1px solid var(--av-line-strong);
@@ -482,25 +482,46 @@
 .ed-barra__grupo {
   flex: none;
   display: flex;
-  flex-direction: column;
-  gap: var(--av-space-1);
 }
-.ed-barra__nombre {
-  font-size: var(--av-fs-xs);
-  font-weight: 700;
-  color: var(--av-muted);
+.ed-barra__grupo + .ed-barra__grupo {
+  padding-left: var(--av-space-3);
+  border-left: 1px solid var(--av-line-strong);
 }
 .ed-barra__botones {
   display: flex;
-  gap: var(--av-space-2);
+  gap: var(--av-space-1);
+}
+@media (min-width: 900px) {
+  .ed-barra {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    row-gap: var(--av-space-2);
+  }
+}
+.ed-ico-t {
+  font-size: var(--av-fs-sm);
+  font-weight: 700;
+  line-height: 1;
+}
+.ed-ico-t--b {
+  font-size: var(--av-fs-base);
+  font-weight: 800;
+}
+.ed-ico-t--i {
+  font-size: var(--av-fs-base);
+  font-style: italic;
+  font-family: Georgia, serif;
 }
 .ed-barra__btn {
   min-height: var(--av-target);
   min-width: var(--av-target);
-  padding: 0 var(--av-space-3);
-  border: 1px solid var(--av-line-strong);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
   border-radius: var(--av-radius-sm);
-  background: var(--av-surface);
+  background: transparent;
   color: var(--av-ink);
   font: inherit;
   font-size: var(--av-fs-sm);
@@ -509,7 +530,8 @@
   cursor: pointer;
 }
 .ed-barra__btn:hover {
-  border-color: var(--av-blue-600);
+  background: var(--av-surface);
+  border-color: var(--av-line-strong);
   color: var(--av-blue-700);
 }
 .ed-barra__btn:focus-visible {
