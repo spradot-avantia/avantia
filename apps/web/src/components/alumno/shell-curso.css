@@ -126,6 +126,26 @@
   color: var(--av-muted);
 }
 
+/* Botón para ocultar/mostrar el syllabus: solo en escritorio (en móvil ya es un panel plegable). */
+.al-shell__toggle {
+  display: none;
+  align-items: center;
+  gap: var(--av-space-2);
+  min-height: 44px;
+  margin-bottom: var(--av-space-3);
+  padding: 0 var(--av-space-3);
+  border: 1px solid var(--av-line);
+  border-radius: var(--av-radius-md);
+  background: var(--av-surface);
+  color: var(--av-ink);
+  font: inherit;
+  font-size: var(--av-fs-sm);
+  cursor: pointer;
+}
+.al-shell__toggle:hover {
+  background: var(--av-bg-sunken);
+}
+
 /* ---- Índice de la lección ---- */
 .al-toc {
   list-style: none;
@@ -197,6 +217,20 @@
   .al-pp--sil .al-pp__cuerpo {
     display: block;
   }
+  .al-shell__toggle {
+    display: inline-flex;
+  }
+  /* Syllabus oculto: el contenido ocupa su columna (el índice, si hay, sigue a su lado). */
+  .al-shell[data-sil="oculto"] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "main";
+  }
+  .al-shell--con-indice[data-sil="oculto"] {
+    grid-template-areas: "toc" "main";
+  }
+  .al-shell[data-sil="oculto"] .al-shell__sil {
+    display: none;
+  }
 }
 
 /* ---- Pantalla ancha: tres columnas y el índice fijo a la derecha ---- */
@@ -211,6 +245,10 @@
     top: 84px;
     max-height: calc(100vh - 100px);
     overflow-y: auto;
+  }
+  .al-shell--con-indice[data-sil="oculto"] {
+    grid-template-columns: minmax(0, 1fr) 250px;
+    grid-template-areas: "main toc";
   }
   .al-pp--toc .al-pp__toggle {
     display: none;
