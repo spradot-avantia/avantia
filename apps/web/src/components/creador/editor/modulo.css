@@ -119,7 +119,7 @@
 .md-dur {
   max-width: 160px;
 }
-.md-autoalto {
+textarea.cr-input.md-autoalto {
   resize: none;
   overflow: hidden;
   line-height: 1.45;
