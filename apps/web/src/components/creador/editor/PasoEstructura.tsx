@@ -14,7 +14,8 @@ import {
   moverLeccionAction,
   moverModuloAction,
 } from "../../../lib/creador/actions";
-import { actualizarModuloAction, aplicarEstructuraSugeridaAction } from "../../../lib/creador/actionsEditor";
+import { actualizarModuloAction, aplicarEstructuraSugeridaAction, aplicarPlantillaModuloAction } from "../../../lib/creador/actionsEditor";
+import { PLANTILLA_MODULO } from "../../../lib/creador/plantillaModulo";
 import { estadoQuiz } from "../../../lib/creador/quiz";
 import { leccionLista } from "../../../lib/creador/reglasPublicacion";
 import type { Leccion, Modulo, TipoLeccion } from "../../../lib/creador/types";
@@ -180,6 +181,18 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
     setFoco(`esq-lec-titulo-${id}`);
   };
 
+  /** Agrega las lecciones de la plantilla a un módulo vacío; solo se reemplazan las lecciones de ese módulo. */
+  const usarPlantilla = async (m: Modulo) => {
+    setTrabajando(true);
+    const r = await auto.encolar(null, () => aplicarPlantillaModuloAction(curso.id, m.id));
+    setTrabajando(false);
+    if (!r.ok) return ctx.avisar(r.error);
+    const lecciones = r.data.modulos.find((x) => x.id === m.id)?.lecciones ?? [];
+    mapMod(m.id, (x) => ({ ...x, lecciones }));
+    ctx.anunciar(`Plantilla aplicada: ${lecciones.length} lecciones`);
+    setFoco(`esq-lec-titulo-${lecciones[0]?.id}`);
+  };
+
   const renombrarLeccion = (l: Leccion, valor: string) => {
     mapMod(l.moduloId, (m) => ({ ...m, lecciones: m.lecciones.map((x) => (x.id === l.id ? { ...x, titulo: valor } : x)) }));
     if (!tituloLeccion.safeParse(valor).success) return auto.cancelar(`lec:${l.id}:titulo`);
@@ -319,7 +332,19 @@ export function PasoEstructura({ ctx }: { ctx: EditorCtx }) {
                 {abierto && (
                   <div id={panelId} className="esq-panel">
                     {m.lecciones.length === 0 ? (
-                      <p className="ed-vacio">Este módulo aún no tiene lecciones.</p>
+                      <div className="esq-vacio">
+                        <p className="ed-vacio">Este módulo aún no tiene lecciones.</p>
+                        <p className="cr-field__hint">
+                          ¿Quieres partir con una estructura? La plantilla crea {PLANTILLA_MODULO.map((l) => l.titulo).join(", ")}: puedes
+                          renombrarlas, moverlas o borrarlas.
+                        </p>
+                        <div>
+                          <Button variante="secondary" onClick={() => usarPlantilla(m)} disabled={trabajando}>
+                            Usar plantilla de lecciones
+                            <span className="av-sr-only"> en el módulo {m.titulo || i + 1}</span>
+                          </Button>
+                        </div>
+                      </div>
                     ) : (
                       <ol className="esq-lecs">
                         {m.lecciones.map((l, j) => {

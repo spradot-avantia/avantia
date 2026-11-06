@@ -260,3 +260,17 @@ textarea.cr-input.md-autoalto--linea {
     gap: var(--av-space-1);
   }
 }
+
+.esq-vacio {
+  display: grid;
+  gap: var(--av-space-2);
+}
+
+.ed-lec__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--av-space-3);
+  padding-top: var(--av-space-3);
+  border-top: 1px solid var(--av-line);
+}

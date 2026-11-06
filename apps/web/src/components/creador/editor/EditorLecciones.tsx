@@ -263,6 +263,14 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
     auto.programar(`lec:${l.id}:dur`, () => actualizarLeccionAction(l.id, { duracionMin: n }));
   };
 
+  // Orden de recorrido de TODO el curso, para pasar a la lección anterior o siguiente aunque sea de otro módulo.
+  const recorrido = curso.modulos.flatMap((m) => m.lecciones.map((l) => ({ m, l })));
+  const irALeccion = (destino: { m: Modulo; l: Leccion }) => {
+    if (destino.m.id !== modulo.id) return void ctx.salir(`/cursos/${curso.id}/modulos/${destino.m.id}?leccion=${destino.l.id}`);
+    setAbierta(destino.l.id);
+    setFoco(`ed-lec-titulo-${destino.l.id}`);
+  };
+
   return (
     <div className="ed-form">
       {modulo.lecciones.length === 0 && <p className="ed-vacio">Este módulo aún no tiene lecciones.</p>}
@@ -546,6 +554,30 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
                     </h3>
                     <EditorMateriales ctx={ctx} modulo={modulo} leccionId={l.id} nombreGrupo="esta lección" />
                   </section>
+                  {(() => {
+                    const pos = recorrido.findIndex((x) => x.l.id === l.id);
+                    const ant = recorrido[pos - 1];
+                    const sig = recorrido[pos + 1];
+                    if (!ant && !sig) return null;
+                    return (
+                      <nav className="ed-lec__nav" aria-label="Ir a otra lección">
+                        {ant ? (
+                          <Button variante="secondary" onClick={() => irALeccion(ant)}>
+                            ← Lección anterior
+                            <span className="av-sr-only">: {ant.l.titulo}</span>
+                          </Button>
+                        ) : (
+                          <span />
+                        )}
+                        {sig && (
+                          <Button variante="secondary" onClick={() => irALeccion(sig)}>
+                            Lección siguiente →
+                            <span className="av-sr-only">: {sig.l.titulo}</span>
+                          </Button>
+                        )}
+                      </nav>
+                    );
+                  })()}
                 </div>
               )}
             </li>

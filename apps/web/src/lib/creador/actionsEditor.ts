@@ -4,9 +4,10 @@
 // se toca). Ninguna recibe tenant_id: sale de la sesion (tenantActual.ts).
 import * as archivos from "./archivos";
 import { getCurso } from "./cursos";
-import { actualizarModulo, crearModulo, type ModuloPatch } from "./estructura";
+import { actualizarModulo, crearLeccion, crearModulo, type ModuloPatch } from "./estructura";
 import * as materiales from "./materiales";
 import type { PreguntaQuiz } from "./quiz";
+import { PLANTILLA_MODULO } from "./plantillaModulo";
 import { guardarQuiz } from "./quizzes";
 import type { CursoCompleto, Leccion, Material, Resultado, TipoMaterial } from "./types";
 
@@ -46,6 +47,25 @@ export async function aplicarEstructuraSugeridaAction(cursoId: string): Promise<
   });
 }
 
+/**
+ * Plantilla de módulo (ADR 032, F3): agrega las lecciones sugeridas SOLO si el módulo no tiene
+ * ninguna (nunca pisa ni duplica lo que el creador ya armó). Devuelve el curso actualizado.
+ */
+export async function aplicarPlantillaModuloAction(cursoId: string, moduloId: string): Promise<Resultado<CursoCompleto>> {
+  return seguro(async () => {
+    const actual = await getCurso(cursoId);
+    const modulo = actual?.modulos.find((m) => m.id === moduloId);
+    if (!actual || !modulo) return { ok: false, error: "Módulo no encontrado." };
+    if (modulo.lecciones.length === 0) {
+      for (const l of PLANTILLA_MODULO) {
+        const r = await crearLeccion(moduloId, l);
+        if (!r.ok) return r;
+      }
+    }
+    const c = await getCurso(cursoId);
+    return c ? { ok: true, data: c } : { ok: false, error: "Curso no encontrado." };
+  });
+}
 
 /** Guarda el quiz de repaso de un módulo (ADR 022). Reemplaza sus preguntas. */
 export async function guardarQuizAction(moduloId: string, preguntas: PreguntaQuiz[]): Promise<Resultado<PreguntaQuiz[]>> {
