@@ -25,10 +25,15 @@ import {
 //
 // Uso (desde apps/web, con .env.local y `npm run dev` en otra terminal):
 //   npx playwright test materiales --project=escritorio
-// Contra otro despliegue (solo la mitad del alumno): E2E_ACADEMIA_URL=https://academia.goavantia.com
+// La mitad del creador solo corre si el panel local está en modo demo sobre LA MISMA academia
+// (DEMO_TENANT_SLUG y ALLOW_DEMO_TENANT=true en .env.local, igual a E2E_TENANT).
+// Contra producción (solo la mitad del alumno), con datos propios que se borran al final:
+//   E2E_ACADEMIA_URL=https://academia-avantia.goavantia.com E2E_PANEL_URL=https://www.goavantia.com //     npx playwright test materiales --project=escritorio
+// Ojo: el curso temporal queda publicado unos minutos en el catálogo público de esa academia.
 // La prueba de caducidad de la URL firmada tarda 65 s: se activa con E2E_LENTO=1.
 
-const SUB = process.env.E2E_TENANT ?? "prueba";
+// Por defecto, la academia propia del equipo: `prueba` es la demo de otra persona y no se usa para escribir datos.
+const SUB = process.env.E2E_TENANT ?? "academia-avantia";
 const PUERTO = process.env.E2E_PORT ?? "3000";
 const PANEL = process.env.E2E_PANEL_URL ?? `http://localhost:${PUERTO}`;
 const CREADOR_LOCAL = PANEL.startsWith("http://localhost") && E.ALLOW_DEMO_TENANT === "true" && E.DEMO_TENANT_SLUG === SUB;
@@ -137,6 +142,10 @@ async function crearAlumno(clave: string, correo: string, curso: string, estado:
   });
   return { id, token: s.token };
 }
+
+// La suite fija su propia academia: así sus datos y sus peticiones van siempre al mismo tenant,
+// sin depender del valor por defecto de playwright.config.ts (que usan otras suites).
+test.use({ baseURL: process.env.E2E_ACADEMIA_URL ?? `http://${SUB}.localhost:${PUERTO}` });
 
 test.describe.configure({ mode: "serial" });
 
