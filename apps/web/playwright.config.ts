@@ -4,6 +4,7 @@ import { defineConfig, devices } from "@playwright/test";
 // localhost = panel, <subdominio>.localhost = academia (Chromium resuelve *.localhost).
 // Uso: npm run dev (otra terminal) y `npm run test:e2e` desde apps/web.
 // E2E_TENANT = subdominio de una academia con un curso publicado de acceso "enlace".
+// E2E_ACADEMIA_URL = URL completa de una academia ya desplegada (anula la topología local).
 const tenant = process.env.E2E_TENANT ?? "prueba";
 const puerto = process.env.E2E_PORT ?? "3000";
 
@@ -14,7 +15,7 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"]],
   use: {
-    baseURL: `http://${tenant}.localhost:${puerto}`,
+    baseURL: process.env.E2E_ACADEMIA_URL ?? `http://${tenant}.localhost:${puerto}`,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
