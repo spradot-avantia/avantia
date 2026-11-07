@@ -295,7 +295,9 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
           const dur = duracionMin.safeParse(l.duracionMin);
           const eDur = dur.success ? undefined : dur.error.issues[0].message;
           const vUrl = l.tipo !== "texto" && l.contenidoUrl?.trim() ? validarUrlLeccion(l.tipo, l.contenidoUrl) : null;
-          const eUrl = tocUrl[l.id] && vUrl && !vUrl.ok ? vUrl.error : undefined;
+          // Con un cambio de formato pendiente, el motivo se muestra de inmediato: sin él,
+          // «Guardar cambios» queda deshabilitado y la persona no sabe por qué.
+          const eUrl = (tocUrl[l.id] || !!b) && vUrl && !vUrl.ok ? vUrl.error : undefined;
           const texto = l.contenidoTexto ?? "";
           return (
             <li key={l.id} className={`ed-lec${abiertaAhora ? " ed-lec--abierta" : ""}`}>
@@ -365,6 +367,11 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
                         Cambiaste el formato a <strong>{TIPOS.find((t) => t.id === b.tipo)?.label}</strong>. El contenido anterior se
                         conserva hasta que guardes los cambios.
                       </p>
+                      {eUrl && (
+                        <p className="cr-field__error" role="alert">
+                          No se puede guardar el cambio: {eUrl}
+                        </p>
+                      )}
                       <div className="ed-lec__borrador">
                         <Button
                           disabled={l.tipo !== "texto" && !!l.contenidoUrl?.trim() && !validarUrlLeccion(l.tipo, l.contenidoUrl).ok}
