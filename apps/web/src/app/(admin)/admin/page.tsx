@@ -44,7 +44,7 @@ export default async function AdminResumenPage() {
       </div>
       {nuevas > 0 && (
         <p className="ad-msg">
-          Tienes {nuevas} postulación{nuevas === 1 ? "" : "es"} sin revisar. <Link href="/admin/postulaciones?estado=nueva">Revisar ahora</Link>
+          Tienes {nuevas} {nuevas === 1 ? "postulación" : "postulaciones"} sin revisar. <Link href="/admin/postulaciones?estado=nueva">Revisar ahora</Link>
         </p>
       )}
     </>

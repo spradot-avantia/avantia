@@ -54,6 +54,10 @@ export async function agregarStaffAction(fd: FormData): Promise<void> {
   const email = texto(fd, "email").toLowerCase();
   if (!CORREO.test(email) || email.length > 200) volver("/admin/equipo", "correo_invalido");
 
+  // Si ya era del equipo se dice, en vez de repetir «Listo» como si fuera un alta nueva.
+  const { data: existente } = await supabaseAdmin.from("staff").select("email").eq("email", email).maybeSingle();
+  if (existente) volver("/admin/equipo", "ya_era");
+
   const yo = await getUsuarioActual();
   const { error } = await supabaseAdmin
     .from("staff")
