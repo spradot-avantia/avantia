@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Insignia, Sello } from "../../../../../../../components/alumno/Piezas";
+import { IconoCohete, IconoMedalla, IconoTrofeo, TituloIcono } from "../../../../../../../components/ui/Iconos";
 import { exigirCursoActivo } from "../../../../../../../lib/alumno/guardia";
 import { calcularXp, nivelDe } from "../../../../../../../lib/alumno/xp";
 
@@ -31,7 +32,7 @@ export default async function CompletadoPage({ params }: { params: { cursoId: st
 
       {curso.objetivos.length > 0 && (
         <section className="al-card">
-          <h2>Lo que ahora puedes hacer</h2>
+          <TituloIcono icono={<IconoCohete tam={20} />}>Lo que ahora puedes hacer</TituloIcono>
           <ul>
             {curso.objetivos.map((o, i) => (
               <li key={i}>{o}</li>
@@ -41,9 +42,9 @@ export default async function CompletadoPage({ params }: { params: { cursoId: st
       )}
 
       <section className="al-stack">
-        <h2>Tu insignia</h2>
+        <TituloIcono icono={<IconoMedalla tam={20} />}>Tu insignia</TituloIcono>
         <ul className="al-insignias">
-          <Insignia activa icono={<Sello tam={22} />} titulo="Curso completado">
+          <Insignia activa icono={<IconoTrofeo tam={24} />} titulo="Curso completado">
             Todas las lecciones.
           </Insignia>
         </ul>

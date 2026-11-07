@@ -30,6 +30,7 @@ import { Field, Input, Select } from "../Field";
 import { Acciones } from "./AccionesFila";
 import { ConfirmDialog } from "./ConfirmDialog";
 import type { EditorCtx } from "./contexto";
+import { IconoDocumento, IconoEnlace } from "../../ui/Iconos";
 import "./materiales.css";
 
 const TIPOS: ReadonlyArray<{ id: TipoMaterial; label: string }> = [
@@ -208,7 +209,7 @@ export function EditorMateriales({
               <li key={m.id} className="mt-item">
                 <div className="mt-item__cab">
                   <span className="mt-item__num">
-                    Material {i + 1}
+                    {modoArchivo ? <IconoDocumento tam={16} /> : <IconoEnlace tam={16} />} Material {i + 1}
                     {!completo && <span className="mt-item__falta"> · {modoArchivo ? "Falta el archivo" : "Falta el enlace"}</span>}
                   </span>
                   <Acciones

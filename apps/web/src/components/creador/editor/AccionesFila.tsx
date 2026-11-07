@@ -3,6 +3,7 @@
 // Piezas compartidas por la lista de módulos (Paso 3) y la pantalla de cada módulo.
 import { estadoQuiz } from "../../../lib/creador/quiz";
 import type { Modulo } from "../../../lib/creador/types";
+import { IconoFlecha, IconoPapelera } from "../../ui/Iconos";
 import { Button } from "../Button";
 import "./quiz.css";
 
@@ -32,7 +33,7 @@ export function Acciones({
         aria-disabled={primero}
         onClick={() => !primero && onSubir()}
       >
-        <span aria-hidden="true">↑</span>
+        <IconoFlecha dir="arriba" tam={18} />
       </button>
       <button
         type="button"
@@ -41,10 +42,10 @@ export function Acciones({
         aria-disabled={ultimo}
         onClick={() => !ultimo && onBajar()}
       >
-        <span aria-hidden="true">↓</span>
+        <IconoFlecha dir="abajo" tam={18} />
       </button>
       <button type="button" className="ed-icono ed-icono--peligro" aria-label={`Eliminar ${nombre}`} onClick={onEliminar}>
-        <span aria-hidden="true">✕</span>
+        <IconoPapelera tam={18} />
       </button>
     </div>
   );

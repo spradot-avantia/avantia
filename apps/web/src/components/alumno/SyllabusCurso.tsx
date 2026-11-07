@@ -5,6 +5,7 @@ import type { CursoParaAlumno } from "../../lib/alumno/catalogo";
 import { nombreModulo } from "../../lib/alumno/formato";
 import { resumirModulo } from "../../lib/alumno/moduloReglas";
 import type { EstadoQuizModulo } from "../../lib/alumno/quizReglas";
+import { IconoCandado, IconoCheck, IconoLista, IconoTipoLeccion, ROTULO_TIPO } from "../ui/Iconos";
 import { PanelPlegable } from "./PanelPlegable";
 import { Barra } from "./Piezas";
 
@@ -44,7 +45,7 @@ export function SyllabusCurso({ curso, completadas, hoy, quizzes, actual }: Prop
                 <li>
                   <Link href={`/aprender/${curso.id}/modulo/${m.id}`} aria-current={esActual && !actual.leccionId ? "page" : undefined}>
                     <span className="al-syl__ico" aria-hidden="true">
-                      ≡
+                      <IconoLista tam={16} />
                     </span>
                     <span>Resumen del módulo</span>
                   </Link>
@@ -53,9 +54,11 @@ export function SyllabusCurso({ curso, completadas, hoy, quizzes, actual }: Prop
                   const interior = (
                     <>
                       <span className={`al-dot${f.estado === "completada" ? " al-dot--ok" : ""}`} aria-hidden="true">
-                        {f.estado === "completada" ? "✓" : ""}
+                        {f.estado === "completada" ? <IconoCheck tam={12} /> : f.estado === "bloqueada" ? <IconoCandado tam={12} grosor={2.2} /> : null}
                       </span>
+                      <IconoTipoLeccion tipo={f.tipo} tam={16} className="al-syl__tipo" />
                       <span>
+                        <span className="av-sr-only">{ROTULO_TIPO[f.tipo]}: </span>
                         {f.titulo}
                         <span className="av-sr-only">
                           {f.estado === "completada" ? " (completada)" : f.estado === "bloqueada" ? " (aún no disponible)" : ""}
@@ -79,7 +82,7 @@ export function SyllabusCurso({ curso, completadas, hoy, quizzes, actual }: Prop
                   <li>
                     <Link href={`/aprender/${curso.id}/quiz/${m.id}`}>
                       <span className={`al-dot${q.dominado ? " al-dot--ok" : ""}`} aria-hidden="true">
-                        {q.dominado ? "✓" : ""}
+                        {q.dominado ? <IconoCheck tam={12} /> : null}
                       </span>
                       <span>Quiz de repaso</span>
                     </Link>

@@ -3,6 +3,7 @@
 // Panel que en pantallas angostas se pliega detrás de un botón y en pantallas anchas se ve
 // siempre abierto con un título fijo (ADR 033). El umbral lo define la variante en el CSS.
 import { useState, type ReactNode } from "react";
+import { IconoChevron } from "../ui/Iconos";
 
 interface Props {
   id: string;
@@ -19,7 +20,7 @@ export function PanelPlegable({ id, titulo, variante, children }: Props) {
       <button type="button" className="al-pp__toggle" aria-expanded={abierto} aria-controls={id} onClick={() => setAbierto((a) => !a)}>
         <span>{titulo}</span>
         <span className="al-pp__chev" aria-hidden="true">
-          {abierto ? "▴" : "▾"}
+          <IconoChevron dir={abierto ? "arriba" : "abajo"} tam={18} />
         </span>
       </button>
       <p className="al-pp__titulo">{titulo}</p>

@@ -5,6 +5,7 @@ import { DescripcionModulo, ObjetivosModulo } from "../../../../../../../../comp
 import { ShellCurso } from "../../../../../../../../components/alumno/ShellCurso";
 import { SyllabusCurso } from "../../../../../../../../components/alumno/SyllabusCurso";
 import { Barra } from "../../../../../../../../components/alumno/Piezas";
+import { IconoCheck, IconoTipoLeccion } from "../../../../../../../../components/ui/Iconos";
 import "../../../../../../../../components/alumno/modulo-alumno.css";
 import { nombreModulo } from "../../../../../../../../lib/alumno/formato";
 import { exigirCursoActivo } from "../../../../../../../../lib/alumno/guardia";
@@ -76,7 +77,9 @@ export default async function ModuloAlumnoPage({ params }: { params: { cursoId: 
             {r.estado === "sin_empezar" ? "Empezar el módulo" : "Continuar"}
           </Link>
         ) : r.estado === "completo" ? (
-          <p className="al-badge al-badge--ok">✓ Módulo completado</p>
+          <p className="al-badge al-badge--ok">
+            <IconoCheck tam={14} /> Módulo completado
+          </p>
         ) : proximaBloqueada ? (
           <p className="al-alert" role="status">
             La próxima lección se abre el <strong>{proximaBloqueada.abreEl ? fechaCorta(proximaBloqueada.abreEl) : "próximamente"}</strong>.
@@ -94,14 +97,16 @@ export default async function ModuloAlumnoPage({ params }: { params: { cursoId: 
               const interior = (
                 <>
                   <span className={`al-dot${f.estado === "completada" ? " al-dot--ok" : ""}`} aria-hidden="true">
-                    {f.estado === "completada" ? "✓" : ""}
+                    {f.estado === "completada" ? <IconoCheck tam={12} /> : null}
                   </span>
                   <span className="al-mp__fila">
                     <span className="al-mp__titulo">
                       {f.titulo}
                       <span className="av-sr-only">{f.estado === "completada" ? " (completada)" : f.estado === "bloqueada" ? " (aún no disponible)" : ""}</span>
                     </span>
-                    <span className="al-muted al-mp__det">{detalleFila(f)}</span>
+                    <span className="al-muted al-mp__det">
+                      <IconoTipoLeccion tipo={f.tipo} tam={14} /> {detalleFila(f)}
+                    </span>
                   </span>
                 </>
               );
@@ -121,7 +126,7 @@ export default async function ModuloAlumnoPage({ params }: { params: { cursoId: 
               <li>
                 <Link href={`/aprender/${curso.id}/quiz/${modulo.id}`} className="al-mp__item">
                   <span className={`al-dot${quiz.dominado ? " al-dot--ok" : ""}`} aria-hidden="true">
-                    {quiz.dominado ? "✓" : ""}
+                    {quiz.dominado ? <IconoCheck tam={12} /> : null}
                   </span>
                   <span className="al-mp__fila">
                     <span className="al-mp__titulo">Quiz de repaso</span>

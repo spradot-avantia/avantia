@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { IconoCheck, IconoReloj, IconoEquis } from "../ui/Iconos";
 import "./alumno.css";
 
 export function Barra({ etiqueta, pct, detalle }: { etiqueta: string; pct: number; detalle?: string }) {
@@ -39,10 +40,15 @@ export function Sello({ tam = 28 }: { tam?: number }) {
 
 export function EstadoBadge({ estado }: { estado: string }) {
   const e = ESTADOS[estado] ?? ESTADOS.pendiente;
-  return <span className={`al-badge ${e.clase}`}>{e.texto}</span>;
+  const ico = estado === "activa" ? <IconoCheck tam={12} /> : estado === "pendiente" ? <IconoReloj tam={12} /> : <IconoEquis tam={12} />;
+  return (
+    <span className={`al-badge ${e.clase}`}>
+      {ico} {e.texto}
+    </span>
+  );
 }
 
-export function Insignia({ activa, icono, titulo, children }: { activa: boolean; icono: ReactNode; titulo: string; children: ReactNode }) {
+export function Insignia({ activa, icono, titulo, ganada = "Ganada", children }: { activa: boolean; icono: ReactNode; titulo: string; ganada?: string; children: ReactNode }) {
   return (
     <li className={`al-insignia${activa ? " al-insignia--on" : ""}`}>
       <span className="al-insignia__ico" aria-hidden="true">
@@ -51,7 +57,7 @@ export function Insignia({ activa, icono, titulo, children }: { activa: boolean;
       <span>
         <strong>{titulo}</strong>
         <br />
-        <span className="al-muted">{activa ? "Ganada" : children}</span>
+        <span className="al-muted">{activa ? ganada : children}</span>
       </span>
     </li>
   );

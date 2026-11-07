@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IconoCheck } from "../../ui/Iconos";
 import { Badge } from "../Badge";
 import "./inicio.css";
 
@@ -25,7 +26,7 @@ export function Checklist({ pasos }: { pasos: PasoChecklist[] }) {
       <ol className="ci-steps">
         {pasos.map((p, i) => (
           <li key={p.titulo} className={`ci-step${p.hecho ? " ci-step--hecho" : ""}${p.bloqueado ? " ci-step--bloqueado" : ""}`}>
-            <span className="ci-step__dot" aria-hidden="true">{p.hecho ? "✓" : i + 1}</span>
+            <span className="ci-step__dot" aria-hidden="true">{p.hecho ? <IconoCheck tam={12} /> : i + 1}</span>
             <div className="ci-step__body">
               <span className="ci-step__title">{p.titulo}</span>
               {!p.hecho && <span className="ci-muted">{p.detalle}</span>}

@@ -1,6 +1,7 @@
 // Materiales de una lección (ADR 029 F3 / ADR 030): los de la lección y los del módulo.
 // Server component sin estado. Los archivos se abren por una ruta del servidor que firma la
 // URL; el enlace nunca contiene la ruta interna del bucket.
+import { IconoDocumento, IconoEnlace } from "../ui/Iconos";
 import { hrefMaterial, rotuloMaterial, type MaterialAlumno } from "../../lib/alumno/materialesReglas";
 
 function Lista({ materiales, cursoId, id, titulo }: { materiales: MaterialAlumno[]; cursoId: string; id: string; titulo: string }) {
@@ -15,6 +16,9 @@ function Lista({ materiales, cursoId, id, titulo }: { materiales: MaterialAlumno
           const href = hrefMaterial(m, cursoId);
           return (
             <li key={m.id} className="al-mat">
+              <span className="al-mat__ico" aria-hidden="true">
+                {m.origen === "enlace" ? <IconoEnlace tam={20} /> : <IconoDocumento tam={20} />}
+              </span>
               {href ? (
                 <a className="al-mat__enlace" href={href} target="_blank" rel="noopener noreferrer">
                   {m.titulo}

@@ -136,6 +136,8 @@ export interface ResumenCursoAlumno {
   totalModulos: number;
   /** Lo que domina de los quizzes del curso (ADR 025); null sin quiz o sin respuestas. */
   dominio: Dominio | null;
+  /** Módulos cuyo quiz quedó dominado (ADR 023: insignia «Módulo dominado»). */
+  modulosDominados: number;
 }
 
 /** Resumen de todos los cursos del alumno (Mis cursos y Mi progreso). */
@@ -198,6 +200,7 @@ export async function resumenDelAlumno(
       continuarId,
       totalModulos: modulos.length,
       dominio,
+      modulosDominados: estados.filter((e) => e.dominado).length,
     });
   }
   return out;

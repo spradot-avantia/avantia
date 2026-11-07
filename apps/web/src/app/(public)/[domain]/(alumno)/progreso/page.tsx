@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Barra, Insignia, Sello } from "../../../../../components/alumno/Piezas";
+import { IconoCohete, IconoDiana, IconoLibros, IconoMedalla, IconoRayo, IconoTrofeo, TituloIcono } from "../../../../../components/ui/Iconos";
+import { Barra, Insignia } from "../../../../../components/alumno/Piezas";
 import { getTenantPublico } from "../../../../../lib/alumno/contexto";
 import { inscripcionesDe } from "../../../../../lib/alumno/inscripciones";
 import { resumenDelAlumno } from "../../../../../lib/alumno/progreso";
@@ -26,11 +27,14 @@ export default async function ProgresoPage() {
   const xp = cursos.reduce((n, c) => n + c.desglose.xp, 0);
   const nivel = nivelDe(xp);
   const haTerminado = cursos.some((c) => c.desglose.cursoCompleto);
+  const dominados = cursos.reduce((n, c) => n + c.modulosDominados, 0);
 
   return (
     <>
       <section className="al-stack">
-        <h1>Mi progreso</h1>
+        <TituloIcono nivel={1} icono={<IconoCohete tam={22} />}>
+          Mi progreso
+        </TituloIcono>
       </section>
 
       <section className="al-card al-nivelcard" aria-labelledby="xp-t">
@@ -42,7 +46,9 @@ export default async function ProgresoPage() {
             {nivel.nivel}
           </span>
           <div>
-            <p className="al-nivelcard__xp">{xp} XP</p>
+            <p className="al-nivelcard__xp">
+              <IconoRayo tam={24} className="al-nivelcard__rayo" /> {xp} XP
+            </p>
             <p className="al-muted">Nivel {nivel.nivel}</p>
           </div>
         </div>
@@ -63,7 +69,9 @@ export default async function ProgresoPage() {
         </section>
       ) : (
         <section className="al-stack" aria-labelledby="av-t">
-          <h2 id="av-t">Avance por curso</h2>
+          <TituloIcono id="av-t" icono={<IconoLibros tam={20} />}>
+            Avance por curso
+          </TituloIcono>
           {cursos.map((c) => (
             <article key={c.cursoId} className="al-card">
               <h3>{c.titulo}</h3>
@@ -88,10 +96,20 @@ export default async function ProgresoPage() {
       )}
 
       <section className="al-stack" aria-labelledby="ins-t">
-        <h2 id="ins-t">Insignias</h2>
+        <TituloIcono id="ins-t" icono={<IconoMedalla tam={20} />}>
+          Insignias
+        </TituloIcono>
         <ul className="al-insignias">
-          <Insignia activa={haTerminado} icono={<Sello tam={22} />} titulo="Curso completado">
+          <Insignia activa={haTerminado} icono={<IconoTrofeo tam={24} />} titulo="Curso completado">
             Completa todas las lecciones de un curso.
+          </Insignia>
+          <Insignia
+            activa={dominados > 0}
+            icono={<IconoDiana tam={24} />}
+            titulo="Módulo dominado"
+            ganada={dominados === 1 ? "Ganada" : `Ganada en ${dominados} módulos`}
+          >
+            Acierta el 80 % o más del quiz de un módulo al primer intento.
           </Insignia>
         </ul>
       </section>

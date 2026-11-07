@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IconoCheck } from "../ui/Iconos";
 import "./creador.css";
 
 export interface PasoStepper {
@@ -30,7 +31,7 @@ export function Stepper({ pasos, actual, etiqueta = "Pasos" }: { pasos: PasoStep
         {pasos.map((p, i) => {
           const contenido = (
             <>
-              <span className="cr-step__n">{p.hecho ? "✓" : i + 1}</span>
+              <span className="cr-step__n">{p.hecho ? <IconoCheck tam={12} /> : i + 1}</span>
               {p.titulo}
             </>
           );

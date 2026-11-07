@@ -38,6 +38,7 @@ import { Acciones } from "./AccionesFila";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { EditorMateriales } from "./EditorMateriales";
 import type { EditorCtx } from "./contexto";
+import { IconoFlecha, IconoTipoLeccion } from "../../ui/Iconos";
 import "./materiales.css";
 
 const TIPOS: ReadonlyArray<{ id: TipoLeccion; label: string }> = [
@@ -308,7 +309,9 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
                 >
                   <span className="ed-lec__titulo">{l.titulo.trim() || "Lección sin título"}</span>
                   <span className="ed-lec__chips">
-                    <Badge tono="neutral">{TIPOS.find((t) => t.id === lGuardada.tipo)?.label}</Badge>
+                    <Badge tono="neutral">
+                      <IconoTipoLeccion tipo={lGuardada.tipo} tam={14} /> {TIPOS.find((t) => t.id === lGuardada.tipo)?.label}
+                    </Badge>
                     <Badge tono={lista ? "ok" : "warning"}>{lista ? "Listo" : "Falta contenido"}</Badge>
                   </span>
                 </button>
@@ -349,7 +352,9 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
                             checked={l.tipo === t.id}
                             onChange={() => cambiarTipo(l, t.id)}
                           />
-                          <span>{t.label}</span>
+                          <span>
+                            <IconoTipoLeccion tipo={t.id} tam={18} /> {t.label}
+                          </span>
                         </label>
                       ))}
                     </div>
@@ -569,7 +574,7 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
                       <nav className="ed-lec__nav" aria-label="Ir a otra lección">
                         {ant ? (
                           <Button variante="secondary" onClick={() => irALeccion(ant)}>
-                            ← Lección anterior
+                            <IconoFlecha dir="izquierda" tam={16} /> Lección anterior
                             <span className="av-sr-only">: {ant.l.titulo}</span>
                           </Button>
                         ) : (
@@ -577,7 +582,7 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
                         )}
                         {sig && (
                           <Button variante="secondary" onClick={() => irALeccion(sig)}>
-                            Lección siguiente →
+                            Lección siguiente <IconoFlecha tam={16} />
                             <span className="av-sr-only">: {sig.l.titulo}</span>
                           </Button>
                         )}

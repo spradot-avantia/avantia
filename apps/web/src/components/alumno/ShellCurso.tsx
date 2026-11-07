@@ -4,6 +4,7 @@
 // centro e índice de la lección a la derecha (opcional). En móvil todo se apila y los paneles se
 // pliegan; desde 900 px el syllabus se puede ocultar y la preferencia se recuerda en el navegador.
 import { useEffect, useState, type ReactNode } from "react";
+import { IconoPanel } from "../ui/Iconos";
 import "./shell-curso.css";
 
 const CLAVE = "avantia:syllabus-oculto";
@@ -39,7 +40,7 @@ export function ShellCurso({ syllabus, indice, children }: { syllabus: ReactNode
       {indice && <aside className="al-shell__toc">{indice}</aside>}
       <div className="al-shell__main">
         <button type="button" className="al-shell__toggle" aria-expanded={!oculto} aria-controls="al-shell-sil" onClick={alternar}>
-          <span aria-hidden="true">{oculto ? "▶" : "◀"}</span>
+          <IconoPanel tam={18} />
           {oculto ? "Mostrar contenido del curso" : "Ocultar contenido del curso"}
         </button>
         {children}

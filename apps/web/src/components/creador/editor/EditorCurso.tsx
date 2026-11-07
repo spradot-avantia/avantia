@@ -16,6 +16,7 @@ import { PasoEstructura } from "./PasoEstructura";
 import { PasoModalidad } from "./PasoModalidad";
 import { PasoObjetivo } from "./PasoObjetivo";
 import { PasoRevisar } from "./PasoRevisar";
+import { IconoCheck, IconoFlecha } from "../../ui/Iconos";
 import { useAutosave } from "./useAutosave";
 import "../creador.css";
 import "./editor.css";
@@ -183,7 +184,7 @@ export function EditorCurso({ cursoInicial, pasoInicial, urlPublica }: Props) {
   return (
     <div className="av-scope ed">
       <button type="button" className="cr-back ed-back" onClick={() => void salir("/cursos")}>
-        ← Cursos
+        <IconoFlecha dir="izquierda" tam={16} /> Cursos
       </button>
 
       <header className="ed-head">
@@ -240,7 +241,7 @@ export function EditorCurso({ cursoInicial, pasoInicial, urlPublica }: Props) {
                 aria-current={p.id === paso ? "step" : undefined}
                 onClick={() => irAPaso(p.id)}
               >
-                <span className="cr-step__n">{hecho(p.id) && p.id !== paso ? "✓" : p.numero}</span>
+                <span className="cr-step__n">{hecho(p.id) && p.id !== paso ? <IconoCheck tam={12} /> : p.numero}</span>
                 {p.titulo}
               </button>
             </li>
@@ -267,12 +268,14 @@ export function EditorCurso({ cursoInicial, pasoInicial, urlPublica }: Props) {
       <div className="ed-pie">
         {idx > 0 ? (
           <Button variante="secondary" onClick={() => irAPaso(IDS[idx - 1])}>
-            ← Atrás
+            <IconoFlecha dir="izquierda" tam={16} /> Atrás
           </Button>
         ) : (
           <span />
         )}
-        {idx < IDS.length - 1 && <Button onClick={() => irAPaso(IDS[idx + 1])}>Siguiente →</Button>}
+        {idx < IDS.length - 1 && <Button onClick={() => irAPaso(IDS[idx + 1])}>
+            Siguiente <IconoFlecha tam={16} />
+          </Button>}
       </div>
 
       <div className="av-sr-only" role="status" aria-live="polite" aria-atomic="true">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { IconoRepetir, TituloIcono } from "../../../../../components/ui/Iconos";
 import { Barra, EstadoBadge, Sello } from "../../../../../components/alumno/Piezas";
 import { getTenantPublico } from "../../../../../lib/alumno/contexto";
 import { aplicarInvitaciones, inscripcionesDe } from "../../../../../lib/alumno/inscripciones";
@@ -40,7 +41,9 @@ export default async function MisCursosPage() {
 
       {repaso.length > 0 && (
         <section className="al-card" aria-labelledby="al-repaso-t">
-          <h2 id="al-repaso-t">Repaso de hoy</h2>
+          <TituloIcono id="al-repaso-t" icono={<IconoRepetir tam={20} />}>
+            Repaso de hoy
+          </TituloIcono>
           <p className="al-muted">
             {repaso.length === 1 ? "1 pregunta que fallaste vuelve" : `${repaso.length} preguntas que fallaste vuelven`} hoy. Son un par de minutos y ayudan a
             recordarlo.

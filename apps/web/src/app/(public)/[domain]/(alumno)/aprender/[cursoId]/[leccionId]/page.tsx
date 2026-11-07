@@ -12,6 +12,7 @@ import { ShellCurso } from "../../../../../../../components/alumno/ShellCurso";
 import { SyllabusCurso } from "../../../../../../../components/alumno/SyllabusCurso";
 import { estadoQuizzes } from "../../../../../../../lib/alumno/quiz";
 import { Barra } from "../../../../../../../components/alumno/Piezas";
+import { IconoCheck, IconoTipoLeccion } from "../../../../../../../components/ui/Iconos";
 import { completarLeccionAction } from "../../../../../../../lib/alumno/actions";
 import { leccionesEnOrden } from "../../../../../../../lib/alumno/catalogo";
 import { exigirCursoActivo } from "../../../../../../../lib/alumno/guardia";
@@ -94,10 +95,14 @@ export default async function LeccionPage({
         </div>
         <p className="al-muted al-meta">
           <span>
-            Módulo {leccion.moduloNum} · Lección {leccion.num} · {TIPO[leccion.tipo]}
+            <IconoTipoLeccion tipo={leccion.tipo} tam={16} /> Módulo {leccion.moduloNum} · Lección {leccion.num} · {TIPO[leccion.tipo]}
             {leccion.duracionMin ? ` · ${leccion.duracionMin} min` : ""}
           </span>
-          {hecha && <span className="al-badge al-badge--ok">✓ Completada</span>}
+          {hecha && (
+            <span className="al-badge al-badge--ok">
+              <IconoCheck tam={14} /> Completada
+            </span>
+          )}
         </p>
         <h1>{leccion.titulo}</h1>
         {leccion.descripcion && <p className="al-leccion__desc">{leccion.descripcion}</p>}

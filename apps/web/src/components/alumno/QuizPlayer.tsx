@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import { responderQuizAction } from "../../lib/alumno/actions";
 import type { PreguntaParaAlumno } from "../../lib/alumno/quiz";
+import { IconoCheck, IconoEquis, IconoFlecha, IconoMedalla } from "../ui/Iconos";
 import "./alumno.css";
 
 type PreguntaPlayer = PreguntaParaAlumno & { cursoId?: string; moduloId?: string };
@@ -89,7 +90,9 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
         {repaso ? (
           <p className="al-muted">Las que fallaste vuelven en unos días: repasar poco y seguido es lo que hace que se recuerde. Esto no suma XP.</p>
         ) : dominado ? (
-          <p className="al-badge al-badge--ok">🏅 Módulo dominado</p>
+          <p className="al-badge al-badge--ok">
+            <IconoMedalla tam={16} /> Módulo dominado
+          </p>
         ) : (
           <p className="al-muted">
             {intento === 0
@@ -131,8 +134,8 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
             <label key={k} className={`al-quiz__op${elegida === k ? " is-sel" : ""}${estado ? ` al-quiz__op--${estado}` : ""}`}>
               <input type="radio" name={`q-${p.id}`} checked={elegida === k} onChange={() => setElegida(k)} />
               <span>{o}</span>
-              {estado === "ok" && <span aria-hidden="true">✓</span>}
-              {estado === "mal" && <span aria-hidden="true">✕</span>}
+              {estado === "ok" && <IconoCheck tam={18} className="al-quiz__ico" />}
+              {estado === "mal" && <IconoEquis tam={18} className="al-quiz__ico" />}
               {estado && <span className="av-sr-only">{estado === "ok" ? " (respuesta correcta)" : " (tu respuesta)"}</span>}
             </label>
           );
@@ -153,7 +156,13 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
       <div className="al-pager">
         {res ? (
           <button type="button" className="al-btn" onClick={siguiente}>
-            {i + 1 < preguntas.length ? "Siguiente pregunta →" : "Ver mi resultado"}
+            {i + 1 < preguntas.length ? (
+              <>
+                Siguiente pregunta <IconoFlecha tam={18} />
+              </>
+            ) : (
+              "Ver mi resultado"
+            )}
           </button>
         ) : (
           <button type="button" className="al-btn" onClick={responder} disabled={elegida === null || pendiente}>

@@ -818,7 +818,7 @@
 
 /* Navegación inferior con íconos y estado activo. */
 .al-tabs {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 }
 .al-tabs a {
   flex-direction: column;
@@ -964,4 +964,124 @@
   color: var(--av-ink-2);
   font-size: var(--av-fs-md);
   line-height: var(--av-lh-body);
+}
+
+/* Íconos expresivos: títulos con burbuja, perfil y tarjetas de resumen. */
+.al-titulo-ico {
+  display: flex;
+  align-items: center;
+  gap: var(--av-space-3);
+}
+.al-ico-burbuja {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: var(--al-brand);
+  background: color-mix(in srgb, var(--al-brand) 12%, var(--av-surface));
+}
+h2.al-titulo-ico .al-ico-burbuja {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+}
+.al-nivelcard__xp {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.al-nivelcard__rayo {
+  color: var(--al-brand);
+}
+.al-insignia__ico svg {
+  display: block;
+}
+.al-perfil__top {
+  display: flex;
+  align-items: center;
+  gap: var(--av-space-4);
+}
+.al-perfil__avatar {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--al-brand);
+  color: var(--al-on-brand);
+  font-size: 26px;
+  font-weight: var(--av-fw-semibold);
+}
+.al-perfil__datos {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.al-perfil__nombre {
+  font-size: var(--av-fs-xl);
+  font-weight: var(--av-fw-semibold);
+  overflow-wrap: anywhere;
+}
+.al-perfil__fila {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+.al-perfil__fila svg {
+  flex-shrink: 0;
+  color: var(--al-brand);
+}
+.al-perfil__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--av-space-3);
+}
+.al-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  padding: var(--av-space-3) var(--av-space-2);
+  background: var(--av-surface);
+  border: 1px solid var(--av-line);
+  border-radius: var(--av-radius-lg);
+  font-size: var(--av-fs-sm);
+}
+.al-stat svg {
+  color: var(--al-brand);
+}
+.al-stat strong {
+  font-size: var(--av-fs-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* B-35: íconos que reemplazan glifos de texto. */
+.al-dot svg,
+.al-syl__ico svg {
+  display: block;
+}
+.al-syl__tipo {
+  flex: none;
+  color: var(--av-muted);
+}
+.al-mat__ico {
+  display: inline-grid;
+  place-items: center;
+  color: var(--al-brand);
+}
+.al-quiz__ico {
+  margin-left: auto;
+  flex: none;
+}
+.al-pp__chev svg {
+  display: block;
+}
+.al-badge svg {
+  flex: none;
 }

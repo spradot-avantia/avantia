@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { IconoRayo } from "../ui/Iconos";
 import "./alumno.css";
 
 /** Aviso breve de XP ganada: desaparece solo y no parece un botón. */
@@ -13,7 +14,7 @@ export function ToastXp({ xp }: { xp: number }) {
   if (!visible) return null;
   return (
     <p className="al-xp" role="status">
-      <span aria-hidden="true">⭐</span> +{xp} XP ganados
+      <IconoRayo tam={16} /> +{xp} XP ganados
     </p>
   );
 }
