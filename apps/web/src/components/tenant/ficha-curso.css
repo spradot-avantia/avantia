@@ -192,6 +192,11 @@
   gap: var(--av-space-3);
   max-width: 68ch;
 }
+/* Los enlaces dentro del texto se distinguen por algo más que el color (WCAG 1.4.1). */
+.fc-md a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .fc-md p,
 .fc-md ul,
 .fc-md ol,
