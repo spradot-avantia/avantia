@@ -1,0 +1,27 @@
+/* Pantallas de estado globales (404, error, carga). Neutras: sin marca, porque
+   también se muestran dentro de la academia de un tenant. Solo tokens. */
+.es {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background: var(--av-bg);
+  color: var(--av-ink);
+  font-family: var(--av-font-sans);
+}
+.es__caja { max-width: 440px; width: 100%; display: grid; gap: 12px; }
+.es__codigo { margin: 0; font-size: var(--av-fs-sm); color: var(--av-muted); font-variant-numeric: tabular-nums; }
+.es__titulo { margin: 0; font-size: var(--av-fs-xl); font-weight: var(--av-fw-semibold); line-height: 1.25; text-wrap: balance; }
+.es__texto { margin: 0; color: var(--av-muted); text-wrap: pretty; }
+.es__acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+.es__acciones .av-btn { min-height: 44px; padding: 0 20px; }
+.es__acciones .av-btn:focus-visible { outline: 2px solid var(--av-blue-400); outline-offset: 2px; }
+
+/* Esqueleto de carga */
+.es-carga { padding: 24px 16px; display: grid; gap: 14px; max-width: 720px; margin: 0 auto; }
+.es-carga__fila { height: 16px; border-radius: 8px; background: var(--av-line); animation: es-pulso 1.4s ease-in-out infinite; }
+.es-carga__fila--t { height: 28px; width: 55%; }
+.es-carga__fila--c { height: 96px; border-radius: 12px; }
+.es-carga__fila--s { width: 70%; }
+@keyframes es-pulso { 50% { opacity: 0.45; } }
+@media (prefers-reduced-motion: reduce) { .es-carga__fila { animation: none; } }
