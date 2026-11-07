@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { LARGO_MAX_CONTRASENA, LARGO_MIN_CONTRASENA } from "../auth/contrasena";
 
-const correo = z
+export const correo = z
   .string({ message: "Escribe tu correo." })
   .trim()
   .toLowerCase()
@@ -52,7 +52,7 @@ export function sanitizarNextAlumno(next: unknown, porDefecto = "/mis-cursos"): 
   if (!next.startsWith("/") || next.startsWith("//") || next.includes("\\")) return porDefecto;
   // eslint-disable-next-line no-control-regex
   if (/[\u0000-\u001f]/.test(next)) return porDefecto;
-  if (/^\/(ingresar|registro|recuperar|restablecer|confirmar)(\/|\?|$)/.test(next)) return porDefecto;
+  if (/^\/(ingresar|registro|recuperar|restablecer|confirmar|confirmar-correo)(\/|\?|$)/.test(next)) return porDefecto;
   return next;
 }
 

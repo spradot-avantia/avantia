@@ -47,7 +47,13 @@ const HORAS_RECUPERAR = 2;
 const MSG_REVISA_CORREO =
   "Te enviamos un enlace para confirmar tu correo. Revisa tu bandeja de entrada y la carpeta de spam; puede tardar un par de minutos.";
 
-async function emitirToken(tenantId: string, alumnoId: string, tipo: "confirmar" | "recuperar", horas: number): Promise<string> {
+export async function emitirToken(
+  tenantId: string,
+  alumnoId: string,
+  tipo: "confirmar" | "recuperar" | "cambio_correo",
+  horas: number,
+  dato?: string,
+): Promise<string> {
   // Un solo enlace vigente por tipo: invalida los anteriores.
   await supabaseAdmin
     .from("alumno_tokens")
@@ -63,6 +69,7 @@ async function emitirToken(tenantId: string, alumnoId: string, tipo: "confirmar"
     tipo,
     token_hash: hash,
     expira_at: new Date(Date.now() + horas * 3600 * 1000).toISOString(),
+    ...(dato ? { dato } : {}),
   });
   if (error) throw new Error("No se pudo emitir el enlace");
   return token;

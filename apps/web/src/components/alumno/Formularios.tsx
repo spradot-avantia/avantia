@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import {
   confirmarAction,
+  confirmarCambioCorreoAction,
   ingresarAction,
   recuperarAction,
   registrarAction,
@@ -24,7 +25,7 @@ function useIrA(estado: EstadoForm) {
   }, [estado]);
 }
 
-function Enviar({ children, bloque = true }: { children: React.ReactNode; bloque?: boolean }) {
+export function Enviar({ children, bloque = true }: { children: React.ReactNode; bloque?: boolean }) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className={`al-btn${bloque ? " al-btn--block" : ""}`} disabled={pending} aria-disabled={pending}>
@@ -33,7 +34,7 @@ function Enviar({ children, bloque = true }: { children: React.ReactNode; bloque
   );
 }
 
-function Campo({
+export function Campo({
   id,
   label,
   error,
@@ -64,7 +65,7 @@ function Campo({
   );
 }
 
-function Resultado({ estado }: { estado: EstadoForm }) {
+export function Resultado({ estado }: { estado: EstadoForm }) {
   if (estado.error && !estado.campos) {
     return (
       <p className="al-alert al-alert--error" role="alert">
@@ -75,7 +76,7 @@ function Resultado({ estado }: { estado: EstadoForm }) {
   return null;
 }
 
-const aria = (id: string, error?: string, ayuda?: boolean) => ({
+export const aria = (id: string, error?: string, ayuda?: boolean) => ({
   "aria-invalid": error ? true : undefined,
   "aria-describedby": [ayuda ? `${id}-ayuda` : "", error ? `${id}-error` : ""].filter(Boolean).join(" ") || undefined,
 });
@@ -270,6 +271,24 @@ export function FormConfirmar({ token }: { token: string }) {
       {estado.error && (
         <p className="al-muted">
           <Link href="/ingresar">Ir a ingresar</Link> para pedir un enlace nuevo.
+        </p>
+      )}
+    </form>
+  );
+}
+
+/** El enlace del correo nuevo solo muestra el botón: confirmar es un POST (los escáneres no lo consumen). */
+export function FormConfirmarCorreo({ token }: { token: string }) {
+  const [estado, accion] = useFormState(confirmarCambioCorreoAction, VACIO);
+  useIrA(estado);
+  return (
+    <form action={accion} className="al-form">
+      <input type="hidden" name="token" value={token} />
+      <Resultado estado={estado} />
+      <Enviar>Confirmar mi nuevo correo</Enviar>
+      {estado.error && (
+        <p className="al-muted">
+          <Link href="/perfil">Ir a mi perfil</Link> para pedir un enlace nuevo.
         </p>
       )}
     </form>

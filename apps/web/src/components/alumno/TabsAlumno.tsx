@@ -37,6 +37,17 @@ const TABS: { href: string; texto: string; icono: ReactNode; activa: (p: string)
       </svg>
     ),
   },
+  {
+    href: "/perfil",
+    texto: "Mi perfil",
+    activa: (p) => p.startsWith("/perfil"),
+    icono: (
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" {...trazo}>
+        <circle cx="12" cy="8.5" r="3.7" />
+        <path d="M5 20c.6-3.7 3.4-5.8 7-5.8s6.4 2.1 7 5.8" />
+      </svg>
+    ),
+  },
 ];
 
 /** Secciones del alumno: barra inferior en móvil (con íconos), pestañas de texto en escritorio. */

@@ -219,6 +219,7 @@ delay de loading que tenía la versión SPA.
 ## 6. Lado del alumno en el sitio de la academia (ADR 018, Aceptada)
 
 - **Cuentas:** `alumnos(tenant_id, correo, password_hash, …)`, único por academia; no usan `auth.users`. Contraseña con scrypt (`lib/alumno/password.ts`).
+- **Perfil y cambio de correo ([ADR 036](../decisiones/036-cambio-de-correo-del-alumno.md)):** `/perfil` permite cambiar nombre, contraseña (cierra otras sesiones) y correo. El correo nuevo se guarda en `alumno_tokens.dato` (tipo `cambio_correo`, vence en 2 h) y `alumnos.correo` solo cambia al confirmar el enlace enviado al correo nuevo.
 - **Sesión:** cookie `av_alumno` httpOnly emitida solo en el host de la academia, validada contra `alumno_tokens` (hash SHA-256) y el `tenant_id` del host. Es independiente de la sesión del panel (ADR 003).
 - **Acceso a datos:** `lib/alumno/*` es el único código del sitio público que usa `supabaseAdmin`; todas sus queries filtran por el tenant del host. El creador ve `alumnos`, `inscripciones` y `pagos` con su sesión y RLS (sin `password_hash`, por grants de columnas).
 - **Inscripción:** `pendiente → activa | rechazada | vencida`. Las invitaciones del creador activan solo con correo confirmado; el resto espera la activación del creador (pago manual en `pagos`) o, a futuro, la pasarela.

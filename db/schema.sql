@@ -1074,12 +1074,19 @@ create table if not exists alumno_tokens (
   id uuid primary key default gen_random_uuid(),
   tenant_id uuid not null references tenants(id) on delete cascade,
   alumno_id uuid not null,
-  tipo text not null check (tipo in ('sesion', 'confirmar', 'recuperar')),
+  tipo text not null check (tipo in ('sesion', 'confirmar', 'recuperar', 'cambio_correo')),
+  -- Solo cambio_correo (ADR 036): el correo nuevo, que no pasa a alumnos.correo hasta confirmar.
+  dato text,
   token_hash text not null unique,
   expira_at timestamptz not null,
   usado_at timestamptz,
   created_at timestamptz not null default now(),
   foreign key (alumno_id, tenant_id) references alumnos (id, tenant_id) on delete cascade
+);
+alter table alumno_tokens drop constraint if exists alumno_tokens_dato_check;
+alter table alumno_tokens add constraint alumno_tokens_dato_check check (
+  (tipo = 'cambio_correo' and dato is not null and dato = lower(dato) and char_length(dato) <= 254)
+  or (tipo <> 'cambio_correo' and dato is null)
 );
 create index if not exists alumno_tokens_tenant_alumno_idx on alumno_tokens (tenant_id, alumno_id, tipo);
 create index if not exists alumno_tokens_expira_idx on alumno_tokens (tenant_id, expira_at);
@@ -1165,7 +1172,7 @@ alter table eventos add constraint eventos_tipo_check check (tipo in (
   'inscripcion', 'leccion_abierta', 'leccion_completada',
   'intento_quiz', 'curso_completado', 'correo_abierto', 'correo_clic',
   'cuenta_creada', 'inscripcion_creada', 'inscripcion_activada',
-  'pago_registrado', 'inscripcion_rechazada'
+  'pago_registrado', 'inscripcion_rechazada', 'correo_cambiado'
 ));
 
 -- ---------------------------------------------------------------------------

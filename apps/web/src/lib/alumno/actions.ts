@@ -14,6 +14,7 @@ import {
 } from "./cuentas";
 import { requireTenantPublico } from "./contexto";
 import { solicitarInscripcion } from "./inscripciones";
+import { actualizarNombre, cambiarContrasena, confirmarCambioCorreo, solicitarCambioCorreo } from "./perfil";
 import { completarLeccion } from "./progreso";
 import { responderPregunta, type ResultadoResponder } from "./quiz";
 import { cerrarSesion, getAlumnoActual } from "./sesion";
@@ -44,6 +45,23 @@ export async function registrarAction(_: EstadoForm, fd: FormData): Promise<Esta
 export async function ingresarAction(_: EstadoForm, fd: FormData): Promise<EstadoForm> {
   const r = await ingresarAlumno({ email: txt(fd, "email"), password: txt(fd, "password") });
   return r.ok ? destino(sanitizarNextAlumno(txt(fd, "next"))) : r;
+}
+
+export async function actualizarNombreAction(_: EstadoForm, fd: FormData): Promise<EstadoForm> {
+  return actualizarNombre({ nombre: txt(fd, "nombre") });
+}
+
+export async function cambiarContrasenaAction(_: EstadoForm, fd: FormData): Promise<EstadoForm> {
+  return cambiarContrasena({ actual: txt(fd, "actual"), password: txt(fd, "password"), confirmacion: txt(fd, "confirmacion") });
+}
+
+export async function solicitarCambioCorreoAction(_: EstadoForm, fd: FormData): Promise<EstadoForm> {
+  return solicitarCambioCorreo({ email: txt(fd, "email"), password: txt(fd, "password") });
+}
+
+export async function confirmarCambioCorreoAction(_: EstadoForm, fd: FormData): Promise<EstadoForm> {
+  const r = await confirmarCambioCorreo(txt(fd, "token"));
+  return r.ok ? destino("/perfil") : r;
 }
 
 export async function salirAction(): Promise<EstadoForm> {
