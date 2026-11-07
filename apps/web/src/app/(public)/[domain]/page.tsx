@@ -27,7 +27,8 @@ export async function generateMetadata({ params }: { params: { domain: string } 
   const titulo = sitio.publicado?.titulo ?? sitio.academia.nombre;
   return {
     title: titulo === sitio.academia.nombre ? titulo : `${titulo} · ${sitio.academia.nombre}`,
-    description: sitio.publicado?.bajada ?? sitio.academia.frase ?? undefined,
+    // Siempre hay descripción (SEO): si la academia no escribió bajada ni frase, una genérica con su nombre.
+    description: sitio.publicado?.bajada ?? sitio.academia.frase ?? `Cursos online de ${sitio.academia.nombre}.`,
   };
 }
 

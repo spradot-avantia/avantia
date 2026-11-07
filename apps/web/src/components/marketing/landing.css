@@ -91,7 +91,7 @@
 .lp-ac-brand { display: flex; align-items: center; gap: var(--av-space-3); font-weight: var(--av-fw-semibold); font-size: var(--av-fs-sm); }
 .lp-ac-mark { width: 28px; height: 28px; border-radius: var(--av-radius-sm); background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 13px; flex: none; transition: background-color 0.42s var(--av-ease-out); }
 .lp-ac-cover { margin: 0 10px; border-radius: var(--av-radius-lg); padding: 16px; background: var(--brand); color: #fff; display: flex; flex-direction: column; gap: 6px; position: relative; overflow: hidden; transition: background-color 0.42s var(--av-ease-out); }
-.lp-ac-cover small { font-size: 11px; font-weight: var(--av-fw-medium); letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.9; }
+.lp-ac-cover small { font-size: 11px; font-weight: var(--av-fw-medium); letter-spacing: 0.12em; text-transform: uppercase; opacity: 1; }
 .lp-ac-cover strong { font-size: var(--av-fs-lg); font-weight: var(--av-fw-semibold); line-height: 1.2; letter-spacing: -0.01em; }
 .lp-ac-cover span { font-size: var(--av-fs-xs); opacity: 0.92; }
 .lp-ac-mods { padding: 16px 10px 0; display: flex; flex-direction: column; gap: 6px; }

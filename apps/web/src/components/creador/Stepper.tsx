@@ -23,7 +23,7 @@ export function Stepper({ pasos, actual, etiqueta = "Pasos" }: { pasos: PasoStep
         <span className="cr-stepper__compact-label">
           Paso {idx + 1} de {pasos.length} · <strong>{pasos[idx]?.titulo}</strong>
         </span>
-        <div className="cr-stepper__bar" role="progressbar" aria-valuemin={1} aria-valuemax={pasos.length} aria-valuenow={idx + 1}>
+        <div className="cr-stepper__bar" role="progressbar" aria-label="Progreso de la configuración" aria-valuemin={1} aria-valuemax={pasos.length} aria-valuenow={idx + 1}>
           <i style={{ width: `${pct}%` }} />
         </div>
       </div>

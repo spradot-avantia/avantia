@@ -226,3 +226,11 @@
   background: var(--av-blue-50);
   border: 1px solid var(--av-blue-200);
 }
+
+.ad-form .cr-input { min-height: 44px; }
+.ad-msg a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Barra superior en móvil: los enlaces no se parten y el correo cede el espacio. */
+.ad-user a, .ad-user .ad-link, .ad-user button { white-space: nowrap; }
+.ad-user__mail { min-width: 0; flex: 0 1 auto; max-width: min(200px, 30vw); }
+.ad-lede { padding-bottom: var(--av-space-5); }
