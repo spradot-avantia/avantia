@@ -268,9 +268,13 @@
   font-size: var(--av-fs-xs);
   color: var(--av-muted);
 }
+/* Lo habitual aquí son prompts de texto, no código largo: hacen salto de línea en vez de obligar
+   a desplazarse en horizontal (sin barra visible, quien lee no sabe que hay más). */
 .fc-md .fc-codigo pre {
   margin: 0;
   padding: var(--av-space-3) var(--av-space-4);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   overflow-x: auto;
   font-family: var(--av-font-mono);
   font-size: var(--av-fs-sm);
@@ -382,7 +386,8 @@
   border-bottom: 1px solid var(--av-line);
   text-align: left;
   vertical-align: top;
-  min-width: 90px;
+  /* Con 3 o 4 columnas en móvil la tabla se desplaza en vez de apretarse hasta partir palabras. */
+  min-width: 112px;
 }
 .fc-tabla thead th {
   background: var(--av-surface-2);
