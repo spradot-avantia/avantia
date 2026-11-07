@@ -96,7 +96,7 @@
   content: "✓";
   position: absolute;
   left: 0;
-  color: var(--fc-brand);
+  color: var(--fc-brand-text, var(--fc-brand));
   font-weight: var(--av-fw-semibold);
 }
 .fc-mod {

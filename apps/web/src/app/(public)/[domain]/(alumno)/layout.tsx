@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Cabecera } from "../../../../components/alumno/Cabecera";
 import "../../../../components/alumno/alumno.css";
 import { getAlumnoActual } from "../../../../lib/alumno/sesion";
-import { textoSobre } from "../../../../lib/creador/color";
+import { colorTexto, textoSobre } from "../../../../lib/creador/color";
 import { clasesFuentes } from "../../../../lib/tenant/fuentes";
 import { clasesIdentidad } from "../../../../lib/tenant/identidad";
 import { resolveTenantByHostname } from "../../../../lib/tenant/resolve";
@@ -23,12 +23,12 @@ export default async function AlumnoLayout({ children, params }: { children: Rea
   const alumno = await getAlumnoActual();
   const color = tenant.theme.colorPrimario;
   return (
-    <div className={`al ${clasesFuentes} ${clasesIdentidad(tenant.theme.tipografia, tenant.theme.forma)}`} style={{ ["--al-brand" as string]: color, ["--al-on-brand" as string]: textoSobre(color) }}>
+    <div className={`al ${clasesFuentes} ${clasesIdentidad(tenant.theme.tipografia, tenant.theme.forma)}`} style={{ ["--al-brand" as string]: color, ["--al-on-brand" as string]: textoSobre(color), ["--al-brand-text" as string]: colorTexto(color) }}>
       <a className="al-skip" href="#contenido">
         Saltar al contenido
       </a>
       <Cabecera tenant={tenant} alumno={alumno} />
-      <main id="contenido" className="al-main">
+      <main id="contenido" tabIndex={-1} className="al-main">
         {children}
       </main>
       <footer className="al-foot">
