@@ -7,6 +7,7 @@ import { crearLimitador } from "../auth/limite";
 import { urlPanel } from "../auth/panel";
 import { MSG_GENERICO, MSG_LIMITE, erroresPorCampo } from "../auth/validacion";
 import { enviarCorreo, escaparHtml } from "../email/resend";
+import { esDespliegueDePreview } from "../seo";
 import { esStaff } from "../staff";
 import { supabaseAdmin } from "../supabase/admin";
 import { postulacionSchema, type EstadoPostulacion } from "./validacion";
@@ -21,7 +22,10 @@ const limitePorIp = crearLimitador(5, 10 * 60_000);
 const limitePorCorreo = crearLimitador(3, 60 * 60_000);
 
 function destinatariosAviso(): string[] {
-  return (process.env.POSTULACIONES_NOTIFY_TO ?? "javiera@goavantia.com,contacto@goavantia.com")
+  // En los despliegues de Preview (dev) NO hay direcciones reales por defecto: sin la variable no se
+  // avisa a nadie, para que probar el formulario no escriba al equipo de verdad.
+  const porDefecto = esDespliegueDePreview() ? "" : "javiera@goavantia.com,contacto@goavantia.com";
+  return (process.env.POSTULACIONES_NOTIFY_TO ?? porDefecto)
     .split(",")
     .map((e) => e.trim())
     .filter(Boolean);
@@ -71,8 +75,10 @@ export async function enviarPostulacionAction(_prev: EstadoPostulacion, fd: Form
     return { mensaje: MSG_GENERICO, valores };
   }
 
+  const para = destinatariosAviso();
+  if (para.length === 0) return { ok: true };
   await enviarCorreo({
-    to: destinatariosAviso(),
+    to: para,
     replyTo: email,
     subject: `Nueva postulación: ${nombre}`,
     text: `${nombre} <${email}>\n\n${descripcion}\n\nRevisar: ${urlPanel()}/admin/postulaciones`,
