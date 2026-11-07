@@ -19,7 +19,8 @@ interface Props {
   preguntas: PreguntaPlayer[];
   /** Ruta a la que vuelve al terminar (siguiente lección o cierre). */
   volverA: string;
-  umbral: number;
+  /** Ya no se usa: el veredicto de «dominado» lo da el servidor (quizReglas.estadoDeModulo). */
+  umbral?: number;
 }
 
 interface Corregida {
@@ -31,7 +32,7 @@ interface Corregida {
 }
 
 /** Quiz de repaso: una pregunta por vez; se corrige en el servidor al responder. */
-export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", preguntas, volverA, umbral }: Props) {
+export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", preguntas, volverA }: Props) {
   const repaso = modo === "repaso";
   const rotulo = repaso ? "Repaso de hoy" : `Quiz de repaso · ${moduloTitulo}`;
   const [i, setI] = useState(0);
@@ -39,6 +40,8 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
   const [res, setRes] = useState<Corregida | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [aciertos, setAciertos] = useState(0);
+  // Veredicto del servidor (todas las respuestas guardadas, no solo esta pasada): coincide con /progreso.
+  const [dominadoServidor, setDominadoServidor] = useState(false);
   const [xpTotal, setXpTotal] = useState(0);
   const [pendiente, start] = useTransition();
   const [intento, setIntento] = useState(0);
@@ -60,6 +63,7 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
       if (!r.ok) return setError(r.error);
       setRes({ acierto: r.acierto, correcta: r.correcta, explicacion: r.explicacion, elegida, xp: r.xpGanada });
       if (r.acierto) setAciertos((a) => a + 1);
+      setDominadoServidor(r.dominado);
       setXpTotal((x) => x + r.xpGanada);
     });
   }
@@ -76,13 +80,14 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
     setElegida(null);
     setRes(null);
     setAciertos(0);
+    setDominadoServidor(false);
     setXpTotal(0);
     setIntento((n) => n + 1);
   }
 
   if (fin) {
     const pct = Math.round((aciertos / preguntas.length) * 100);
-    const dominado = !repaso && intento === 0 && aciertos / preguntas.length >= umbral;
+    const dominado = !repaso && dominadoServidor;
     return (
       <div className="al-quiz" role="status">
         <p className="al-muted">{rotulo}</p>
