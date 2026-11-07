@@ -33,6 +33,20 @@ Idioma: documentación, commits y UI en **español** (es-CL por defecto). Códig
 - Pagos: Mercado Pago como pasarela local del MVP (Stripe fue retirado del código). Webhooks verifican firma e idempotencia.
 - Secretos solo en variables de entorno (Vercel); nunca en el repo.
 
+## Dos proyectos de Supabase: NO confundirlos (ADR 037)
+
+| | Producción | Dev |
+|---|---|---|
+| Ref | `owjhakhkdqmcykvtmbox` | `kdvquarwgawaozyzllmd` |
+| MCP en Claude Code | `supabase` | `supabase-dev` |
+| Vercel | Production (`master`, `www.goavantia.com`) | Preview (`dev`, `www.dev.goavantia.com`) |
+
+- **Por defecto usa `supabase-dev`.** Una migración va primero a dev; a producción solo cuando Samuel lo pida para ese cambio (aprobar en dev no autoriza producción).
+- **Antes de cualquier escritura** por MCP, confirma con `get_project_url` que el ref es el esperado.
+- El seed de logins y los datos de prueba van **solo en dev**. Nunca en producción sin orden explícita; si pasa, se borra al terminar y se verifica.
+- Los tokens (`AVANTIA_SUPABASE_TOKEN`, `SUPABASE_ACCESS_TOKEN_DEV`) son variables de sistema; jamás en el repo. Alcanzan ambos proyectos: el límite es el `--project-ref` de `.mcp.json`.
+- Cada migración se aplica en ambos proyectos (dev primero) y se refleja en `db/schema.sql`.
+
 ## Decisiones de producto vigentes (revisión de flujos 2026-10-12)
 
 Ver `docs/Revision_Flujos_Creador_Alumno_2026-10-12.md`. Resumen: postulación pública sin cuenta y registro del creador solo por invitación, con correo y contraseña o Google (ADR 014, Propuesta; + validación de correo/MFA); lecciones solo video (enlace) + texto; sin acceso por invitación; quiz de término; dashboard del creador (CR-11); identidad visual genérica con iniciales; **mobile-first** (alumno 100% móvil; creador: edición pesada en escritorio). La retención es el diferenciador: cadencia/cohortes, práctica de recuperación, presencia del creador, nudges con normas sociales, lecciones cortas, analítica y A/B por tenant. Gamificación pesada e IA adaptativa quedan fuera del MVP.
