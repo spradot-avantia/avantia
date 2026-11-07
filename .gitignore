@@ -19,6 +19,7 @@ coverage/
 .vercel
 .env*
 !.env.example
+!.env.dev.example
 
 # material de trabajo local (no versionar)
 docs/cambios_propuestos/
