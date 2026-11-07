@@ -3,6 +3,8 @@ import type { DatosSitio } from "../../lib/sitio/tipos";
 import { Cta, Ej, MarcaSitio, PieSitio, Portada, TarjetaCurso, estiloAcento, textoAccion } from "./partes";
 
 export function TemplatePrograma({ d }: { d: DatosSitio }) {
+  // En la vista previa del panel el título principal es el de la página del creador.
+  const Titulo = d.modo === "vista" ? "h2" : "h1";
   const acento = estiloAcento(d.academia.colorPrimario);
   const principal = d.cursos[0];
   return (
@@ -18,9 +20,9 @@ export function TemplatePrograma({ d }: { d: DatosSitio }) {
 
       <section className="st-pr-hero">
         <div className="st-pr-hero__txt">
-          <h1 className="st-h1">
+          <Titulo className="st-h1">
             <Ej si={d.ejemplo.titulo}>{d.titulo}</Ej>
-          </h1>
+          </Titulo>
           {d.bajada && (
             <p className="st-lede">
               <Ej si={d.ejemplo.bajada}>{d.bajada}</Ej>

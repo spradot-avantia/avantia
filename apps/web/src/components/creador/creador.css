@@ -484,3 +484,7 @@ select.cr-input {
     animation-duration: 0s !important;
   }
 }
+
+.cr-empty .pg-fila { justify-content: center; }
+.cr-empty__title { margin: 0; text-wrap: balance; }
+.cr-empty__desc { text-wrap: pretty; }

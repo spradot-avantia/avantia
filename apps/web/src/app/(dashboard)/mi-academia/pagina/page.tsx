@@ -12,6 +12,7 @@ export default async function EditarPaginaPage() {
   if (carga.estado === "error") {
     return (
       <EmptyState
+        titulo1
         titulo="No pudimos abrir el editor"
         descripcion="Hubo un problema al cargar tu página. Tus cambios anteriores siguen guardados. Inténtalo de nuevo en unos minutos."
         accion={<LinkButton href="/mi-academia">Volver a Mi academia</LinkButton>}
@@ -23,6 +24,7 @@ export default async function EditarPaginaPage() {
   if (!template) {
     return (
       <EmptyState
+        titulo1
         titulo="Primero elige un template"
         descripcion="Tu página parte de un template: Programa, Maestro o Consultor. Elige uno en Mi academia o responde 5 preguntas y te recomendamos el que mejor te queda."
         accion={
