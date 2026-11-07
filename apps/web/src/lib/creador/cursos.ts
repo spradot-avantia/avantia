@@ -188,12 +188,25 @@ export async function updateCursoCampo(cursoId: string, campo: CampoCurso, valor
 
   if (campo === "objetivos") {
     const textos = v.valor as string[];
-    const del = await db.from("curso_objetivos").delete().eq("tenant_id", tenant.id).eq("curso_id", cursoId);
-    if (del.error) return { ok: false, error: "No pudimos guardar los objetivos." };
-    const ins = await db
+    // Nunca se borra antes de escribir: si el guardado se interrumpe a medias, el curso no
+    // queda sin objetivos. Primero se escriben (o actualizan) las filas por (curso_id, orden)
+    // y después se eliminan solo las que sobran.
+    if (textos.length > 0) {
+      const up = await db
+        .from("curso_objetivos")
+        .upsert(
+          textos.map((texto, i) => ({ tenant_id: tenant.id, curso_id: cursoId, orden: i + 1, texto })),
+          { onConflict: "curso_id,orden" },
+        );
+      if (up.error) return { ok: false, error: "No pudimos guardar los objetivos." };
+    }
+    const del = await db
       .from("curso_objetivos")
-      .insert(textos.map((texto, i) => ({ tenant_id: tenant.id, curso_id: cursoId, orden: i + 1, texto })));
-    if (ins.error) return { ok: false, error: "No pudimos guardar los objetivos." };
+      .delete()
+      .eq("tenant_id", tenant.id)
+      .eq("curso_id", cursoId)
+      .gt("orden", textos.length);
+    if (del.error) return { ok: false, error: "No pudimos guardar los objetivos." };
     return { ok: true, data: undefined };
   }
 
