@@ -7,14 +7,24 @@ import "./alumno.css";
 /** Aviso breve de XP ganada: desaparece solo y no parece un botón. */
 export function ToastXp({ xp }: { xp: number }) {
   const [visible, setVisible] = useState(true);
+  // La región "status" existe vacía y el texto entra después: así los lectores de pantalla lo anuncian.
+  const [anunciado, setAnunciado] = useState(false);
   useEffect(() => {
+    const a = setTimeout(() => setAnunciado(true), 300);
     const t = setTimeout(() => setVisible(false), 4500);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(a);
+      clearTimeout(t);
+    };
   }, []);
   if (!visible) return null;
   return (
-    <p className="al-xp" role="status">
-      <IconoRayo tam={16} /> +{xp} XP ganados
-    </p>
+    <div role="status">
+      {anunciado && (
+        <p className="al-xp">
+          <IconoRayo tam={16} /> +{xp} XP ganados
+        </p>
+      )}
+    </div>
   );
 }

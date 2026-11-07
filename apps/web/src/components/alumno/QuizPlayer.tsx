@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { responderQuizAction } from "../../lib/alumno/actions";
 import type { PreguntaParaAlumno } from "../../lib/alumno/quiz";
 import { IconoCheck, IconoEquis, IconoFlecha, IconoMedalla } from "../ui/Iconos";
@@ -43,6 +43,11 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
   const [pendiente, start] = useTransition();
   const [intento, setIntento] = useState(0);
   const titulo = useRef<HTMLHeadingElement>(null);
+  const feedback = useRef<HTMLDivElement>(null);
+  // Al responder, el fieldset se deshabilita y el foco se perdería: pasa al resultado para que se lea.
+  useEffect(() => {
+    if (res) feedback.current?.focus();
+  }, [res]);
 
   const p = preguntas[i];
   const fin = i >= preguntas.length;
@@ -126,6 +131,12 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
       <h1 ref={titulo} tabIndex={-1} className="al-quiz__q">
         {p.texto}
       </h1>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!res && elegida !== null && !pendiente) responder();
+        }}
+      >
       <fieldset className="al-quiz__ops" disabled={!!res || pendiente}>
         <legend className="av-sr-only">Elige una respuesta</legend>
         {p.opciones.map((o, k) => {
@@ -147,7 +158,7 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
         </p>
       )}
       {res ? (
-        <div role="status" className={`al-quiz__fb ${res.acierto ? "is-ok" : "is-mal"}`}>
+        <div ref={feedback} tabIndex={-1} role="status" className={`al-quiz__fb ${res.acierto ? "is-ok" : "is-mal"}`}>
           <strong>{res.acierto ? "¡Correcto!" : "Esta vez no."}</strong>
           {res.explicacion && <p>{res.explicacion}</p>}
           {res.xp > 0 && <p className="al-muted">+{res.xp} XP</p>}
@@ -165,11 +176,12 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
             )}
           </button>
         ) : (
-          <button type="button" className="al-btn" onClick={responder} disabled={elegida === null || pendiente}>
+          <button type="submit" className="al-btn" disabled={elegida === null || pendiente}>
             {pendiente ? "Revisando…" : "Responder"}
           </button>
         )}
       </div>
+      </form>
     </div>
   );
 }

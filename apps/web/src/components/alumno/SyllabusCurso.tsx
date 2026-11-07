@@ -34,7 +34,7 @@ export function SyllabusCurso({ curso, completadas, hoy, quizzes, actual }: Prop
             <details key={m.id} className="al-syl__mod" open={esActual}>
               <summary>
                 <span className="al-syl__modt">
-                  Módulo {mi + 1} · {nombreModulo(m.titulo)}
+                  {/^m[oó]dulo\s*\d+$/i.test(nombreModulo(m.titulo)) ? `Módulo ${mi + 1}` : `Módulo ${mi + 1} · ${nombreModulo(m.titulo)}`}
                 </span>
                 <span className="al-syl__cnt">
                   {r.hechas}/{r.total}
