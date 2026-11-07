@@ -1,5 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import "./estado.css";
+
+// Título neutro: dentro de la academia de un tenant no debe aparecer el eslogan de Avantia.
+export const metadata: Metadata = { title: "Página no encontrada", robots: { index: false } };
 
 // 404 neutro: sin marca (también se muestra dentro de la academia de un tenant).
 export default function NoEncontrada() {
