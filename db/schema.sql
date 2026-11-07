@@ -272,6 +272,9 @@ create table if not exists lecciones (
   orden integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+  -- Declarada aquí (y no más abajo, en 0003) para que `materiales` pueda referenciarla
+  -- al aplicar este archivo completo sobre una base vacía (ADR 037).
+  constraint lecciones_id_tenant_id_key unique (id, tenant_id),
   foreign key (curso_id, tenant_id) references cursos (id, tenant_id) on delete cascade,
   foreign key (modulo_id, tenant_id) references modulos (id, tenant_id) on delete cascade
 );
