@@ -16,7 +16,9 @@ export type Inline =
   | { t: "cursiva"; v: Inline[] }
   | { t: "tachado"; v: Inline[] }
   | { t: "resaltado"; v: Inline[] }
-  | { t: "enlace"; href: string; v: Inline[] };
+  | { t: "enlace"; href: string; v: Inline[] }
+  /** Fórmula LaTeX en línea ($...$). `v` es el código LaTeX tal cual; se renderiza con KaTeX. */
+  | { t: "mate"; v: string };
 
 export type TipoAviso = "nota" | "consejo" | "importante" | "advertencia";
 export type Alineacion = "izq" | "centro" | "der" | null;
@@ -35,6 +37,8 @@ export type Bloque =
   | { t: "aviso"; tipo: TipoAviso; titulo: string; v: Bloque[] }
   | { t: "codigo"; lenguaje: string; v: string }
   | { t: "separador" }
+  /** Fórmula LaTeX en bloque ($$...$$), centrada. */
+  | { t: "mate"; v: string }
   | { t: "tabla"; alinear: Alineacion[]; cabecera: Inline[][]; filas: Inline[][][] }
   | { t: "pestanas"; items: Elemento[] }
   | { t: "tarjetas"; items: Elemento[] }
@@ -46,6 +50,8 @@ export const MAX_ELEMENTOS = 8;
 export const MAX_COLUMNAS = 8;
 export const MAX_FILAS = 200;
 const MAX_TITULO = 80;
+/** Largo máximo del código LaTeX de una fórmula (KaTeX es rápido, pero no hay por qué aceptar novelas). */
+const MAX_MATE = 2000;
 
 export const ETIQUETA_AVISO: Record<TipoAviso, string> = {
   nota: "Nota",
@@ -96,6 +102,32 @@ export function parsearInline(s: string): Inline[] {
   };
   let i = 0;
   while (i < s.length) {
+    // \$ es un signo peso literal.
+    if (s[i] === "\\" && s[i + 1] === "$") {
+      buf += "$";
+      i += 2;
+      continue;
+    }
+    // Fórmula en línea $...$ (regla de pandoc para no confundir precios: sin espacio
+    // tras el $ de apertura ni antes del de cierre, y el cierre no va seguido de un dígito).
+    if (s[i] === "$" && s[i + 1] !== "$" && s[i + 1] !== " ") {
+      let fin = i + 1;
+      let hallado = -1;
+      while ((fin = s.indexOf("$", fin)) !== -1) {
+        if (s[fin - 1] === "\\") {
+          fin++;
+          continue;
+        }
+        if (s[fin - 1] !== " " && !/\d/.test(s[fin + 1] ?? "")) hallado = fin;
+        break;
+      }
+      if (hallado > i + 1 && hallado - i <= MAX_MATE) {
+        vaciar();
+        out.push({ t: "mate", v: s.slice(i + 1, hallado) });
+        i = hallado + 1;
+        continue;
+      }
+    }
     if (s[i] === "`") {
       const fin = s.indexOf("`", i + 1);
       if (fin > i + 1) {
@@ -265,6 +297,20 @@ function parsearLineas(lineas: string[], prof: number): Bloque[] {
       continue;
     }
 
+    // Fórmula en bloque: $$ ... $$ (en una línea o en varias).
+    if (l.startsWith("$$")) {
+      let cuerpo = l.slice(2);
+      let j = i;
+      while (!cuerpo.includes("$$") && j + 1 < lineas.length && cuerpo.length <= MAX_MATE) cuerpo += "\n" + lineas[++j];
+      const fin = cuerpo.indexOf("$$");
+      if (fin !== -1 && cuerpo.slice(fin + 2).trim() === "" && cuerpo.slice(0, fin).trim() && fin <= MAX_MATE) {
+        cerrar();
+        bloques.push({ t: "mate", v: cuerpo.slice(0, fin).trim() });
+        i = j;
+        continue;
+      }
+    }
+
     // Contenedores :::pestanas, :::tarjetas, :::desplegable
     const c = prof < MAX_PROFUNDIDAD ? RE_CONTENEDOR.exec(l) : null;
     if (c) {
@@ -383,7 +429,7 @@ export interface EntradaIndice {
 
 /** Texto sin formato de un fragmento inline (para el índice y los ids). */
 export function textoPlano(nodos: Inline[]): string {
-  return nodos.map((n) => (n.t === "texto" || n.t === "codigo" ? n.v : textoPlano(n.v))).join("");
+  return nodos.map((n) => (n.t === "texto" || n.t === "codigo" || n.t === "mate" ? n.v : textoPlano(n.v))).join("");
 }
 
 function slug(texto: string): string {

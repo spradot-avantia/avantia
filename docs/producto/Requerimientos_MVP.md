@@ -466,3 +466,9 @@ Cada decisión de alcance asume algo. La columna "Pregunta de la guía" refiere 
 3. **Un solo desarrollador con conocimiento de RLS** es un punto único de falla: el aprendiz debe escribir pruebas de aislamiento desde RQ-04.
 4. **Evidencia de retención no verificada:** no condicionar la arquitectura a que se confirme (los eventos de RQ-26 sirven en cualquier caso).
 5. **Sabionet y Hotmart** compiten en cobro local y español: el diferencial a demostrar es retención medida y white-label real, no funciones.
+
+---
+
+## Cambios de alcance
+
+- **2026-11-08 — Tareas con entrega y revisión, clases en vivo y fórmulas LaTeX.** Motivo: Samuel dicta una clase en vivo de Inferencia Estadística (material en LaTeX, Google Meet) y necesita organizar archivos, la clase, un quiz automático y la revisión de ejercicios resueltos con puntaje y comentarios. Amplía lo vigente («lecciones solo video + texto», quiz como única evaluación): se suman tareas con entrega de archivo y revisión manual (ADR 038), clases en vivo con enlace de Meet pegado a mano (ADR 039, Fase 1) y fórmulas `$...$` en el texto (B-38). Agendar Meet desde la plataforma con Google queda en Propuesta (ADR 039, Fase 2). Sin validar con otros creadores: es un caso de uso de Samuel.

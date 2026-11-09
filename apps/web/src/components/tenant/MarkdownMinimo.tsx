@@ -1,11 +1,25 @@
 import type { ReactNode } from "react";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 import "./ficha-curso.css";
 import { indiceDeTitulos, parsearMarkdown, type Alineacion, type Bloque, type Inline } from "../../lib/creador/markdown";
 import { PestanasTexto } from "./PestanasTexto";
 
+/**
+ * Fórmula LaTeX con KaTeX. El HTML lo genera KaTeX (no el creador): `trust: false` bloquea
+ * \href, \url, \includegraphics y similares, y un error de sintaxis se muestra como texto rojo
+ * en vez de romper la lección.
+ */
+function Mate({ v, bloque }: { v: string; bloque?: boolean }) {
+  const html = katex.renderToString(v, { displayMode: !!bloque, throwOnError: false, trust: false, strict: "ignore", maxExpand: 1000, maxSize: 20 });
+  const Tag = bloque ? "div" : "span";
+  return <Tag className={bloque ? "fc-mate" : "fc-mate-linea"} dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
 function inline(nodos: Inline[]): ReactNode[] {
   return nodos.map((n, i) => {
     if (n.t === "texto") return n.v;
+    if (n.t === "mate") return <Mate key={i} v={n.v} />;
     if (n.t === "codigo") return <code key={i}>{n.v}</code>;
     if (n.t === "negrita") return <strong key={i}>{inline(n.v)}</strong>;
     if (n.t === "cursiva") return <em key={i}>{inline(n.v)}</em>;
@@ -79,6 +93,8 @@ function bloque(b: Bloque, i: number, idTitulo?: string): ReactNode {
       );
     case "separador":
       return <hr key={i} />;
+    case "mate":
+      return <Mate key={i} v={b.v} bloque />;
     case "tabla":
       return (
         <div key={i} className="fc-tabla" role="region" aria-label="Tabla" tabIndex={0}>

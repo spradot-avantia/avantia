@@ -173,3 +173,31 @@ describe("markdown ampliado (ADR 035)", () => {
     expect(indiceDeTitulos(b).map((e) => e.texto)).toEqual(["Uno"]);
   });
 });
+
+describe("fórmulas LaTeX", () => {
+  it("fórmula en línea $...$", () => {
+    expect(parsearInline("sea $\hat{\theta}$ el estimador")).toEqual([
+      { t: "texto", v: "sea " },
+      { t: "mate", v: "\hat{\theta}" },
+      { t: "texto", v: " el estimador" },
+    ]);
+  });
+  it("no confunde precios con fórmulas", () => {
+    expect(parsearInline("cuesta $5 y luego $10").every((n) => n.t === "texto")).toBe(true);
+    expect(parsearInline("pagó $ 5 $ ayer").every((n) => n.t === "texto")).toBe(true);
+  });
+  it("\$ es un signo peso literal", () => {
+    expect(parsearInline("\$5 y \$6")).toEqual([{ t: "texto", v: "$5 y $6" }]);
+  });
+  it("fórmula en bloque $$ en una línea y en varias", () => {
+    const b = parsearMarkdown("Antes\n\n$$\bar{X}=\frac{1}{n}\sum X_i$$\n\n$$\n\sigma^2\n= E[X^2]\n$$\n\nDespués");
+    expect(b.map((x) => x.t)).toEqual(["parrafo", "mate", "mate", "parrafo"]);
+    expect(b[2]).toMatchObject({ v: "\sigma^2\n= E[X^2]" });
+  });
+  it("un $$ sin cierre queda como párrafo", () => {
+    expect(parsearMarkdown("$$ sin cierre")[0].t).toBe("parrafo");
+  });
+  it("la fórmula cuenta como texto en el índice", () => {
+    expect(textoPlano(parsearInline("Media $\mu$"))).toBe("Media \mu");
+  });
+});

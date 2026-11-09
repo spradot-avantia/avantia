@@ -503,3 +503,8 @@
     gap: var(--av-space-6);
   }
 }
+
+/* Fórmulas LaTeX (KaTeX). Las de bloque se desplazan en horizontal si no caben (móvil). */
+.fc-md .fc-mate { margin: 1rem 0; overflow-x: auto; overflow-y: hidden; padding: 0.25rem 0; }
+.fc-md .fc-mate .katex-display { margin: 0; }
+.fc-md .fc-mate-linea { white-space: nowrap; }

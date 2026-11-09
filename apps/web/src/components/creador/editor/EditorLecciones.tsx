@@ -37,6 +37,7 @@ import { Field, Input, Textarea } from "../Field";
 import { Acciones } from "./AccionesFila";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { EditorMateriales } from "./EditorMateriales";
+import { EditorTarea } from "../tareas/EditorTarea";
 import type { EditorCtx } from "./contexto";
 import { IconoFlecha, IconoTipoLeccion } from "../../ui/Iconos";
 import "./materiales.css";
@@ -572,6 +573,7 @@ export function EditorLecciones({ ctx, modulo, abiertaInicial }: { ctx: EditorCt
                     </h3>
                     <EditorMateriales ctx={ctx} modulo={modulo} leccionId={l.id} nombreGrupo="esta lección" />
                   </section>
+                  <EditorTarea leccionId={l.id} tituloLeccion={l.titulo} />
                   {(() => {
                     const pos = recorrido.findIndex((x) => x.l.id === l.id);
                     const ant = recorrido[pos - 1];
