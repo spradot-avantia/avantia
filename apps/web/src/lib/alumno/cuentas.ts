@@ -62,7 +62,9 @@ export async function emitirToken(
     .eq("alumno_id", alumnoId)
     .eq("tipo", tipo)
     .is("usado_at", null);
-  const { token, hash } = nuevoToken();
+  // 16 bytes (128 bits, 22 caracteres): suficiente para un enlace de un solo uso
+  // y mantiene corta la URL del correo.
+  const { token, hash } = nuevoToken(16);
   const { error } = await supabaseAdmin.from("alumno_tokens").insert({
     tenant_id: tenantId,
     alumno_id: alumnoId,

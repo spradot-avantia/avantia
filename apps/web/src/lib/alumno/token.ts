@@ -1,8 +1,8 @@
 import { createHash, randomBytes } from "node:crypto";
 
 /** Token opaco para cookies y enlaces de correo. En base solo se guarda el hash. */
-export function nuevoToken(): { token: string; hash: string } {
-  const token = randomBytes(32).toString("base64url");
+export function nuevoToken(bytes = 32): { token: string; hash: string } {
+  const token = randomBytes(bytes).toString("base64url");
   return { token, hash: hashToken(token) };
 }
 
