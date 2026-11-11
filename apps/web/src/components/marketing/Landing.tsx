@@ -106,7 +106,7 @@ export default function Landing() {
             <div className="lp-head">
               <span className="av-overline">Míralo funcionar</span>
               <h2 className="av-h2">Así se ve tu academia</h2>
-              <p className="av-lede">Pruébalo: escribe el nombre de tu academia y de tu curso, elige un color y tu dominio. Después mira en "Alumno" cómo lo verían tus estudiantes.</p>
+              <p className="av-lede">Pruébalo: escribe el nombre de tu academia y de tu curso, elige un color y tu dominio. Después mira en «Alumno» cómo lo verían tus estudiantes.</p>
             </div>
             <DemoTabs />
           </div>
