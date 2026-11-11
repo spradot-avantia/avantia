@@ -62,3 +62,18 @@ export const CONTACTO = "contacto@goavantia.com";
 export function agendaHref(): string {
   return process.env.NEXT_PUBLIC_AGENDA_URL?.trim() || `mailto:${CONTACTO}?subject=${encodeURIComponent("Agendar reunión de 20 minutos")}`;
 }
+
+// Cupos del programa fundador. Deben ser los números reales: se muestran en el hero,
+// en la sección fundador y en la barra móvil (no inventar escasez; Ley 19.496 art. 28).
+export const CUPOS_FUNDADOR_TOTAL: number = 5; // cupos del primer grupo
+export const CUPOS_FUNDADOR: number = 4; // cupos que quedan disponibles
+
+/** "4 cupos de 5", "1 cupo de 5" o "Cupos completos". */
+export function textoCupos(): string {
+  if (CUPOS_FUNDADOR <= 0) return "Cupos completos";
+  return `${CUPOS_FUNDADOR} ${CUPOS_FUNDADOR === 1 ? "cupo" : "cupos"} de ${CUPOS_FUNDADOR_TOTAL}`;
+}
+
+// Mínimo de alumnos para postular al programa fundador. Lo decide el equipo:
+// mientras sea null, el perfil dice solo "tienes alumnos" (no inventar el número).
+export const MIN_ALUMNOS_FUNDADOR: number | null = null;

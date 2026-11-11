@@ -8,8 +8,12 @@ import type { ReactNode } from "react";
 import { Icon, type IconName } from "./icons";
 import { BrandStage } from "./BrandStage";
 import { DemoTabs } from "./DemoTabs";
+import { AntesDespues } from "./AntesDespues";
+import { LoQueViene } from "./LoQueViene";
+import { AvisoCookies, PreferenciasCookies } from "./AvisoCookies";
+import { LogoInicio } from "./LogoInicio";
 import { ApplyButton, PostularCta, StickyBar, loginHref } from "./Ctas";
-import { CONTACTO, FAQS, agendaHref } from "./content";
+import { CONTACTO, CUPOS_FUNDADOR_TOTAL, FAQS, MIN_ALUMNOS_FUNDADOR, agendaHref, textoCupos } from "./content";
 import "./landing.css";
 
 function Logo({ mark, word }: { mark: number; word: number }) {
@@ -22,10 +26,15 @@ function Logo({ mark, word }: { mark: number; word: number }) {
 }
 
 function Trust({ size }: { size: number }) {
+  const items = [
+    { t: "Programa gratis" },
+    { t: "Sin tarjeta" },
+    { t: textoCupos(), destacado: true },
+  ];
   return (
     <ul className="lp-trust" aria-label="Condiciones">
-      {["Programa gratis", "Sin tarjeta", "5 cupos"].map((t) => (
-        <li key={t}><Icon name="check" size={size} />{t}</li>
+      {items.map(({ t, destacado }) => (
+        <li key={t} className={destacado ? "lp-trust__dest" : undefined}><Icon name="check" size={size} />{t}</li>
       ))}
     </ul>
   );
@@ -40,13 +49,6 @@ function BulletList({ items, icon, color }: { items: ReactNode[]; icon: IconName
     </ul>
   );
 }
-
-const SCATTER: { icon: IconName; style: React.CSSProperties }[] = [
-  { icon: "folder", style: { left: "2%", top: 4, transform: "rotate(-8deg)" } },
-  { icon: "chat", style: { left: "26%", top: 50, transform: "rotate(6deg)" } },
-  { icon: "bank", style: { left: "50%", top: 0, transform: "rotate(-4deg)" } },
-  { icon: "table", style: { left: "72%", top: 44, transform: "rotate(9deg)" } },
-];
 
 /** Enlace a la página de reservas de Google Calendar (abre en otra pestaña). */
 function AgendaLink({ children }: { children: ReactNode }) {
@@ -64,7 +66,7 @@ export default function Landing() {
     <div className="av-scope lp">
       <header className="lp-top">
         <div className="lp-wrap lp-top__in">
-          <Link className="lp-logo" href="#top" aria-label="avantia, inicio"><Logo mark={36} word={18} /></Link>
+          <LogoInicio><Logo mark={36} word={18} /></LogoInicio>
           <div className="lp-top__act">
             <a className="av-btn av-btn--secondary av-btn--sm" href={loginHref()}>Ingresar</a>
             <ApplyButton size="sm">Postular</ApplyButton>
@@ -78,7 +80,7 @@ export default function Landing() {
           <div className="lp-wrap lp-hero__grid">
             <div className="lp-hero__copy">
               <span className="av-overline">Para expertos que ya enseñan online</span>
-              <h1 id="hero-title">Tu academia online, <span style={{ color: "var(--av-blue-600)" }}>con tu marca</span></h1>
+              <h1 id="hero-title"><span>Tu academia online,</span> <span className="lp-hero__marca">con tu marca</span></h1>
               <p className="lp-sub">Sube tus cursos, recibe los pagos de tus alumnos y entrégales una experiencia con tu marca, a tu manera.</p>
               <PostularCta />
               <Trust size={20} />
@@ -94,37 +96,7 @@ export default function Landing() {
             <div className="lp-head">
               <h2 className="av-h2">Deja de armar tu academia con piezas sueltas</h2>
             </div>
-            <div className="lp-compare">
-              <div className="lp-cmp lp-cmp--before">
-                <span className="av-overline" style={{ color: "var(--av-muted)" }}>Hoy</span>
-                <div className="lp-scatter" aria-hidden="true">
-                  {SCATTER.map((s) => <span key={s.icon} style={s.style}><Icon name={s.icon} size={30} /></span>)}
-                </div>
-                <BulletList
-                  icon="x"
-                  color="var(--av-subtle)"
-                  items={["Materiales repartidos en carpetas compartidas", "Cobros por transferencia y seguimiento a mano", "Una experiencia con el logo de otras plataformas"]}
-                />
-              </div>
-              <div className="lp-arrow" aria-hidden="true"><Icon name="arrow" size={26} /></div>
-              <div className="lp-cmp lp-cmp--after">
-                <span className="av-overline">Con Avantia</span>
-                <div className="lp-unified" aria-hidden="true">
-                  <div className="lp-u-head">
-                    <span className="lp-u-star"><Icon name="star" /></span>
-                    <div><b>Tu academia</b><small>www.tudominio.cl</small></div>
-                  </div>
-                  <div className="lp-ico">
-                    {(["folder", "card", "users", "bot", "video"] as IconName[]).map((n) => <span key={n}><Icon name={n} /></span>)}
-                  </div>
-                </div>
-                <BulletList
-                  icon="check"
-                  color="var(--av-blue-600)"
-                  items={["Tus contenidos organizados en tu propia academia", "Tus alumnos se inscriben y pagan ahí mismo", "Tu logo, tus colores y tu dominio en cada paso"]}
-                />
-              </div>
-            </div>
+            <AntesDespues />
           </div>
         </section>
 
@@ -134,8 +106,16 @@ export default function Landing() {
             <div className="lp-head">
               <span className="av-overline">Míralo funcionar</span>
               <h2 className="av-h2">Así se ve tu academia</h2>
+              <p className="av-lede">Pruébalo: escribe el nombre de tu academia y de tu curso, elige un color y tu dominio. Después mira en "Alumno" cómo lo verían tus estudiantes.</p>
             </div>
             <DemoTabs />
+          </div>
+        </section>
+
+        {/* Lo que viene (en exploración, sin fecha) */}
+        <section className="lp-sec" id="lo-que-viene" style={{ background: "var(--av-surface)" }}>
+          <div className="lp-wrap">
+            <LoQueViene />
           </div>
         </section>
 
@@ -144,8 +124,9 @@ export default function Landing() {
           <div className="lp-wrap">
             <div className="lp-head">
               <span className="av-overline">Programa fundador</span>
-              <h2 className="av-h2">5 cupos para el primer grupo de fundadores</h2>
-              <p className="av-lede">Buscamos a 5 expertos que ya enseñan online para construir Avantia junto a ellos.</p>
+              <h2 className="av-h2">Lanza tu academia gratis, con acompañamiento de nuestro equipo</h2>
+              <span className="lp-cupos">{textoCupos()} disponibles en el primer grupo</span>
+              <p className="av-lede">Buscamos a {CUPOS_FUNDADOR_TOTAL} expertos que ya enseñan online para construir Avantia junto a ellos.</p>
             </div>
             <div className="lp-fgrid">
               <div className="lp-fbox">
@@ -164,16 +145,18 @@ export default function Landing() {
                   "Contarnos tu experiencia en dos conversaciones breves.",
                 ]} />
               </div>
-              <div className="lp-fbox">
+              <div className="lp-fbox lp-fbox--dest">
                 <h3>Es para ti si</h3>
-                <BulletList icon="minus" color="var(--av-blue-600)" items={[
-                  "Ya enseñas online y tienes alumnos.",
+                <BulletList icon="check" color="#fff" items={[
+                  MIN_ALUMNOS_FUNDADOR
+                    ? `Ya enseñas online y tienes al menos ${MIN_ALUMNOS_FUNDADOR} alumnos.`
+                    : "Ya enseñas online y tienes alumnos.",
                   "Tienes una marca personal o quieres construirla.",
                 ]} />
               </div>
             </div>
             <div className="lp-ffoot">
-              <p>Si el grupo ya está completo, quedas en la lista de espera para el siguiente. Inicio estimado: noviembre 2026.</p>
+              <p>Si el grupo ya está completo, quedas en la lista de espera para el siguiente.</p>
               <div className="lp-fcta"><ApplyButton>Postula al programa fundador</ApplyButton></div>
             </div>
           </div>
@@ -182,11 +165,10 @@ export default function Landing() {
               <defs>
                 <linearGradient id="ondaA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#1D4ED8" /><stop offset=".7" stopColor="#2563EB" /><stop offset="1" stopColor="#8B5CF6" /></linearGradient>
                 <linearGradient id="ondaB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#2563EB" /><stop offset=".55" stopColor="#4C7DF0" /><stop offset=".85" stopColor="#A9C2F9" /><stop offset="1" stopColor="#CDB9FC" /></linearGradient>
-                <linearGradient id="ondaC" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#E4EDFD" /><stop offset=".5" stopColor="#FFFFFF" /><stop offset="1" stopColor="#E4EDFD" /></linearGradient>
               </defs>
               <path d="M0 78 C 220 18, 470 8, 720 48 S 1190 104, 1440 34 L 1440 150 L 0 150 Z" fill="url(#ondaA)" opacity=".34" />
               <path d="M0 104 C 260 54, 540 58, 800 92 S 1240 122, 1440 70 L 1440 150 L 0 150 Z" fill="url(#ondaB)" opacity=".48" />
-              <path d="M0 128 C 280 100, 560 98, 820 118 S 1260 140, 1440 108 L 1440 150 L 0 150 Z" fill="url(#ondaC)" opacity=".85" />
+              <path d="M0 128 C 280 100, 560 98, 820 118 S 1260 140, 1440 108 L 1440 150 L 0 150 Z" style={{ fill: "var(--av-surface)" }} />
             </svg>
           </div>
         </section>
@@ -232,11 +214,13 @@ export default function Landing() {
             <Link href="/privacidad">Política de privacidad</Link>
             <AgendaLink>Agenda 20 minutos</AgendaLink>
             <span><a href={`mailto:${CONTACTO}`}>{CONTACTO}</a></span>
+            <PreferenciasCookies />
           </nav>
         </div>
       </footer>
 
       <StickyBar />
+      <AvisoCookies />
     </div>
   );
 }
