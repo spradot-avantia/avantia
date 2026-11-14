@@ -211,7 +211,7 @@ export function EditorPagina({ paginaInicial, template, academia, cursos, direcc
             ← Mi academia
           </Link>
           <div className="pg-ed-barra__titulo">
-            <b id="pg-ed-h">Página de tu academia · template {infoTemplate(template).nombre}</b>
+            <h1 id="pg-ed-h" className="pg-ed-barra__h1">Página de tu academia · template {infoTemplate(template).nombre}</h1>
             <span className="pg-fila pg-fila--sm">
               <Badge tono={estado === "publicada" ? "ok" : "warning"}>
                 {estado === "publicada" ? "Publicada" : estado === "cambios_sin_publicar" ? "Cambios sin publicar" : "Borrador"}

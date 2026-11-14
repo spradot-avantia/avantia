@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DescripcionModulo, ObjetivosModulo } from "../../../../../../../../components/tenant/PresentacionModulo";
+import { ProximaClase } from "../../../../../../../../components/alumno/ClasesEnVivo";
+import { clasesDeCurso } from "../../../../../../../../lib/alumno/tareas";
 import { ShellCurso } from "../../../../../../../../components/alumno/ShellCurso";
 import { SyllabusCurso } from "../../../../../../../../components/alumno/SyllabusCurso";
 import { Barra } from "../../../../../../../../components/alumno/Piezas";
@@ -45,6 +47,7 @@ export default async function ModuloAlumnoPage({ params }: { params: { cursoId: 
   const r = resumirModulo(modulo, curso, curso.diaLiberacion, completadas, hoy);
   const quizzes = await estadoQuizzes(tenant.id, alumno.id, curso.id);
   const quiz = quizzes.get(modulo.id);
+  const clases = await clasesDeCurso(tenant.id, curso.id);
   const proximaBloqueada = r.filas.find((f) => f.estado === "bloqueada");
   const nombre = nombreModulo(modulo.titulo);
 
@@ -67,6 +70,8 @@ export default async function ModuloAlumnoPage({ params }: { params: { cursoId: 
         <p className="al-muted">{resumen}</p>
         <DescripcionModulo texto={modulo.descripcion} className="al-mp__desc" />
       </header>
+
+      <ProximaClase cursoId={curso.id} clases={clases} />
 
       <ObjetivosModulo modulo={modulo} variante="alumno" />
 

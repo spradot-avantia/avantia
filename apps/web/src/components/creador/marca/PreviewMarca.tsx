@@ -1,4 +1,4 @@
-import { textoSobre } from "../../../lib/creador/color";
+import { colorTexto, textoSobre } from "../../../lib/creador/color";
 import { clasesIdentidad, type Forma, type Tipografia } from "../../../lib/tenant/identidad";
 import type { LogoModo } from "../../../lib/creador/types";
 import { TenantMark } from "../TenantMark";
@@ -23,7 +23,7 @@ interface Props {
 export function PreviewMarca({ nombre, frase, logoUrl, logoModo, color, tipografia, forma, idTitulo = "mk-prev-h", titulo = "Así se verá" }: Props) {
   const nom = nombre.trim() || "Tu academia";
   const modo = logoUrl ? logoModo : "logo_y_nombre";
-  const estilo = { ["--cr-brand" as string]: color, ["--cr-on-brand" as string]: textoSobre(color) };
+  const estilo = { ["--cr-brand" as string]: color, ["--cr-on-brand" as string]: textoSobre(color), ["--cr-brand-text" as string]: colorTexto(color) };
   return (
     <section className={`mk-prev ${clasesIdentidad(tipografia, forma)}`} aria-labelledby={idTitulo} style={estilo}>
       <h3 className="mk-prev__t" id={idTitulo}>

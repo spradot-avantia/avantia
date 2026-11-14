@@ -37,3 +37,27 @@ export function textoSobre(fondo: string): "#ffffff" | "#0a1029" {
 export function cumpleAA(fondo: string): boolean {
   return contraste(fondo, textoSobre(fondo)) >= 4.5;
 }
+
+function aHex(r: number, g: number, b: number): string {
+  return "#" + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Variante del color de la academia para usarla COMO TEXTO (enlaces, pestaña activa, íconos)
+ * sobre los fondos claros del sitio. Conserva el tono: mezcla el color con la tinta oscura
+ * solo lo necesario para llegar a `minimo`:1 sobre `fondo` (por defecto el fondo más oscuro del sitio).
+ * El color original se sigue usando para rellenos (botones, barras) con su texto automático.
+ */
+export function colorTexto(brand: string, fondo = "#faf9f6", minimo = 4.8): string {
+  const m = /^#([0-9a-f]{6})$/i.exec(brand);
+  if (!m) return brand;
+  if (contraste(brand, fondo) >= minimo) return brand;
+  const n = parseInt(m[1], 16);
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  const [tr, tg, tb] = [0x0a, 0x10, 0x29];
+  for (let t = 0.05; t <= 1.0001; t += 0.05) {
+    const c = aHex(r + (tr - r) * t, g + (tg - g) * t, b + (tb - b) * t);
+    if (contraste(c, fondo) >= minimo) return c;
+  }
+  return "#0a1029";
+}

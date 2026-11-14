@@ -258,6 +258,46 @@ check("lote: creador A ve la ventana acotada (8 de 11)", (await lote("authentica
 check("lote: creador B no ve filas de A", (await lote("authenticated", U.creaB, T.A, [U.alumA])).length === 0);
 check("anon no ejecuta las funciones del creador", (await falla("anon", null, "select * from quiz_resumen_por_alumno($1, $2::uuid[])", [T.A, [U.alumA]])) && (await falla("anon", null, "select * from quiz_respuestas_para_repaso_lote($1, $2::uuid[], 8)", [T.A, [U.alumA]])));
 
+console.log("\nTareas, entregas, revisiones y clases en vivo (0020 y 0021, ADR 038 y 039):");
+const TA = { A: "50000000-0000-0000-0000-00000000000a", B: "50000000-0000-0000-0000-00000000000b" };
+const EN = { A: "60000000-0000-0000-0000-00000000000a", B: "60000000-0000-0000-0000-00000000000b" };
+for (const k of ["A", "B"]) {
+  await client.query("insert into tareas (id, tenant_id, curso_id, leccion_id, titulo, puntaje_maximo) values ($1,$2,$3,$4,'Tarea',30)", [TA[k], T[k], C[k], L[k]]);
+  await client.query("insert into entregas (id, tenant_id, tarea_id, alumno_id, storage_path, archivo_nombre, mime, bytes) values ($1,$2,$3,$4,$5,'x.pdf','application/pdf',10)", [EN[k], T[k], TA[k], U[`alum${k}`], `${T[k]}/${TA[k]}/${U[`alum${k}`]}/x.pdf`]);
+  await client.query("insert into revisiones (tenant_id, entrega_id, puntaje, publicada_at) values ($1,$2,25, now())", [T[k], EN[k]]);
+  await client.query("insert into clases_en_vivo (tenant_id, curso_id, titulo, inicia_at) values ($1,$2,'Clase', now())", [T[k], C[k]]);
+}
+for (const t of ["tareas", "entregas", "revisiones", "clases_en_vivo"]) {
+  const filas = await como("authenticated", U.creaA, async (c) => (await c.query(`select tenant_id from ${t}`)).rows);
+  check(`${t}: creador A ve solo lo de A`, filas.length === 1 && filas[0].tenant_id === T.A, `(vio ${filas.length})`);
+  check(`${t}: anon no lee`, await falla("anon", null, `select 1 from ${t}`));
+  check(`${t}: un JWT ajeno (alumA) no lee`, (await como("authenticated", U.alumA, (c) => cuenta(c, `select 1 from ${t}`))) === 0);
+}
+check("insert tarea en B falla", await falla("authenticated", U.creaA, "insert into tareas (tenant_id, curso_id, leccion_id, titulo, puntaje_maximo) values ($1,$2,$3,'x',10)", [T.B, C.B, L.B]));
+check("update tarea de B afecta 0 filas", (await filasAfectadas("authenticated", U.creaA, "update tareas set titulo='hack' where id=$1", [TA.B])) === 0);
+check("delete tarea de B afecta 0 filas", (await filasAfectadas("authenticated", U.creaA, "delete from tareas where id=$1", [TA.B])) === 0);
+check("creador A no inserta entregas (las crea el servidor)", await falla("authenticated", U.creaA, "insert into entregas (tenant_id, tarea_id, alumno_id, numero, storage_path, archivo_nombre, mime, bytes) values ($1,$2,$3,2,'p','x','application/pdf',1)", [T.A, TA.A, U.alumA]));
+check("creador A no edita entregas", await falla("authenticated", U.creaA, "update entregas set bytes=1 where id=$1", [EN.A]));
+check("creador A revisa una entrega de su academia", (await filasAfectadas("authenticated", U.creaA, "update revisiones set comentario='bien' where entrega_id=$1", [EN.A])) === 1);
+check("creador A no revisa una entrega de B", (await filasAfectadas("authenticated", U.creaA, "update revisiones set comentario='hack' where entrega_id=$1", [EN.B])) === 0);
+check("insert revision para entrega de B falla", await falla("authenticated", U.creaA, "insert into revisiones (tenant_id, entrega_id, puntaje) values ($1,$2,1)", [T.B, EN.B]));
+check("insert clase en B falla", await falla("authenticated", U.creaA, "insert into clases_en_vivo (tenant_id, curso_id, titulo, inicia_at) values ($1,$2,'x',now())", [T.B, C.B]));
+check("update clase de B afecta 0 filas", (await filasAfectadas("authenticated", U.creaA, "update clases_en_vivo set titulo='hack' where tenant_id=$1", [T.B])) === 0);
+check("creador A agenda una clase en su academia", !(await falla("authenticated", U.creaA, "insert into clases_en_vivo (tenant_id, curso_id, titulo, inicia_at) values ($1,$2,'Otra',now())", [T.A, C.A])));
+check("entrega de B con tarea de A es rechazada (FK compuesta)", await fkFalla("insert into entregas (tenant_id, tarea_id, alumno_id, numero, storage_path, archivo_nombre, mime, bytes) values ($1,$2,$3,2,'p2','x','application/pdf',1)", [T.B, TA.A, U.alumB]));
+check("entrega con alumno de otra academia es rechazada (FK compuesta)", await fkFalla("insert into entregas (tenant_id, tarea_id, alumno_id, numero, storage_path, archivo_nombre, mime, bytes) values ($1,$2,$3,2,'p3','x','application/pdf',1)", [T.A, TA.A, U.alumB]));
+check("revision de B sobre entrega de A es rechazada (FK compuesta)", await fkFalla("insert into revisiones (tenant_id, entrega_id, puntaje) values ($1,$2,1)", [T.B, EN.A]));
+check("tarea de B sobre leccion de A es rechazada (FK compuesta)", await fkFalla("insert into tareas (tenant_id, curso_id, leccion_id, titulo, puntaje_maximo) values ($1,$2,$3,'x',5)", [T.B, C.B, L.A]));
+check("una sola tarea por leccion", await fkFalla("insert into tareas (tenant_id, curso_id, leccion_id, titulo, puntaje_maximo) values ($1,$2,$3,'dup',5)", [T.A, C.A, L.A]));
+check("un mismo archivo no puede ser de dos entregas", await fkFalla("insert into entregas (tenant_id, tarea_id, alumno_id, numero, storage_path, archivo_nombre, mime, bytes) values ($1,$2,$3,2,$4,'x','application/pdf',1)", [T.A, TA.A, U.alumA, `${T.A}/${TA.A}/${U.alumA}/x.pdf`]));
+check("el puntaje no puede superar el maximo de la tarea", await fkFalla("update revisiones set puntaje=31 where entrega_id=$1", [EN.A]));
+check("un puntaje dentro del maximo es aceptado", !(await fkFalla("update revisiones set puntaje=30 where entrega_id=$1", [EN.A])));
+check("enlace de Meet que no es https es rechazado", await fkFalla("insert into clases_en_vivo (tenant_id, curso_id, titulo, inicia_at, enlace_meet) values ($1,$2,'x',now(),'http://meet.google.com/x')", [T.A, C.A]));
+check("borrar la tarea borra sus entregas y revisiones", (await como("authenticated", U.creaA, async (c) => {
+  await c.query("delete from tareas where id=$1", [TA.A]);
+  return cuenta(c, "select 1 from entregas union all select 1 from revisiones");
+})) === 0);
+
 console.log(`\n${pass} ok, ${fallos.length} fallos`);
 await client.end();
 if (fallos.length) { console.log("Fallos:\n - " + fallos.join("\n - ")); process.exit(1); }

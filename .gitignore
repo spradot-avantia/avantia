@@ -19,6 +19,7 @@ coverage/
 .vercel
 .env*
 !.env.example
+!.env.dev.example
 
 # material de trabajo local (no versionar)
 docs/cambios_propuestos/
@@ -34,3 +35,9 @@ docs/2026-11-03 Creador y Alumno/
 
 # configuración personal de Claude Code
 .claude/settings.local.json
+
+# herramientas locales de Impeccable (agentes, skills y hooks instalados; no se suben)
+.claude/
+.github/agents/
+.github/hooks/
+.github/skills/

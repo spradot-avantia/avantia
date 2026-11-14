@@ -3,6 +3,8 @@ import { resumenCurso, type DatosSitio } from "../../lib/sitio/tipos";
 import { Cta, Ej, MarcaSitio, PieSitio, estiloAcento, textoAccion } from "./partes";
 
 export function TemplateConsultor({ d }: { d: DatosSitio }) {
+  // En la vista previa del panel el título principal es el de la página del creador.
+  const Titulo = d.modo === "vista" ? "h2" : "h1";
   const acento = estiloAcento(d.academia.colorPrimario);
   const [primero, ...resto] = d.testimonios;
   return (
@@ -16,9 +18,9 @@ export function TemplateConsultor({ d }: { d: DatosSitio }) {
       </header>
 
       <section className="st-co-hero">
-        <h1 className="st-co-h1">
+        <Titulo className="st-co-h1">
           <Ej si={d.ejemplo.titulo}>{d.titulo}</Ej>
-        </h1>
+        </Titulo>
         {d.bajada && (
           <p className="st-lede">
             <Ej si={d.ejemplo.bajada}>{d.bajada}</Ej>

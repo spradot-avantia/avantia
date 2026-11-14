@@ -2,7 +2,7 @@ import { nombreModulo, sinTituloRepetido } from "../../lib/alumno/formato";
 import { rotuloMaterial } from "../../lib/alumno/materialesReglas";
 import type { ReactNode } from "react";
 import { leccionLista } from "../../lib/creador/reglasPublicacion";
-import { textoSobre } from "../../lib/creador/color";
+import { colorTexto, textoSobre } from "../../lib/creador/color";
 import type { CursoCompleto, Leccion, TenantCreador } from "../../lib/creador/types";
 import { urlEmbebible } from "../../lib/creador/validacion";
 import { TenantMark } from "../creador/TenantMark";
@@ -97,7 +97,7 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
   const objetivos = curso.objetivos.filter((o) => o.trim());
 
   return (
-    <article className="fc" style={{ ["--fc-brand" as string]: tenant.colorPrimario, ["--fc-on-brand" as string]: textoSobre(tenant.colorPrimario) }}>
+    <article className="fc" style={{ ["--fc-brand" as string]: tenant.colorPrimario, ["--fc-on-brand" as string]: textoSobre(tenant.colorPrimario), ["--fc-brand-text" as string]: colorTexto(tenant.colorPrimario) }}>
       {!sinCabecera && (
         <header className="fc-top">
           <TenantMark nombre={tenant.nombre} logoUrl={tenant.logoUrl} logoModo={tenant.logoModo} color={tenant.colorPrimario} />
@@ -112,7 +112,7 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
             {plural(curso.modulos.length, "módulo", "módulos")} · {plural(totalLecciones, "lección", "lecciones")}
           </span>
         </p>
-        <h2 className="fc-title">{curso.titulo}</h2>
+        {preview ? <h2 className="fc-title">{curso.titulo}</h2> : <h1 className="fc-title">{curso.titulo}</h1>}
         {curso.descripcion && <p className="fc-desc">{curso.descripcion}</p>}
         {curso.publico && <p className="fc-publico">{curso.publico}</p>}
         {ctaPropio ? (

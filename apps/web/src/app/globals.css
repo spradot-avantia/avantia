@@ -84,3 +84,7 @@ input[type="text"]:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 1px;
 }
+
+/* Evita palabras sueltas al final de párrafos y títulos desbalanceados. */
+h1, h2, h3 { text-wrap: balance; }
+p, li, blockquote { text-wrap: pretty; }

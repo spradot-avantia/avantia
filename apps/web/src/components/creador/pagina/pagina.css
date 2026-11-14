@@ -658,4 +658,9 @@
 }
 .pg-mini-marco {
   padding: var(--av-space-4);
+}.pg-ed-barra__h1 {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: var(--av-fw-semibold);
 }

@@ -5,9 +5,9 @@ import { estadoQuiz, type PreguntaQuiz } from "../creador/quiz";
 import { mapPregunta } from "../creador/quizzes";
 import { inscripcionDe } from "./inscripciones";
 import { registrarEvento } from "./eventos";
-import { UMBRAL_DOMINADO, XP_ACIERTO, XP_RESPONDER, type EstadoQuizModulo } from "./quizReglas";
+import { XP_ACIERTO, XP_RESPONDER, estadoDeModulo, type EstadoQuizModulo } from "./quizReglas";
 
-export { UMBRAL_DOMINADO, XP_ACIERTO, XP_RESPONDER, xpDeQuiz, type EstadoQuizModulo } from "./quizReglas";
+export { UMBRAL_DOMINADO, XP_ACIERTO, XP_RESPONDER, estadoDeModulo, xpDeQuiz, type EstadoQuizModulo } from "./quizReglas";
 
 
 export interface PreguntaParaAlumno {
@@ -71,22 +71,13 @@ export async function estadoQuizzes(tenantId: string, alumnoId: string, cursoId:
   const [quizzes, resp] = await Promise.all([quizzesCompletos(tenantId, cursoId), respuestasDelCurso(tenantId, alumnoId, cursoId)]);
   const out = new Map<string, EstadoQuizModulo>();
   for (const [moduloId, ps] of Array.from(quizzes)) {
-    const delModulo = resp.filter((r) => r.modulo_id === moduloId);
-    const respondidas = new Set(delModulo.map((r) => r.pregunta_id)).size;
-    const aciertos = delModulo.filter((r) => r.primer_intento && r.acierto).length;
-    out.set(moduloId, {
-      moduloId,
-      total: ps.length,
-      respondidas,
-      aciertosPrimerIntento: aciertos,
-      dominado: respondidas >= ps.length && aciertos / ps.length >= UMBRAL_DOMINADO,
-    });
+    out.set(moduloId, estadoDeModulo(moduloId, ps.length, resp.filter((r) => r.modulo_id === moduloId)));
   }
   return out;
 }
 
 export type ResultadoResponder =
-  | { ok: true; acierto: boolean; correcta: number; explicacion: string; xpGanada: number }
+  | { ok: true; acierto: boolean; correcta: number; explicacion: string; xpGanada: number; dominado: boolean }
   | { ok: false; error: string };
 
 /** Corrige y guarda una respuesta. Valida inscripción activa y que la pregunta sea del módulo/curso. */
@@ -125,11 +116,16 @@ export async function responderPregunta(
   });
   if (error) return { ok: false, error: "No pudimos guardar tu respuesta. Inténtalo de nuevo." };
   await registrarEvento(tenantId, { tipo: "intento_quiz", alumnoId, cursoId, entidadTipo: "quiz", entidadId: moduloId });
+  // Veredicto del servidor con todas las respuestas guardadas: el mensaje final del quiz y la
+  // insignia de /progreso nunca se contradicen (antes la pantalla contaba solo la pasada actual).
+  const resp = await respuestasDelCurso(tenantId, alumnoId, cursoId);
+  const { dominado } = estadoDeModulo(moduloId, quizzes.get(moduloId)?.length ?? 0, resp.filter((r) => r.modulo_id === moduloId));
   return {
     ok: true,
     acierto,
     correcta: p.correcta,
     explicacion: p.explicacion,
     xpGanada: primera ? XP_RESPONDER + (acierto ? XP_ACIERTO : 0) : 0,
+    dominado,
   };
 }

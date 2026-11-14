@@ -14,6 +14,8 @@ const ITEMS: ItemNav[] = [
   { href: "/inicio", label: "Inicio", exacto: true, icono: "inicio" },
   { href: "/cursos", label: "Cursos", icono: "cursos" },
   { href: "/estudiantes", label: "Estudiantes", icono: "estudiantes" },
+  { href: "/clases", label: "Clases en vivo", icono: "clases" },
+  { href: "/revisiones", label: "Revisiones", icono: "revisiones" },
   { href: "/mi-academia", label: "Mi academia", icono: "academia" },
 ];
 

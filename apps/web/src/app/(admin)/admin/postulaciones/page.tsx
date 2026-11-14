@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { BotonConfirmar } from "../../../../components/admin/BotonConfirmar";
 import { Badge } from "../../../../components/creador";
 import { supabaseAdmin } from "../../../../lib/supabase/admin";
 import { cambiarEstadoPostulacionAction } from "../../../../lib/postulacion/actions";
+import { avisoPostulacion } from "../../../../lib/postulacion/avisos";
 import { RANGOS_ALUMNOS } from "../../../../lib/postulacion/validacion";
 
 export const dynamic = "force-dynamic";
@@ -31,8 +33,9 @@ function accionesPara(estado: Estado) {
 // Postulaciones al programa fundador (ADR 011/014). Tabla de plataforma sin
 // tenant: el layout de /admin ya restringe a staff, por eso se lee con service role.
 // El enlace del postulante se muestra como texto porque viene sin validar.
-export default async function AdminPostulacionesPage({ searchParams }: { searchParams: { estado?: string } }) {
+export default async function AdminPostulacionesPage({ searchParams }: { searchParams: { estado?: string; aviso?: string } }) {
   const filtro = ESTADOS.find((e) => e.value === searchParams.estado)?.value;
+  const aviso = avisoPostulacion(searchParams.aviso);
 
   let q = supabaseAdmin
     .from("postulaciones")
@@ -54,6 +57,12 @@ export default async function AdminPostulacionesPage({ searchParams }: { searchP
       <p className="ad-lede">
         Al aceptar, el postulante recibe un correo para crear su cuenta. Solo las personas aceptadas pueden registrarse e ingresar.
       </p>
+
+      {aviso && (
+        <p className="ad-msg" role={aviso.tono === "alerta" ? "alert" : "status"}>
+          {aviso.texto}
+        </p>
+      )}
 
       <nav className="ad-filters" aria-label="Filtrar por estado">
         <Link href="/admin/postulaciones" className="ad-chip" aria-current={!filtro}>
@@ -95,12 +104,26 @@ export default async function AdminPostulacionesPage({ searchParams }: { searchP
                     <form key={a.estado} action={cambiarEstadoPostulacionAction}>
                       <input type="hidden" name="id" value={p.id} />
                       <input type="hidden" name="estado" value={a.estado} />
-                      <button
-                        type="submit"
-                        className={`av-btn cr-btn ${"primaria" in a ? "av-btn--primary" : "peligro" in a ? "cr-btn--danger" : "av-btn--secondary"}`}
-                      >
-                        {a.label}
-                      </button>
+                      <input type="hidden" name="filtro" value={filtro ?? ""} />
+                      {"peligro" in a ? (
+                        <BotonConfirmar
+                          className="av-btn cr-btn cr-btn--danger"
+                          mensaje={
+                            p.estado === "aceptada"
+                              ? `¿Revocar el acceso de ${p.nombre}? Dejará de poder ingresar.`
+                              : `¿Rechazar la postulación de ${p.nombre}?`
+                          }
+                        >
+                          {a.label}
+                        </BotonConfirmar>
+                      ) : (
+                        <button
+                          type="submit"
+                          className={`av-btn cr-btn ${"primaria" in a ? "av-btn--primary" : "av-btn--secondary"}`}
+                        >
+                          {a.label}
+                        </button>
+                      )}
                     </form>
                   ))}
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { responderQuizAction } from "../../lib/alumno/actions";
 import type { PreguntaParaAlumno } from "../../lib/alumno/quiz";
 import { IconoCheck, IconoEquis, IconoFlecha, IconoMedalla } from "../ui/Iconos";
@@ -19,7 +19,8 @@ interface Props {
   preguntas: PreguntaPlayer[];
   /** Ruta a la que vuelve al terminar (siguiente lección o cierre). */
   volverA: string;
-  umbral: number;
+  /** Ya no se usa: el veredicto de «dominado» lo da el servidor (quizReglas.estadoDeModulo). */
+  umbral?: number;
 }
 
 interface Corregida {
@@ -31,7 +32,7 @@ interface Corregida {
 }
 
 /** Quiz de repaso: una pregunta por vez; se corrige en el servidor al responder. */
-export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", preguntas, volverA, umbral }: Props) {
+export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", preguntas, volverA }: Props) {
   const repaso = modo === "repaso";
   const rotulo = repaso ? "Repaso de hoy" : `Quiz de repaso · ${moduloTitulo}`;
   const [i, setI] = useState(0);
@@ -39,10 +40,17 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
   const [res, setRes] = useState<Corregida | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [aciertos, setAciertos] = useState(0);
+  // Veredicto del servidor (todas las respuestas guardadas, no solo esta pasada): coincide con /progreso.
+  const [dominadoServidor, setDominadoServidor] = useState(false);
   const [xpTotal, setXpTotal] = useState(0);
   const [pendiente, start] = useTransition();
   const [intento, setIntento] = useState(0);
   const titulo = useRef<HTMLHeadingElement>(null);
+  const feedback = useRef<HTMLDivElement>(null);
+  // Al responder, el fieldset se deshabilita y el foco se perdería: pasa al resultado para que se lea.
+  useEffect(() => {
+    if (res) feedback.current?.focus();
+  }, [res]);
 
   const p = preguntas[i];
   const fin = i >= preguntas.length;
@@ -55,6 +63,7 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
       if (!r.ok) return setError(r.error);
       setRes({ acierto: r.acierto, correcta: r.correcta, explicacion: r.explicacion, elegida, xp: r.xpGanada });
       if (r.acierto) setAciertos((a) => a + 1);
+      setDominadoServidor(r.dominado);
       setXpTotal((x) => x + r.xpGanada);
     });
   }
@@ -71,13 +80,14 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
     setElegida(null);
     setRes(null);
     setAciertos(0);
+    setDominadoServidor(false);
     setXpTotal(0);
     setIntento((n) => n + 1);
   }
 
   if (fin) {
     const pct = Math.round((aciertos / preguntas.length) * 100);
-    const dominado = !repaso && intento === 0 && aciertos / preguntas.length >= umbral;
+    const dominado = !repaso && dominadoServidor;
     return (
       <div className="al-quiz" role="status">
         <p className="al-muted">{rotulo}</p>
@@ -126,6 +136,12 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
       <h1 ref={titulo} tabIndex={-1} className="al-quiz__q">
         {p.texto}
       </h1>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!res && elegida !== null && !pendiente) responder();
+        }}
+      >
       <fieldset className="al-quiz__ops" disabled={!!res || pendiente}>
         <legend className="av-sr-only">Elige una respuesta</legend>
         {p.opciones.map((o, k) => {
@@ -147,7 +163,7 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
         </p>
       )}
       {res ? (
-        <div role="status" className={`al-quiz__fb ${res.acierto ? "is-ok" : "is-mal"}`}>
+        <div ref={feedback} tabIndex={-1} role="status" className={`al-quiz__fb ${res.acierto ? "is-ok" : "is-mal"}`}>
           <strong>{res.acierto ? "¡Correcto!" : "Esta vez no."}</strong>
           {res.explicacion && <p>{res.explicacion}</p>}
           {res.xp > 0 && <p className="al-muted">+{res.xp} XP</p>}
@@ -165,11 +181,12 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
             )}
           </button>
         ) : (
-          <button type="button" className="al-btn" onClick={responder} disabled={elegida === null || pendiente}>
+          <button type="submit" className="al-btn" disabled={elegida === null || pendiente}>
             {pendiente ? "Revisando…" : "Responder"}
           </button>
         )}
       </div>
+      </form>
     </div>
   );
 }

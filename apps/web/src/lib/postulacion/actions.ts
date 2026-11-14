@@ -2,10 +2,12 @@
 
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { crearLimitador } from "../auth/limite";
 import { urlPanel } from "../auth/panel";
 import { MSG_GENERICO, MSG_LIMITE, erroresPorCampo } from "../auth/validacion";
 import { enviarCorreo, escaparHtml } from "../email/resend";
+import { esDespliegueDePreview } from "../seo";
 import { esStaff } from "../staff";
 import { supabaseAdmin } from "../supabase/admin";
 import { postulacionSchema, type EstadoPostulacion } from "./validacion";
@@ -20,7 +22,10 @@ const limitePorIp = crearLimitador(5, 10 * 60_000);
 const limitePorCorreo = crearLimitador(3, 60 * 60_000);
 
 function destinatariosAviso(): string[] {
-  return (process.env.POSTULACIONES_NOTIFY_TO ?? "javiera@goavantia.com,contacto@goavantia.com")
+  // En los despliegues de Preview (dev) NO hay direcciones reales por defecto: sin la variable no se
+  // avisa a nadie, para que probar el formulario no escriba al equipo de verdad.
+  const porDefecto = esDespliegueDePreview() ? "" : "javiera@goavantia.com,contacto@goavantia.com";
+  return (process.env.POSTULACIONES_NOTIFY_TO ?? porDefecto)
     .split(",")
     .map((e) => e.trim())
     .filter(Boolean);
@@ -70,8 +75,10 @@ export async function enviarPostulacionAction(_prev: EstadoPostulacion, fd: Form
     return { mensaje: MSG_GENERICO, valores };
   }
 
+  const para = destinatariosAviso();
+  if (para.length === 0) return { ok: true };
   await enviarCorreo({
-    to: destinatariosAviso(),
+    to: para,
     replyTo: email,
     subject: `Nueva postulación: ${nombre}`,
     text: `${nombre} <${email}>\n\n${descripcion}\n\nRevisar: ${urlPanel()}/admin/postulaciones`,
@@ -82,33 +89,49 @@ export async function enviarPostulacionAction(_prev: EstadoPostulacion, fd: Form
 
 const ESTADOS = new Set(["nueva", "contactada", "aceptada", "lista_espera", "descartada"]);
 
-/** Solo el equipo: cambia el estado y, al aceptar (o reenviar), manda la invitación a registrarse. */
+/** Vuelve a la lista con un aviso visible (y conserva el filtro de estado que la persona tenía). */
+function volverAPostulaciones(aviso: string, filtro: string): never {
+  revalidatePath("/admin/postulaciones");
+  const q = new URLSearchParams({ aviso });
+  if (ESTADOS.has(filtro)) q.set("estado", filtro);
+  redirect(`/admin/postulaciones?${q.toString()}`);
+}
+
+/**
+ * Solo el equipo: cambia el estado y, al aceptar (o reenviar), manda la invitación a registrarse.
+ * `invitado_en` solo se marca si el correo realmente salió: así la lista no dice «Invitado» cuando
+ * el envío falló, y el equipo ve el resultado en un aviso.
+ */
 export async function cambiarEstadoPostulacionAction(fd: FormData): Promise<void> {
   if (!(await esStaff())) return;
   const id = fd.get("id")?.toString() ?? "";
   const estado = fd.get("estado")?.toString() ?? "";
+  const filtro = fd.get("filtro")?.toString() ?? "";
   if (!id || !ESTADOS.has(estado)) return;
 
   const { data, error } = await supabaseAdmin
     .from("postulaciones")
-    .update({ estado, ...(estado === "aceptada" ? { invitado_en: new Date().toISOString() } : {}) })
+    .update({ estado })
     .eq("id", id)
     .select("nombre, email")
     .maybeSingle();
   if (error || !data) {
     console.error("[postulacion] cambiar estado", error?.code ?? error?.message ?? "no encontrada");
-    return;
+    volverAPostulaciones("error", filtro);
   }
 
-  if (estado === "aceptada") {
-    const enlace = `${urlPanel()}/signup`;
-    await enviarCorreo({
-      to: [data.email],
-      replyTo: destinatariosAviso()[0],
-      subject: "Quedaste en el programa fundador de Avantia",
-      text: `Hola ${data.nombre},\n\nTu postulación fue aceptada. Crea tu cuenta con este mismo correo (${data.email}), con contraseña o con Google:\n${enlace}\n\nSi tienes dudas, responde este correo.\n\nEquipo Avantia`,
-      html: `<p>Hola ${escaparHtml(data.nombre)},</p><p>Tu postulación fue aceptada. Crea tu cuenta con este mismo correo (<b>${escaparHtml(data.email)}</b>), con contraseña o con Google.</p><p><a href="${enlace}">Crear mi cuenta</a></p><p>Si tienes dudas, responde este correo.</p><p>Equipo Avantia</p>`,
-    });
+  if (estado !== "aceptada") volverAPostulaciones(estado, filtro);
+
+  const enlace = `${urlPanel()}/signup`;
+  const enviado = await enviarCorreo({
+    to: [data.email],
+    replyTo: destinatariosAviso()[0],
+    subject: "Quedaste en el programa fundador de Avantia",
+    text: `Hola ${data.nombre},\n\nTu postulación fue aceptada. Crea tu cuenta con este mismo correo (${data.email}), con contraseña o con Google:\n${enlace}\n\nSi tienes dudas, responde este correo.\n\nEquipo Avantia`,
+    html: `<p>Hola ${escaparHtml(data.nombre)},</p><p>Tu postulación fue aceptada. Crea tu cuenta con este mismo correo (<b>${escaparHtml(data.email)}</b>), con contraseña o con Google.</p><p><a href="${enlace}">Crear mi cuenta</a></p><p>Si tienes dudas, responde este correo.</p><p>Equipo Avantia</p>`,
+  });
+  if (enviado) {
+    await supabaseAdmin.from("postulaciones").update({ invitado_en: new Date().toISOString() }).eq("id", id);
   }
-  revalidatePath("/admin/postulaciones");
+  volverAPostulaciones(enviado ? "aceptada_enviada" : "aceptada_sin_correo", filtro);
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FormAccion } from "../../../../../../components/alumno/FormAccion";
@@ -10,6 +11,19 @@ import { getAlumnoActual } from "../../../../../../lib/alumno/sesion";
 import { limpiarCampana } from "../../../../../../lib/alumno/validacion";
 
 export const dynamic = "force-dynamic";
+
+/** Título y descripción propios de la ficha (SEO y pestaña del navegador): el curso, no solo la academia. */
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const tenant = await getTenantPublico();
+  if (!tenant) return {};
+  const curso = await cargarCurso(tenant.id, { slug: params.slug });
+  if (!curso) return {};
+  const d = (curso.descripcion ?? "").replace(/\s+/g, " ").trim();
+  return {
+    title: `${curso.titulo} · ${tenant.nombre}`,
+    description: d ? (d.length > 160 ? `${d.slice(0, 157).trimEnd()}…` : d) : `Curso online de ${tenant.nombre}.`,
+  };
+}
 
 type Busqueda = { error?: string; origen?: string; utm_source?: string; utm_campaign?: string; utm_medium?: string };
 

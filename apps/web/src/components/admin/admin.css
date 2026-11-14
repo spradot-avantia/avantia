@@ -62,13 +62,14 @@
   cursor: pointer;
   text-decoration: underline;
 }
+/* En móvil la navegación pasa a una segunda línea en vez de desplazarse: así «Equipo» no queda oculto. */
 .ad-nav {
   display: flex;
-  gap: var(--av-space-1);
+  flex-wrap: wrap;
+  gap: 0 var(--av-space-1);
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--av-space-4);
-  overflow-x: auto;
 }
 .ad-nav a {
   display: inline-flex;
@@ -183,6 +184,12 @@
   font-size: var(--av-fs-sm);
   overflow-wrap: anywhere;
 }
+/* El correo es un enlace mailto: área táctil de 44 px sin cambiar la altura visible de la fila. */
+a.ad-row__sub {
+  display: inline-block;
+  padding: 13px 0;
+  margin: -13px 0;
+}
 .ad-row__body {
   overflow-wrap: anywhere;
   white-space: pre-line;
@@ -226,3 +233,11 @@
   background: var(--av-blue-50);
   border: 1px solid var(--av-blue-200);
 }
+
+.ad-form .cr-input { min-height: 44px; }
+.ad-msg a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Barra superior en móvil: los enlaces no se parten y el correo cede el espacio. */
+.ad-user a, .ad-user .ad-link, .ad-user button { white-space: nowrap; }
+.ad-user__mail { min-width: 0; flex: 0 1 auto; max-width: min(200px, 30vw); }
+.ad-lede { padding-bottom: var(--av-space-5); }

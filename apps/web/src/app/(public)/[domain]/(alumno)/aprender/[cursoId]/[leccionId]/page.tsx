@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FormAccion } from "../../../../../../../components/alumno/FormAccion";
 import { ContenidoLeccion } from "../../../../../../../components/tenant/FichaCurso";
+import { ProximaClase } from "../../../../../../../components/alumno/ClasesEnVivo";
+import { TareaLeccion } from "../../../../../../../components/alumno/TareaLeccion";
 import { MaterialesLeccion } from "../../../../../../../components/alumno/MaterialesLeccion";
 import { ToastXp } from "../../../../../../../components/alumno/ToastXp";
 import { nombreModulo, sinTituloRepetido } from "../../../../../../../lib/alumno/formato";
@@ -19,6 +21,7 @@ import { exigirCursoActivo } from "../../../../../../../lib/alumno/guardia";
 import { fechaLiberacion, hoyEnZona, leccionLiberada } from "../../../../../../../lib/alumno/liberacion";
 import { materialesDeCurso } from "../../../../../../../lib/alumno/materiales";
 import { materialesDeLeccion } from "../../../../../../../lib/alumno/materialesReglas";
+import { clasesDeCurso, entregasDelAlumno, tareaDeLeccion } from "../../../../../../../lib/alumno/tareas";
 import { marcarAcceso } from "../../../../../../../lib/alumno/progreso";
 import { porcentaje } from "../../../../../../../lib/alumno/xp";
 
@@ -54,6 +57,11 @@ export default async function LeccionPage({
 
   // Los materiales solo se leen (y se muestran) con la lección liberada y la inscripción ya comprobada.
   const materiales = liberada ? materialesDeLeccion(await materialesDeCurso(tenant.id, curso.id), leccion.moduloId, leccion.id) : null;
+
+  // Tarea de la lección (ADR 038) y próxima clase en vivo (ADR 039): solo con la lección liberada.
+  const tarea = liberada ? await tareaDeLeccion(tenant.id, curso.id, leccion.id) : null;
+  const entregas = tarea ? await entregasDelAlumno(tenant.id, alumno.id, tarea) : [];
+  const clases = await clasesDeCurso(tenant.id, curso.id);
 
   const pct = porcentaje(completadas.size, orden.length);
   const quizzes = await estadoQuizzes(tenant.id, alumno.id, curso.id);
@@ -116,9 +124,12 @@ export default async function LeccionPage({
           </p>
         )}
 
+        <ProximaClase cursoId={curso.id} clases={clases} />
+
         {liberada ? (
           <>
             <ContenidoLeccion l={leccion} />
+            {tarea && <TareaLeccion cursoId={curso.id} tarea={tarea} entregas={entregas} />}
             {materiales && (
               <MaterialesLeccion cursoId={curso.id} deLaLeccion={materiales.deLaLeccion} delModulo={materiales.delModulo} />
             )}

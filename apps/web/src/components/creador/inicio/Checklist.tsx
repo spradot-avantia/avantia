@@ -14,6 +14,8 @@ export interface PasoChecklist {
 
 export function Checklist({ pasos }: { pasos: PasoChecklist[] }) {
   const hechos = pasos.filter((p) => p.hecho).length;
+  // El botón de este paso ya está en la tarjeta «siguiente paso» de arriba: aquí solo se marca.
+  const siguiente = pasos.findIndex((p) => !p.hecho && !p.bloqueado);
   return (
     <section className="ci-card" aria-labelledby="ci-check-t">
       <div className="ci-check__head">
@@ -34,6 +36,8 @@ export function Checklist({ pasos }: { pasos: PasoChecklist[] }) {
             <span className="ci-step__side">
               {p.hecho ? (
                 <Badge tono="ok">Hecho</Badge>
+              ) : i === siguiente ? (
+                <Badge tono="info">Siguiente</Badge>
               ) : p.accion && !p.bloqueado ? (
                 <Link href={p.accion.href} className="ci-step__link">{p.accion.label}</Link>
               ) : null}

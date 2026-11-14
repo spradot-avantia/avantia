@@ -19,6 +19,10 @@
 //   - lib/sitio/paginaPublica.ts       sitio publico de la academia: solo lo publicado, filtra por tenant_id (ADR 021)
 //   - lib/alumno/{sesion,cuentas,inscripciones,catalogo,progreso,eventos}.ts  cuentas y datos del alumno por academia;
 //     la sesion del alumno no es de Supabase Auth, asi que no hay RLS posible: TODA query filtra por el tenant del host (ADR 018)
+//   - lib/alumno/{materiales,perfil,quiz,repaso,tareas}.ts  mismo patron de alumno (ADR 018, 023, 024, 029, 038, 039):
+//     sesion del alumno sin RLS posible; el tenant sale del host y cada query filtra por tenant_id (repaso: RPC con p_tenant)
+//   - app/(public)/[domain]/(alumno)/perfil/page.tsx  Server Component del perfil del alumno; query filtrada por tenant.id y alumno.id
+//   - lib/creador/tareas.ts            SOLO el bucket `entregas` (leer/borrar objetos), tras comprobar con RLS que la fila es de la academia (ADR 038)
 //   - lib/creador/tenantActual.ts      SOLO rama DEMO provisional (RQ-01); se elimina con el login real
 // Prohibido: Server Actions de alta/auth (lib/creador/actionsAlta.ts, lib/auth/**)
 // y cualquier archivo "use client".
@@ -44,6 +48,13 @@ const LISTA_BLANCA = new Set([
   "lib/alumno/catalogo.ts",
   "lib/alumno/progreso.ts",
   "lib/alumno/eventos.ts",
+  "lib/alumno/materiales.ts",
+  "lib/alumno/perfil.ts",
+  "lib/alumno/quiz.ts",
+  "lib/alumno/repaso.ts",
+  "lib/alumno/tareas.ts",
+  "app/(public)/[domain]/(alumno)/perfil/page.tsx",
+  "lib/creador/tareas.ts",
   "lib/creador/tenantActual.ts",
   "lib/supabase/admin.ts",
 ]);

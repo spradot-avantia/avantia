@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { textoCupos } from "./content";
 
 type Size = "lg" | "sm";
 
@@ -39,7 +40,7 @@ export function StickyBar() {
     <div className="lp-sticky">
       <div className="lp-sticky__lbl">
         <b>Programa fundador</b>
-        <span>5 cupos · Programa gratis</span>
+        <span>{textoCupos()} · Programa gratis</span>
       </div>
       <a className="av-btn av-btn--primary av-btn--sm" href={postularHref()}>
         Postular

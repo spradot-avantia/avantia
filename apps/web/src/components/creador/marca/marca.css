@@ -459,7 +459,7 @@
   font-weight: var(--av-fw-semibold);
 }
 .mk-prev__enlace {
-  color: var(--cr-brand);
+  color: var(--cr-brand-text, var(--cr-brand));
   font-size: var(--av-fs-sm);
   font-weight: var(--av-fw-semibold);
   text-decoration: underline;

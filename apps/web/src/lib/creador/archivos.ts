@@ -4,7 +4,7 @@
 // subida; 2) el navegador sube directo a Supabase Storage; 3) `confirmarSubida*` verifica en
 // el bucket el tamaño REAL del objeto, aplica la cuota y recién entonces enlaza el archivo.
 // Todo filtra por tenant.id (sale de la sesión) y la ruta del objeto empieza por el tenant.
-// La cuota de la academia suma los archivos de materiales Y los de lecciones.
+// La cuota de la academia suma los archivos de materiales, los de lecciones y las entregas de alumnos.
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
@@ -40,14 +40,17 @@ const TABLA: Record<Destino, string> = { material: "materiales", leccion: "lecci
 // Se tipa como `string` plano: el `select` de Supabase no puede inferir una unión de dos listas.
 const colsDe = (destino: Destino): string => (destino === "material" ? COLS_MATERIAL : COLS_LECCION);
 
-async function bytesUsados(db: SupabaseClient, tenantId: string, excluir?: Excluir): Promise<number> {
-  const [mats, lecs] = await Promise.all([
+export async function bytesUsados(db: SupabaseClient, tenantId: string, excluir?: Excluir): Promise<number> {
+  const [mats, lecs, ents] = await Promise.all([
     db.from("materiales").select("id, bytes").eq("tenant_id", tenantId).eq("origen", "archivo"),
     db.from("lecciones").select("id, bytes").eq("tenant_id", tenantId).not("storage_path", "is", null),
+    // Las entregas de los alumnos (ADR 038) comparten la misma cuota de la academia.
+    db.from("entregas").select("bytes").eq("tenant_id", tenantId),
   ]);
   const suma = (filas: Array<{ id: string; bytes: number | null }> | null, destino: Destino) =>
     (filas ?? []).filter((r) => !(excluir?.destino === destino && excluir.id === r.id)).reduce((s, r) => s + (r.bytes ?? 0), 0);
-  return suma(mats.data, "material") + suma(lecs.data, "leccion");
+  const deEntregas = (ents.data ?? []).reduce((s, r) => s + ((r as { bytes: number | null }).bytes ?? 0), 0);
+  return suma(mats.data, "material") + suma(lecs.data, "leccion") + deEntregas;
 }
 
 async function usoActual(db: SupabaseClient, tenantId: string): Promise<Uso> {

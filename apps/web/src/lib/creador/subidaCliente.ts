@@ -21,7 +21,7 @@ export type ResultadoSubida<T> =
   | { ok: true; data: T; anuncio: string }
   | { ok: false; error: string };
 
-export async function subirArchivoAlBucket<T>(elegido: File, pasos: PasosSubida<T>): Promise<ResultadoSubida<T>> {
+export async function subirArchivoAlBucket<T>(elegido: File, pasos: PasosSubida<T>, bucket = "materiales"): Promise<ResultadoSubida<T>> {
   pasos.estado("Preparando el archivo…");
   const { archivo, bytesOriginal, comprimido } = await prepararArchivo(elegido);
   const prep = await pasos.preparar({ nombre: archivo.name, bytes: archivo.size });
@@ -29,7 +29,7 @@ export async function subirArchivoAlBucket<T>(elegido: File, pasos: PasosSubida<
 
   pasos.estado(`Subiendo ${formatearBytes(archivo.size)}…`);
   const { error } = await createSupabaseBrowserClient()
-    .storage.from("materiales")
+    .storage.from(bucket)
     .uploadToSignedUrl(prep.data.ruta, prep.data.token, archivo, { contentType: prep.data.mime });
   if (error) return { ok: false, error: "No pudimos subir el archivo. Revisa tu conexión e inténtalo de nuevo." };
 

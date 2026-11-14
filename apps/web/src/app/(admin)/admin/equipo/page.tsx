@@ -1,3 +1,4 @@
+import { BotonConfirmar } from "../../../../components/admin/BotonConfirmar";
 import { Badge } from "../../../../components/creador";
 import { agregarStaffAction, quitarStaffAction } from "../../../../lib/admin/actions";
 import { getUsuarioActual } from "../../../../lib/auth/usuario";
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 const AVISOS: Record<string, string> = {
   agregado: "Listo: esa persona ya es del equipo. Entra con ese correo (cuenta nueva o existente).",
+  ya_era: "Esa persona ya estaba en el equipo; no cambió nada.",
   quitado: "Persona quitada del equipo.",
   correo_invalido: "Escribe un correo válido.",
   no_a_ti: "No puedes quitarte a ti mismo del equipo.",
@@ -68,7 +70,9 @@ export default async function AdminEquipoPage({ searchParams }: { searchParams: 
                   <div className="ad-actions">
                     <form action={quitarStaffAction}>
                       <input type="hidden" name="email" value={s.email} />
-                      <button type="submit" className="av-btn cr-btn cr-btn--danger">Quitar del equipo</button>
+                      <BotonConfirmar className="av-btn cr-btn cr-btn--danger" mensaje={`¿Quitar a ${s.email} del equipo? Perderá el acceso a /admin.`}>
+                        Quitar del equipo
+                      </BotonConfirmar>
                     </form>
                   </div>
                 )}

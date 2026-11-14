@@ -4,6 +4,8 @@
 
 .al {
   --al-brand: var(--av-blue-600);
+  /* Variante del color de la academia apta como TEXTO (AA sobre fondo claro); el layout la calcula. */
+  --al-brand-text: var(--av-blue-600);
   --al-on-brand: #ffffff;
   min-height: 100dvh;
   display: flex;
@@ -15,11 +17,13 @@
   line-height: var(--av-lh-body);
 }
 .al a {
-  color: var(--al-brand);
+  color: var(--al-brand-text);
 }
 .al :focus-visible {
-  outline: 3px solid var(--al-brand);
+  /* Aro doble fijo (tinta + halo blanco): se ve sobre cualquier color de academia. */
+  outline: 3px solid var(--av-ink);
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff;
   border-radius: 4px;
 }
 .al-skip {
@@ -66,6 +70,16 @@
   flex-wrap: wrap;
   gap: 4px;
 }
+/* Visitante sin sesión en móvil: «Ingresar» y «Crear cuenta» van en una sola línea y es el nombre
+   de la academia el que cede espacio (antes los enlaces se apilaban en dos filas). */
+.al-nav:not(.al-nav--cuenta) {
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
+}
+.al-brand:has(+ .al-nav:not(.al-nav--cuenta)) {
+  flex: 1 1 0;
+  min-width: 0;
+}
 .al-nav a,
 .al-nav button {
   display: inline-flex;
@@ -86,7 +100,7 @@
   background: var(--av-bg-sunken);
 }
 .al-nav a[aria-current="page"] {
-  color: var(--al-brand) !important;
+  color: var(--al-brand-text) !important;
   background: var(--av-bg-sunken);
 }
 .al-nav .al-nav__cta {
@@ -222,7 +236,7 @@
   border: 0;
   padding: 0;
   font: inherit;
-  color: var(--al-brand);
+  color: var(--al-brand-text);
   text-decoration: underline;
   cursor: pointer;
   min-height: 44px;
@@ -437,6 +451,12 @@
   font-size: var(--av-fs-sm);
   color: var(--av-muted);
 }
+/* Área táctil de 44 px en las migas sin aumentar la altura visible de la línea. */
+.al-crumbs a {
+  display: inline-block;
+  padding: 13px 2px;
+  margin: -13px -2px;
+}
 .al-leccion {
   display: flex;
   flex-direction: column;
@@ -599,7 +619,7 @@
   text-decoration: none;
 }
 .al-tabs a[aria-current="page"] {
-  color: var(--al-brand) !important;
+  color: var(--al-brand-text) !important;
   box-shadow: inset 0 3px 0 var(--al-brand);
 }
 .al-main {
@@ -776,10 +796,10 @@
   align-items: center;
   gap: 8px;
   font-weight: var(--av-fw-semibold);
-  color: var(--al-brand);
+  color: var(--al-brand-text);
 }
 .al-sello {
-  color: var(--al-brand);
+  color: var(--al-brand-text);
   flex-shrink: 0;
 }
 .al-acciones {
@@ -941,12 +961,15 @@
   align-items: center;
   gap: 2px var(--av-space-3);
   min-height: var(--av-target);
-  padding: 10px var(--av-space-4);
+  padding: 2px var(--av-space-4);
 }
 .al-mat + .al-mat {
   border-top: 1px solid var(--av-line);
 }
 .al-mat__enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--av-target);
   font-weight: var(--av-fw-medium);
   overflow-wrap: anywhere;
 }
@@ -979,7 +1002,7 @@
   border-radius: 12px;
   display: grid;
   place-items: center;
-  color: var(--al-brand);
+  color: var(--al-brand-text);
   background: color-mix(in srgb, var(--al-brand) 12%, var(--av-surface));
 }
 h2.al-titulo-ico .al-ico-burbuja {
@@ -993,7 +1016,7 @@ h2.al-titulo-ico .al-ico-burbuja {
   gap: 4px;
 }
 .al-nivelcard__rayo {
-  color: var(--al-brand);
+  color: var(--al-brand-text);
 }
 .al-insignia__ico svg {
   display: block;
@@ -1034,7 +1057,7 @@ h2.al-titulo-ico .al-ico-burbuja {
 }
 .al-perfil__fila svg {
   flex-shrink: 0;
-  color: var(--al-brand);
+  color: var(--al-brand-text);
 }
 .al-perfil__stats {
   display: grid;
@@ -1054,7 +1077,7 @@ h2.al-titulo-ico .al-ico-burbuja {
   font-size: var(--av-fs-sm);
 }
 .al-stat svg {
-  color: var(--al-brand);
+  color: var(--al-brand-text);
 }
 .al-stat strong {
   font-size: var(--av-fs-lg);
@@ -1073,7 +1096,7 @@ h2.al-titulo-ico .al-ico-burbuja {
 .al-mat__ico {
   display: inline-grid;
   place-items: center;
-  color: var(--al-brand);
+  color: var(--al-brand-text);
 }
 .al-quiz__ico {
   margin-left: auto;
@@ -1085,3 +1108,9 @@ h2.al-titulo-ico .al-ico-burbuja {
 .al-badge svg {
   flex: none;
 }
+
+/* Enlaces dentro de un párrafo: no se distinguen solo por color (WCAG 1.4.1). */
+.al-alert a, .al-muted a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Enlaces del pie: objetivo táctil de 44 px. */
+.al-foot a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; }

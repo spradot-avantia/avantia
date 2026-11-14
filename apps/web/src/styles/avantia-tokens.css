@@ -368,7 +368,7 @@
 }
 
 .av-input::placeholder {
-  color: var(--av-subtle);
+  color: var(--av-muted);
 }
 
 .av-input:focus,

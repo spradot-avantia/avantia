@@ -46,16 +46,19 @@ export function EmptyState({
   descripcion,
   accion,
   ilustracion,
+  titulo1,
 }: {
   titulo: string;
   descripcion?: string;
   accion?: ReactNode;
   ilustracion?: Ilustracion;
+  /** Usar h1 cuando la página no tiene otro título principal. */
+  titulo1?: boolean;
 }) {
   return (
     <div className="cr-empty">
       {ilustracion && <Ilus tipo={ilustracion} />}
-      <h2 className="cr-empty__title">{titulo}</h2>
+      {titulo1 ? <h1 className="cr-empty__title">{titulo}</h1> : <h2 className="cr-empty__title">{titulo}</h2>}
       {descripcion && <p className="cr-empty__desc">{descripcion}</p>}
       {accion}
     </div>

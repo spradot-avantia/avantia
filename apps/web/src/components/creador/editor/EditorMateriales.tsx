@@ -33,6 +33,11 @@ import type { EditorCtx } from "./contexto";
 import { IconoDocumento, IconoEnlace } from "../../ui/Iconos";
 import "./materiales.css";
 
+type UsoAlmacenamiento = { usado: number; limite: number };
+// Canal común del medidor de espacio: cada sección de materiales (lecciones y módulo) se suscribe.
+const oyentesUso = new Set<(u: UsoAlmacenamiento) => void>();
+const publicarUso = (u: UsoAlmacenamiento) => oyentesUso.forEach((f) => f(u));
+
 const TIPOS: ReadonlyArray<{ id: TipoMaterial; label: string }> = [
   { id: "enlace", label: "Enlace" },
   { id: "documento", label: "Documento" },
@@ -64,14 +69,20 @@ export function EditorMateriales({
   useEffect(() => {
     let vivo = true;
     void usoAlmacenamientoAction().then((r) => vivo && r.ok && setUso(r.data));
+    // Hay una sección de materiales por lección y otra por módulo: todas comparten el medidor.
+    oyentesUso.add(setUso);
     return () => {
       vivo = false;
+      oyentesUso.delete(setUso);
     };
   }, []);
 
   const lista = modulo.materiales.filter((m) => m.leccionId === leccionId);
   const sufijo = leccionId ?? "mod";
   const llegoAlTope = modulo.materiales.length >= MATERIALES_MODULO_MAX;
+  // «+ Agregar» crea el material en el servidor al instante: si ya hay uno sin enlace ni archivo,
+  // se pide completarlo antes, para no dejar filas en blanco guardadas en el borrador.
+  const hayIncompleto = lista.some((m) => !m.url?.trim() && !m.archivoNombre);
 
   useEffect(() => {
     if (!foco) return;
@@ -132,7 +143,7 @@ export function EditorMateriales({
     });
     if (!r.ok) return estadoSubida(m.id, { msg: r.error, error: true });
     mapMat(m.id, () => r.data.material);
-    setUso(r.data.uso);
+    publicarUso(r.data.uso);
     estadoSubida(m.id, null);
     ctx.anunciar(r.anuncio);
   };
@@ -144,7 +155,7 @@ export function EditorMateriales({
     setTrabajando(false);
     if (!r.ok) return ctx.avisar(r.error);
     mapMat(m.id, () => r.data.material);
-    setUso(r.data.uso);
+    publicarUso(r.data.uso);
     setVerArchivo((v) => ({ ...v, [m.id]: false }));
     ctx.anunciar("Archivo quitado");
   };
@@ -362,9 +373,14 @@ export function EditorMateriales({
       )}
 
       <div className="mt-pie">
-        <Button id={`mat-add-${sufijo}`} variante="secondary" onClick={agregar} disabled={trabajando || llegoAlTope}>
+        <Button id={`mat-add-${sufijo}`} variante="secondary" onClick={agregar} disabled={trabajando || llegoAlTope || hayIncompleto}>
           + Agregar material
         </Button>
+        {hayIncompleto && !llegoAlTope && (
+          <span className="ed-vacio" role="status">
+            Completa o quita el material sin enlace antes de agregar otro.
+          </span>
+        )}
         {llegoAlTope && (
           <span className="ed-vacio" role="status">
             Llegaste al máximo de {MATERIALES_MODULO_MAX} materiales por módulo.
