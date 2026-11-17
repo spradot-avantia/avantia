@@ -63,9 +63,18 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
   avance.current = { i, fin, total: preguntas.length };
   useEffect(() => {
     if (repaso) capturar("repaso_iniciado", { preguntas: preguntas.length });
-    return () => {
+    let enviado = false;
+    // Al desmontar (navegación interna) y al cerrar la pestaña (pagehide): una sola vez.
+    const abandono = () => {
       const a = avance.current;
-      if (!a.fin) capturar("quiz_abandono", { curso_id: cursoId, modulo_id: moduloId, modo, respondidas: a.i, total: a.total });
+      if (enviado || a.fin) return;
+      enviado = true;
+      capturar("quiz_abandono", { curso_id: cursoId, modulo_id: moduloId, modo, respondidas: a.i, total: a.total }, { alSalir: true });
+    };
+    window.addEventListener("pagehide", abandono);
+    return () => {
+      window.removeEventListener("pagehide", abandono);
+      abandono();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

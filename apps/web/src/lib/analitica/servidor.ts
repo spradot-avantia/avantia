@@ -27,7 +27,7 @@ export async function capturarServidor<E extends NombreEventoServidor>(
     await ph.captureImmediate({
       distinctId,
       event: evento,
-      properties: { ...props, origen: "servidor", $process_person_profile: false },
+      properties: { ...props, tenant_id: tenantId, origen: "servidor", $process_person_profile: false },
       groups: { tenant: tenantId },
     });
   } catch (err) {

@@ -52,6 +52,7 @@ export function AnaliticaProvider({ tenantId, distinctId }: Props) {
       });
     }
     posthog.group("tenant", tenantId);
+    posthog.register({ tenant_id: tenantId });
 
     const aplicar = () => {
       if (leerConsentimiento()?.analitica) posthog.opt_in_capturing({ captureEventName: false });

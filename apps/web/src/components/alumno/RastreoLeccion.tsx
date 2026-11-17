@@ -47,7 +47,7 @@ export function RastreoLeccion({ cursoId, moduloId, leccionId, tipo }: Props) {
       } catch {
         /* sin beacon: no se registra el tiempo de esta visita */
       }
-      capturar("leccion_tiempo_activo", { ...base, activo_seg: seg });
+      capturar("leccion_tiempo_activo", { ...base, activo_seg: seg }, { alSalir: true });
     }
     const alOcultar = () => {
       if (document.visibilityState === "hidden") enviar();
