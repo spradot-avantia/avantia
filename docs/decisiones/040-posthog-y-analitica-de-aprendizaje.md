@@ -1,7 +1,7 @@
 # 040 — PostHog y analítica de aprendizaje para el creador
 
 - **Fecha:** 2026-11-14
-- **Estado:** Propuesta. Samuel pidió implementarla el 2026-11-14 («sigue con todo»); queda a la espera de su aprobación formal y de su revisión antes de llevarla a producción
+- **Estado:** Aceptada (Samuel, 2026-11-17). Implementada en `dev` desde el 2026-11-14; la puesta en producción requiere aplicar la migración 0023 y cargar las variables de PostHog en Vercel Production, cada cosa solo cuando Samuel lo pida
 
 ## Contexto
 
