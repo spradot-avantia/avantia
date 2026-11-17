@@ -181,6 +181,9 @@
 .lp-demo { display: grid; gap: var(--av-space-5); }
 .lp-dstage { background: var(--av-surface); border: 1px solid var(--av-line); border-radius: var(--av-radius-xl); padding: var(--av-space-5); min-height: 420px; display: flex; flex-direction: column; justify-content: center; gap: var(--av-space-4); min-width: 0; }
 .lp-steps { display: flex; flex-direction: column; gap: var(--av-space-3); }
+/* El contenido del escenario cambia al elegir un paso: que el navegador no lo use
+   como ancla del scroll (si no, "corrige" la posición y la pantalla salta). */
+.lp-dstage { overflow-anchor: none; }
 .lp-step { text-align: left; border: 1px solid var(--av-line); background: var(--av-surface); border-radius: var(--av-radius-lg); padding: 16px 26px 16px 16px; cursor: pointer; display: grid; grid-template-columns: 32px 1fr; gap: 2px 16px; align-items: start; width: 100%; transition: border-color 0.18s, box-shadow 0.24s var(--av-ease-out), transform 0.24s var(--av-ease-out); }
 .lp-step:hover { transform: translateY(-2px); box-shadow: var(--av-shadow-sm); }
 .lp-step .k { grid-row: span 2; width: 32px; height: 32px; border-radius: var(--av-radius-sm); background: var(--av-surface-2); display: grid; place-items: center; font-weight: var(--av-fw-semibold); font-size: var(--av-fs-sm); color: var(--av-ink-2); font-variant-numeric: tabular-nums; }

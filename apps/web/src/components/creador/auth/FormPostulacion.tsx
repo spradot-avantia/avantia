@@ -6,7 +6,7 @@ import { ESTADO_POSTULACION_INICIAL } from "../../../lib/postulacion/validacion"
 import { agendaHref } from "../../marketing/content";
 import { Button } from "../Button";
 import { Callout } from "../Callout";
-import { Field, Input, Textarea } from "../Field";
+import { Field, Input } from "../Field";
 
 function Enviar() {
   const { pending } = useFormStatus();
@@ -40,7 +40,7 @@ export function FormPostulacion() {
     );
   }
 
-  const v = estado.valores ?? { nombre: "", email: "", descripcion: "" };
+  const v = estado.valores ?? { nombre: "", email: "", ensena: "", publico: "" };
   const e = estado.errores ?? {};
 
   return (
@@ -57,9 +57,15 @@ export function FormPostulacion() {
         <Field id="p-email" label="Correo" error={e.email}>
           <Input id="p-email" name="email" type="email" inputMode="email" autoComplete="email" placeholder="tu@correo.com" defaultValue={v.email} invalido={!!e.email} maxLength={254} required />
         </Field>
-        <Field id="p-desc" label="¿A qué te dedicas hoy?" ayuda="Una o dos frases: qué enseñas y a quién." error={e.descripcion}>
-          <Textarea id="p-desc" name="descripcion" rows={4} defaultValue={v.descripcion} invalido={!!e.descripcion} conAyuda maxLength={600} required />
-        </Field>
+        <fieldset className="au-grupo">
+          <legend className="cr-field__label">¿A qué te dedicas hoy?</legend>
+          <Field id="p-ensena" label="Qué enseñas" error={e.ensena}>
+            <Input id="p-ensena" name="ensena" placeholder="Ej.: fotografía de producto" defaultValue={v.ensena} invalido={!!e.ensena} maxLength={280} required />
+          </Field>
+          <Field id="p-publico" label="A quién le enseñas" error={e.publico}>
+            <Input id="p-publico" name="publico" placeholder="Ej.: emprendedores" defaultValue={v.publico} invalido={!!e.publico} maxLength={280} required />
+          </Field>
+        </fieldset>
         {/* Campo trampa para bots: oculto a personas y a lectores de pantalla. */}
         <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
           <label>
