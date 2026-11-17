@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
-export type IconoNav = "inicio" | "cursos" | "estudiantes" | "revisiones" | "clases" | "academia" | "admin";
+export type IconoNav = "inicio" | "cursos" | "estudiantes" | "revisiones" | "clases" | "academia" | "analitica" | "admin";
 
 export interface ItemNav {
   href: string;
@@ -42,6 +42,7 @@ const TRAZOS: Record<IconoNav, ReactNode> = {
       <path d="m15 10.5 6-3v9l-6-3" />
     </>
   ),
+  analitica: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />,
   academia: (
     <>
       <path d="M3.5 9 12 4l8.5 5v1H3.5V9Z" />

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FormAccion } from "../../../../../../../components/alumno/FormAccion";
+import { RastreoLeccion } from "../../../../../../../components/alumno/RastreoLeccion";
 import { ContenidoLeccion } from "../../../../../../../components/tenant/FichaCurso";
 import { ProximaClase } from "../../../../../../../components/alumno/ClasesEnVivo";
 import { TareaLeccion } from "../../../../../../../components/alumno/TareaLeccion";
@@ -128,6 +129,7 @@ export default async function LeccionPage({
 
         {liberada ? (
           <>
+            <RastreoLeccion cursoId={curso.id} moduloId={leccion.moduloId} leccionId={leccion.id} tipo={leccion.tipo} />
             <ContenidoLeccion l={leccion} />
             {tarea && <TareaLeccion cursoId={curso.id} tarea={tarea} entregas={entregas} />}
             {materiales && (

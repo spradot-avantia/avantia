@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { AnaliticaProvider } from "../../../../components/alumno/AnaliticaProvider";
+import { AvisoAnaliticaAcademia, PreferenciasAnalitica } from "../../../../components/alumno/AvisoAnaliticaAcademia";
 import { Cabecera } from "../../../../components/alumno/Cabecera";
 import "../../../../components/alumno/alumno.css";
+import { idSeudonimo } from "../../../../lib/analitica/identidad";
 import { getAlumnoActual } from "../../../../lib/alumno/sesion";
 import { colorTexto, textoSobre } from "../../../../lib/creador/color";
 import { clasesFuentes } from "../../../../lib/tenant/fuentes";
@@ -24,6 +27,8 @@ export default async function AlumnoLayout({ children, params }: { children: Rea
   const color = tenant.theme.colorPrimario;
   return (
     <div className={`al ${clasesFuentes} ${clasesIdentidad(tenant.theme.tipografia, tenant.theme.forma)}`} style={{ ["--al-brand" as string]: color, ["--al-on-brand" as string]: textoSobre(color), ["--al-brand-text" as string]: colorTexto(color) }}>
+      {/* Primero: sus efectos deben correr antes que los de RastreoLeccion/QuizPlayer (ADR 040). */}
+      <AnaliticaProvider tenantId={tenant.id} distinctId={alumno ? idSeudonimo(tenant.id, alumno.id) : null} />
       <a className="al-skip" href="#contenido">
         Saltar al contenido
       </a>
@@ -32,8 +37,9 @@ export default async function AlumnoLayout({ children, params }: { children: Rea
         {children}
       </main>
       <footer className="al-foot">
-        {tenant.nombre} · <a href="/terminos">Términos</a> · <a href="/privacidad">Privacidad</a>
+        {tenant.nombre} · <a href="/terminos">Términos</a> · <a href="/privacidad">Privacidad</a> · <PreferenciasAnalitica />
       </footer>
+      <AvisoAnaliticaAcademia academia={tenant.nombre} />
     </div>
   );
 }

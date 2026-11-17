@@ -79,8 +79,8 @@ export const config = {
     /*
      * No aplica a rutas de la API, assets de Next.js ni archivos estáticos:
      * esas no dependen de qué tenant sea, y los webhooks de pago necesitan
-     * llegar sin reescribir.
+     * llegar sin reescribir. /ingest es el proxy de PostHog (next.config.mjs, ADR 040).
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|ingest|_next/static|_next/image|favicon.ico).*)",
   ],
 };

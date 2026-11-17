@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { responderQuizAction } from "../../lib/alumno/actions";
+import { capturar } from "../../lib/analitica/cliente";
 import type { PreguntaParaAlumno } from "../../lib/alumno/quiz";
 import { IconoCheck, IconoEquis, IconoFlecha, IconoMedalla } from "../ui/Iconos";
 import "./alumno.css";
@@ -55,12 +56,43 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
   const p = preguntas[i];
   const fin = i >= preguntas.length;
 
+  // Analítica (ADR 040): tiempo hasta responder, cambios de opinión y abandono. Sin contenido de preguntas.
+  const inicioPregunta = useRef(Date.now());
+  const cambios = useRef(0);
+  const avance = useRef({ i: 0, fin: false, total: preguntas.length });
+  avance.current = { i, fin, total: preguntas.length };
+  useEffect(() => {
+    if (repaso) capturar("repaso_iniciado", { preguntas: preguntas.length });
+    return () => {
+      const a = avance.current;
+      if (!a.fin) capturar("quiz_abandono", { curso_id: cursoId, modulo_id: moduloId, modo, respondidas: a.i, total: a.total });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (!p) return;
+    inicioPregunta.current = Date.now();
+    cambios.current = 0;
+    capturar("quiz_pregunta_vista", { curso_id: p.cursoId ?? cursoId, modulo_id: p.moduloId ?? moduloId, pregunta_id: p.id, modo, posicion: i + 1 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i, intento]);
+
   function responder() {
     if (elegida === null || !p) return;
     setError(null);
     start(async () => {
-      const r = await responderQuizAction(p.cursoId ?? cursoId ?? "", p.moduloId ?? moduloId ?? "", p.id, elegida);
+      const duracion = Date.now() - inicioPregunta.current;
+      const r = await responderQuizAction(p.cursoId ?? cursoId ?? "", p.moduloId ?? moduloId ?? "", p.id, elegida, duracion);
       if (!r.ok) return setError(r.error);
+      capturar("quiz_respuesta", {
+        curso_id: p.cursoId ?? cursoId,
+        modulo_id: p.moduloId ?? moduloId,
+        pregunta_id: p.id,
+        modo,
+        acierto: r.acierto,
+        ms_hasta_responder: duracion,
+        cambios_de_respuesta: cambios.current,
+      });
       setRes({ acierto: r.acierto, correcta: r.correcta, explicacion: r.explicacion, elegida, xp: r.xpGanada });
       if (r.acierto) setAciertos((a) => a + 1);
       setDominadoServidor(r.dominado);
@@ -148,7 +180,10 @@ export function QuizPlayer({ cursoId, moduloId, moduloTitulo, modo = "quiz", pre
           const estado = res ? (k === res.correcta ? "ok" : k === res.elegida ? "mal" : "") : "";
           return (
             <label key={k} className={`al-quiz__op${elegida === k ? " is-sel" : ""}${estado ? ` al-quiz__op--${estado}` : ""}`}>
-              <input type="radio" name={`q-${p.id}`} checked={elegida === k} onChange={() => setElegida(k)} />
+              <input type="radio" name={`q-${p.id}`} checked={elegida === k} onChange={() => {
+                  if (elegida !== null && elegida !== k) cambios.current += 1;
+                  setElegida(k);
+                }} />
               <span>{o}</span>
               {estado === "ok" && <IconoCheck tam={18} className="al-quiz__ico" />}
               {estado === "mal" && <IconoEquis tam={18} className="al-quiz__ico" />}

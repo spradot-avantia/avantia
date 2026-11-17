@@ -22,7 +22,7 @@ export function leerConsentimiento(): Consentimiento | null {
   }
 }
 
-function guardarConsentimiento(analitica: boolean, personalizacion: boolean) {
+export function guardarConsentimiento(analitica: boolean, personalizacion: boolean) {
   const c: Consentimiento = { analitica, personalizacion, fecha: new Date().toISOString() };
   try {
     window.localStorage.setItem(CLAVE, JSON.stringify(c));

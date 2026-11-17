@@ -1,0 +1,26 @@
+/* Analítica del creador (ADR 040). Prefijo .an-. Solo tokens --av-*. */
+.an-tabs { display: flex; flex-wrap: wrap; gap: var(--av-space-2); }
+.an-tabs a {
+  display: inline-flex; align-items: center; min-height: var(--av-target); padding: 0 var(--av-space-4);
+  border: 1px solid var(--av-line-strong); border-radius: var(--av-radius-full); font-weight: var(--av-fw-medium);
+}
+.an-tabs a[aria-current="page"] { background: var(--av-blue-50); border-color: var(--av-blue-200); color: var(--av-blue-700); }
+.an-kpis { display: grid; gap: var(--av-space-3); grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 900px) { .an-kpis { grid-template-columns: repeat(4, 1fr); } }
+.an-kpi { display: flex; flex-direction: column; gap: 2px; }
+.an-kpi b { font-size: var(--av-fs-h3); line-height: 1; font-weight: var(--av-fw-semibold); }
+.an-kpi span { font-size: var(--av-fs-sm); color: var(--av-muted); }
+.an-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--av-space-3); }
+.an-fila { display: flex; flex-direction: column; gap: var(--av-space-2); padding-top: var(--av-space-3); border-top: 1px solid var(--av-line); min-width: 0; }
+.an-fila:first-child { border-top: 0; padding-top: 0; }
+.an-fila__t { font-weight: var(--av-fw-medium); overflow-wrap: anywhere; }
+.an-fila__meta { display: flex; flex-wrap: wrap; gap: var(--av-space-2) var(--av-space-4); font-size: var(--av-fs-sm); color: var(--av-muted); }
+.an-barra { height: 8px; border-radius: var(--av-radius-full); background: var(--av-line); overflow: hidden; }
+.an-barra i { display: block; height: 100%; background: var(--av-blue-600); }
+.an-barra--alerta i { background: var(--av-danger-ink, #b42318); }
+.an-tabla { width: 100%; border-collapse: collapse; font-size: var(--av-fs-sm); }
+.an-tabla th, .an-tabla td { padding: var(--av-space-2); text-align: left; border-top: 1px solid var(--av-line); }
+.an-tabla th { font-weight: var(--av-fw-medium); color: var(--av-muted); }
+.an-scroll { overflow-x: auto; }
+.an-csv { display: flex; flex-wrap: wrap; gap: var(--av-space-3); }
+.an-csv a { display: inline-flex; align-items: center; min-height: var(--av-target); text-decoration: underline; text-underline-offset: 2px; font-weight: var(--av-fw-medium); }
