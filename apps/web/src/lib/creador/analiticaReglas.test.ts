@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { aCsv, celdaCsv, cohortesSemanales, embudoPorLeccion, mediana, resultadosPorPregunta, resumenTareas, sinActividadHace } from "./analiticaReglas";
+import { aciertoMedio, avanceMedio, resumenPorModulo, resumenQuizPorModulo, aCsv, celdaCsv, cohortesSemanales, embudoPorLeccion, mediana, resultadosPorPregunta, resumenTareas, sinActividadHace } from "./analiticaReglas";
 
 describe("mediana", () => {
   it("maneja vacío, impar y par", () => {
@@ -81,3 +81,21 @@ describe("csv", () => {
     expect(aCsv(["x"], [[1]])).toBe("﻿x\r\n1\r\n");
   });
 });
+
+describe("resúmenes por módulo", () => {
+  const l = (id: string, modulo: string, abrieron: number, completaron: number) => ({ leccionId: id, titulo: id, modulo, abrieron, completaron, abandono: null, tiempoMedianoSeg: null });
+  it("agrupa lecciones y calcula abandono del módulo", () => {
+    const m = resumenPorModulo([l("a", "M1", 2, 2), l("b", "M1", 2, 1), l("c", "M2", 0, 0)]);
+    expect(m.map((x) => x.modulo)).toEqual(["M1", "M2"]);
+    expect(m[0]).toMatchObject({ abrieron: 4, completaron: 3, abandono: 25 });
+    expect(m[1].abandono).toBeNull();
+  });
+  it("calcula avance medio y acierto ponderado", () => {
+    expect(avanceMedio([l("a", "M1", 2, 2), l("b", "M1", 2, 1)], 4)).toBe(38);
+    expect(avanceMedio([], 4)).toBeNull();
+    const q = (modulo: string, alumnos: number, acierto: number | null) => ({ preguntaId: modulo + alumnos, texto: "", modulo, alumnos, acierto, tiempoMedianoSeg: null, reintentos: 0 });
+    expect(aciertoMedio([q("M1", 1, 0), q("M1", 3, 100)])).toBe(75);
+    expect(resumenQuizPorModulo([q("M1", 1, 0), q("M1", 3, 100), q("M2", 0, null)]).map((x) => x.acierto)).toEqual([75, null]);
+  });
+});
+

@@ -195,3 +195,78 @@ export function celdaCsv(v: string | number | null): string {
 export function aCsv(encabezados: string[], filas: (string | number | null)[][]): string {
   return "﻿" + [encabezados, ...filas].map((f) => f.map(celdaCsv).join(",")).join("\r\n") + "\r\n";
 }
+
+/* ---------- Resúmenes por módulo (vista compacta del panel) ---------- */
+export interface FilaModulo {
+  modulo: string;
+  lecciones: FilaLeccion[];
+  abrieron: number;
+  completaron: number;
+  /** 0–100 sobre lo abierto; null si nadie abrió nada del módulo. */
+  abandono: number | null;
+}
+
+/** Agrupa las lecciones por módulo (en orden de aparición) y suma aperturas y completadas. */
+export function resumenPorModulo(lecciones: FilaLeccion[]): FilaModulo[] {
+  const orden: string[] = [];
+  const grupos = new Map<string, FilaLeccion[]>();
+  for (const l of lecciones) {
+    if (!grupos.has(l.modulo)) {
+      grupos.set(l.modulo, []);
+      orden.push(l.modulo);
+    }
+    grupos.get(l.modulo)!.push(l);
+  }
+  return orden.map((modulo) => {
+    const ls = grupos.get(modulo)!;
+    const abrieron = ls.reduce((s, l) => s + l.abrieron, 0);
+    const completaron = ls.reduce((s, l) => s + l.completaron, 0);
+    return { modulo, lecciones: ls, abrieron, completaron, abandono: abrieron > 0 ? 100 - (pct(completaron, abrieron) ?? 0) : null };
+  });
+}
+
+export interface FilaQuizModulo {
+  modulo: string;
+  preguntas: FilaPregunta[];
+  /** Acierto medio al primer intento, ponderado por alumnos; null sin respuestas. */
+  acierto: number | null;
+  /** Máximo de alumnos que respondieron alguna pregunta del módulo. */
+  alumnos: number;
+}
+
+export function resumenQuizPorModulo(preguntas: FilaPregunta[]): FilaQuizModulo[] {
+  const orden: string[] = [];
+  const grupos = new Map<string, FilaPregunta[]>();
+  for (const q of preguntas) {
+    if (!grupos.has(q.modulo)) {
+      grupos.set(q.modulo, []);
+      orden.push(q.modulo);
+    }
+    grupos.get(q.modulo)!.push(q);
+  }
+  return orden.map((modulo) => {
+    const qs = grupos.get(modulo)!;
+    const con = qs.filter((q) => q.acierto != null && q.alumnos > 0);
+    const peso = con.reduce((s, q) => s + q.alumnos, 0);
+    return {
+      modulo,
+      preguntas: qs,
+      acierto: peso > 0 ? Math.round(con.reduce((s, q) => s + (q.acierto as number) * q.alumnos, 0) / peso) : null,
+      alumnos: Math.max(0, ...qs.map((q) => q.alumnos)),
+    };
+  });
+}
+
+/** Avance medio: lecciones completadas sobre las posibles (lecciones × inscritos activos); null sin datos. */
+export function avanceMedio(lecciones: FilaLeccion[], inscritosActivos: number): number | null {
+  const posibles = lecciones.length * inscritosActivos;
+  if (posibles === 0) return null;
+  return Math.min(100, Math.round((lecciones.reduce((s, l) => s + l.completaron, 0) / posibles) * 100));
+}
+
+/** Acierto medio global al primer intento, ponderado por alumnos. */
+export function aciertoMedio(preguntas: FilaPregunta[]): number | null {
+  const con = preguntas.filter((q) => q.acierto != null && q.alumnos > 0);
+  const peso = con.reduce((s, q) => s + q.alumnos, 0);
+  return peso > 0 ? Math.round(con.reduce((s, q) => s + (q.acierto as number) * q.alumnos, 0) / peso) : null;
+}
