@@ -1,0 +1,207 @@
+/*
+ * Modo oscuro automático (ADR 044, Propuesta). Sigue la preferencia del sistema
+ * o del navegador (prefers-color-scheme): no hay interruptor.
+ *
+ * Alcance: solo las pantallas de Avantia, que viven dentro de .av-scope (landing,
+ * postulación, acceso, onboarding, panel del creador y admin). Los sitios de las
+ * academias y la experiencia del alumno NO usan .av-scope y siguen en claro.
+ *
+ * Cómo funciona: se redefinen los tokens --av-* (los componentes ya los usan) y se
+ * corrigen los pocos colores fijos. Las vistas previas de una academia dentro de
+ * Avantia (mockups de la landing, vista previa del curso, página y marca) vuelven
+ * a la paleta clara con .av-claro o con su propia clase (ver más abajo). Las
+ * correcciones de componentes llevan :root delante para ganarle a la regla original.
+ *
+ * Contrastes (texto sobre --av-bg / --av-surface): ink 16,0 / 14,5; ink-2 11,7 / 10,6;
+ * muted 7,7 / 6,9; enlaces (blue-700) 8,9 / 8,0. Blanco sobre blue-600: 4,7.
+ */
+
+@media (prefers-color-scheme: dark) {
+  :root:has(.av-scope),
+  .av-scope {
+    color-scheme: dark;
+
+    /* Neutros: tinta clara sobre azul-marino profundo */
+    --av-ink: #e9ecf8;
+    --av-ink-2: #c5cbe2;
+    --av-muted: #9aa4c6;
+    --av-subtle: #6f789b;
+    --av-line: #262d47;
+    --av-line-strong: #343c5e;
+    --av-line-dashed: #4c5579;
+    --av-bg: #0c1020;
+    --av-bg-sunken: #080b17;
+    --av-surface: #151b30;
+    --av-surface-2: #1e2542;
+    --av-canvas: #10152a;
+    --av-side: #141a33;
+
+    /* Azul: blue-600 sigue siendo relleno (botones); blue-700 es texto/enlace, más claro */
+    --av-blue-50: #172452;
+    --av-blue-200: #34509f;
+    --av-blue-400: #6f97f7;
+    --av-blue-600: #336af0;
+    --av-blue-700: #8fb1ff;
+
+    --av-violet-50: #231b47;
+    --av-violet-200: #4d3a8f;
+    --av-violet-500: #a585fa;
+    --av-violet-700: #c3b1ff;
+
+    --av-success-bg: #0f2e25;
+    --av-success: #4fcf9f;
+    --av-danger: #ff8b7d;
+    --av-danger-bg: #3a1512;
+    --av-danger-line: #e5544a;
+    --av-danger-ink: #ffb4a8;
+    --av-warning: #f5a623;
+    --av-warning-bg: #33240a;
+    --av-warning-ink: #ffd79a;
+
+    --av-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --av-shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.35);
+    --av-shadow-md: 0 16px 42px rgba(0, 0, 0, 0.45);
+    --av-shadow-lg: 0 32px 78px rgba(0, 0, 0, 0.55);
+    --av-shadow-primary: 0 10px 30px rgba(51, 106, 240, 0.35);
+    --av-ring: 0 0 0 3px rgba(111, 151, 247, 0.45);
+
+    /* Variables antiguas que algunas hojas leen con un color de respaldo fijo */
+    --ink: var(--av-ink);
+    --ink-2: var(--av-ink-2);
+    --ink-3: var(--av-muted);
+    --accent: var(--av-blue-600);
+  }
+
+  /* ---- Vistas previas de una academia: siempre en claro, como las verá el alumno ---- */
+  .av-claro,
+  .av-scope .lp-stage,
+  .av-scope .lp-dstage,
+  .av-scope .fc,
+  .av-scope .mk-prev,
+  .av-scope .pg-nav__cuerpo {
+    color-scheme: light;
+    --av-ink: #0a1029;
+    --av-ink-2: #232c55;
+    --av-muted: #5a648c;
+    --av-subtle: #8b93ad;
+    --av-line: #e6e4dc;
+    --av-line-strong: #d5d8e2;
+    --av-line-dashed: #b9becf;
+    --av-bg: #faf9f6;
+    --av-bg-sunken: #f1efe9;
+    --av-surface: #ffffff;
+    --av-surface-2: #eff0f5;
+    --av-canvas: #f3f1eb;
+    --av-side: #e4e7f1;
+    --av-blue-50: #e4edfd;
+    --av-blue-200: #a9c2f9;
+    --av-blue-400: #4c7df0;
+    --av-blue-600: #2563eb;
+    --av-blue-700: #1d4ed8;
+    --av-violet-50: #ede9fe;
+    --av-violet-200: #cdb9fc;
+    --av-violet-500: #8b5cf6;
+    --av-violet-700: #6d3ee0;
+    --av-success-bg: #e2f4ee;
+    --av-success: #137a5a;
+    --av-danger: #b42318;
+    --av-danger-bg: #fef3f2;
+    --av-danger-line: #e5544a;
+    --av-danger-ink: #7a271a;
+    --av-warning: #b54708;
+    --av-warning-bg: #fff6e5;
+    --av-warning-ink: #7a4b00;
+    --av-shadow-xs: 0 1px 2px rgba(10, 16, 41, 0.06);
+    --av-shadow-sm: 0 4px 16px rgba(10, 16, 41, 0.07);
+    --av-shadow-md: 0 16px 42px rgba(10, 16, 41, 0.1);
+    --av-shadow-lg: 0 32px 78px rgba(10, 16, 41, 0.14);
+    --av-ring: 0 0 0 3px rgba(76, 125, 240, 0.35);
+    color: var(--av-ink);
+  }
+
+  /* ---- Marca Avantia: el logotipo (texto azul marino) pasa a blanco ---- */
+  :root .av-scope img[src*="avantia-wordmark"] {
+    filter: brightness(0) invert(1);
+  }
+
+  /* ---- Base ---- */
+  :root .av-scope .av-btn--primary:hover {
+    background: #2563eb;
+  }
+
+  /* ---- Landing ---- */
+  :root .av-scope .lp-top,
+  :root .av-scope .lp-sticky {
+    background: rgba(12, 16, 32, 0.9);
+  }
+  :root .av-scope .lp-phone,
+  :root .av-scope .lp-notch span {
+    background: #05070f;
+  }
+  :root .av-scope .lp-burbuja,
+  :root .av-scope .lp-burbuja::before {
+    background: var(--av-ink);
+    color: var(--av-bg);
+  }
+  :root .av-scope .lp-mod-x:hover:not(:disabled) {
+    color: var(--av-danger);
+  }
+  :root .av-scope .lp-switch::after {
+    background: #e9ecf8;
+  }
+
+  /* "4 cupos de 5": píldora azul translúcida con borde, texto y check claros */
+  :root .av-scope .lp-trust__dest {
+    background: rgba(51, 106, 240, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(143, 177, 255, 0.45);
+    color: #dbe6ff;
+  }
+  :root .av-scope .lp-trust__dest svg {
+    color: #dbe6ff;
+  }
+
+  /* ---- Panel del creador ---- */
+  :root .av-scope .cr-callout--success,
+  :root .av-scope .ed-guia__col--mejor,
+  :root .av-scope .ed-exito {
+    border-color: #1f5f49;
+  }
+  :root .av-scope .ed-aviso,
+  :root .av-scope .qz-fb--mal {
+    color: var(--av-danger-ink);
+  }
+  :root .av-scope .ed-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.65);
+  }
+  /* Avatares de estudiantes: rellenos fijos para que el texto blanco se lea */
+  :root .av-scope .ea-ava--0 { background: #1d4ed8; }
+  :root .av-scope .ea-ava--1 { background: #6d3ee0; }
+  :root .av-scope .ea-ava--5 { background: #137a5a; }
+  /* Marca y página: mezclas con el color de la academia sobre fondo oscuro */
+  :root .av-scope .mk-drop--on,
+  :root .av-scope .mk-drop--on:hover {
+    background: color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 16%, var(--av-surface));
+  }
+  :root .av-scope .pg-opcion[aria-pressed="true"] {
+    background: color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 18%, var(--av-surface));
+  }
+  :root .av-scope .pg-puntos i.is-ahora,
+  :root .av-scope .pg-barra__pista i {
+    background: color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 60%, var(--av-surface));
+  }
+  :root .av-scope .pg-chip--espera { background: #3a2a0c; color: #ffcf85; }
+  :root .av-scope .pg-chip--ej { background: #3a1d0c; color: #ffb48a; }
+  :root .av-scope .pg-input--ej,
+  :root .av-scope .pg-ejemplo {
+    background: #2a1a0e !important;
+    border-color: #f08a4b !important;
+  }
+  :root .av-scope .pg-switch[aria-pressed="true"] {
+    color: var(--av-bg);
+  }
+
+  /* ---- Admin ---- */
+  :root .av-scope .ad-chip[aria-current="true"] {
+    color: var(--av-bg);
+  }
+}

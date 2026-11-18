@@ -5,6 +5,7 @@
 // todas las validaciones; esto solo es el camino.
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
+import { capturar } from "../../lib/analitica/cliente";
 import { confirmarEntregaAction, prepararEntregaAction } from "../../lib/alumno/actionsTareas";
 import { subirArchivoAlBucket } from "../../lib/creador/subidaCliente";
 import { formatearBytes } from "../../lib/creador/archivosReglas";
@@ -20,6 +21,7 @@ export function FormEntrega({ tareaId, reenvio }: { tareaId: string; reenvio: bo
   const [estado, setEstado] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const inicio = useRef<number | null>(null);
 
   function elegir(f: File | null) {
     setError(null);
@@ -34,6 +36,10 @@ export function FormEntrega({ tareaId, reenvio }: { tareaId: string; reenvio: bo
       }
     }
     setArchivo(f);
+    if (f && inicio.current === null) {
+      inicio.current = Date.now();
+      capturar("entrega_iniciada", { tarea_id: tareaId });
+    }
   }
 
   async function enviar(e: React.FormEvent) {
@@ -56,6 +62,8 @@ export function FormEntrega({ tareaId, reenvio }: { tareaId: string; reenvio: bo
       setError(r.error);
       return;
     }
+    capturar("entrega_enviada", { tarea_id: tareaId, ms_desde_inicio: Date.now() - (inicio.current ?? Date.now()) });
+    inicio.current = null;
     setArchivo(null);
     setComentario("");
     if (archivoRef.current) archivoRef.current.value = "";

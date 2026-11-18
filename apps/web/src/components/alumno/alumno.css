@@ -1114,3 +1114,35 @@ h2.al-titulo-ico .al-ico-burbuja {
 
 /* Enlaces del pie: objetivo táctil de 44 px. */
 .al-foot a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; }
+
+/* ---- Aviso de medición (ADR 040): marca de la academia, nunca Avantia ---- */
+.al-cookies {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 50;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--av-space-4);
+  background: var(--av-bg);
+  border: 1px solid var(--av-line);
+  border-radius: var(--av-radius-md) var(--av-radius-md) 0 0;
+  box-shadow: 0 -4px 24px rgb(0 0 0 / 0.12);
+  font-size: var(--av-fs-sm);
+}
+.al-cookies__t { margin: 0 0 var(--av-space-2); font-size: var(--av-fs-md, 1rem); }
+.al-cookies p { margin: 0 0 var(--av-space-3); }
+.al-cookies a { text-decoration: underline; text-underline-offset: 2px; }
+.al-cookies__acc { display: flex; flex-wrap: wrap; gap: var(--av-space-2); }
+.al-foot__btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 6px;
+  background: none;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}

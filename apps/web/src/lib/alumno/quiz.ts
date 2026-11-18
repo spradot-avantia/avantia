@@ -88,6 +88,7 @@ export async function responderPregunta(
   moduloId: string,
   preguntaId: string,
   opcion: number,
+  duracionMs?: number | null,
 ): Promise<ResultadoResponder> {
   const insc = await inscripcionDe(tenantId, alumnoId, cursoId);
   if (!insc || insc.estado !== "activa") return { ok: false, error: "Tu inscripción aún no está activa." };
@@ -113,6 +114,7 @@ export async function responderPregunta(
     opcion,
     acierto,
     primer_intento: primera,
+    duracion_ms: Number.isFinite(duracionMs) ? Math.min(600000, Math.max(0, Math.round(duracionMs as number))) : null,
   });
   if (error) return { ok: false, error: "No pudimos guardar tu respuesta. Inténtalo de nuevo." };
   await registrarEvento(tenantId, { tipo: "intento_quiz", alumnoId, cursoId, entidadTipo: "quiz", entidadId: moduloId });

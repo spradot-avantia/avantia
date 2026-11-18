@@ -10,7 +10,7 @@ import { enviarCorreo, escaparHtml } from "../email/resend";
 import { esDespliegueDePreview } from "../seo";
 import { esStaff } from "../staff";
 import { supabaseAdmin } from "../supabase/admin";
-import { postulacionSchema, type EstadoPostulacion } from "./validacion";
+import { armarDescripcion, postulacionSchema, type EstadoPostulacion } from "./validacion";
 
 /**
  * Postulación al programa fundador SIN iniciar sesión (ADR 014). El servidor
@@ -40,14 +40,16 @@ export async function enviarPostulacionAction(_prev: EstadoPostulacion, fd: Form
   const valores = {
     nombre: fd.get("nombre")?.toString() ?? "",
     email: fd.get("email")?.toString() ?? "",
-    descripcion: fd.get("descripcion")?.toString() ?? "",
+    ensena: fd.get("ensena")?.toString() ?? "",
+    publico: fd.get("publico")?.toString() ?? "",
   };
   // Campo trampa: las personas no lo ven; los bots lo llenan. Se responde "ok" sin guardar.
   if ((fd.get("sitio")?.toString() ?? "") !== "") return { ok: true };
 
   const parsed = postulacionSchema.safeParse(valores);
   if (!parsed.success) return { errores: erroresPorCampo(parsed.error), valores };
-  const { nombre, email, descripcion } = parsed.data;
+  const { nombre, email } = parsed.data;
+  const descripcion = armarDescripcion(parsed.data.ensena, parsed.data.publico);
 
   if (!limitePorIp.permitir(ipCliente()) || !limitePorCorreo.permitir(email)) return { mensaje: MSG_LIMITE, valores };
 

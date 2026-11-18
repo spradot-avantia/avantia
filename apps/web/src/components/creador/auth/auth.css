@@ -183,6 +183,12 @@
 .au-toggle:hover { color: var(--ink, #0A1029); }
 .au-toggle svg { display: block; }
 
+/* "¿A qué te dedicas hoy?" agrupa dos campos de una línea (qué enseñas y a quién). */
+.au-grupo { display: grid; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.au-grupo > legend { padding: 0; margin-bottom: 4px; }
+.au-grupo .cr-field__label { font-size: var(--av-fs-sm); font-weight: var(--av-fw-medium); color: var(--av-ink-2); }
+.au-grupo > legend.cr-field__label { font-size: inherit; font-weight: var(--av-fw-semibold); color: var(--av-ink); }
+
 /* Pantallas bajas (notebooks): el login completo cabe sin hacer scroll */
 @media (max-height: 820px) {
   .au-title { font-size: 28px; line-height: 1.15; margin-bottom: 6px; }

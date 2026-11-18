@@ -51,6 +51,8 @@ export async function marcarAcceso(tenantId: string, alumnoId: string, cursoId: 
     await supabaseAdmin
       .from("progreso")
       .insert({ tenant_id: tenantId, curso_id: cursoId, leccion_id: leccionId, alumno_id: alumnoId, ultimo_acceso_at: ahora });
+    // Solo la PRIMERA apertura: sirve para el embudo por lección sin inflar la tabla en cada recarga.
+    await registrarEvento(tenantId, { tipo: "leccion_abierta", alumnoId, cursoId, entidadTipo: "leccion", entidadId: leccionId });
   }
 }
 

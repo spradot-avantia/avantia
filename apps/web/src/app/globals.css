@@ -1,4 +1,5 @@
 @import "../styles/avantia-tokens.css";
+@import "../styles/tema-oscuro.css";
 
 :root {
   /* Alias de la paleta heredada: apuntan a los tokens de marca (avantia-tokens.css).

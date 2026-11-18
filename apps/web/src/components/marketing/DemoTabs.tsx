@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { DEMO_SWATCHES, STEPS_CREATOR, STEPS_STUDENT } from "./content";
 import { Icon } from "./icons";
 
@@ -137,6 +137,31 @@ export function DemoTabs() {
   const [sigId, setSigId] = useState(MODULOS_INICIALES.length + 1);
   const [enfocar, setEnfocar] = useState<number | null>(null);
 
+  // Alto fijo del escenario: guarda el mayor alto visto para que, al cambiar de
+  // paso o de pestaña, la caja no se achique y la pantalla no salte.
+  const escenario = useRef<HTMLDivElement>(null);
+  const [altoMin, setAltoMin] = useState(0);
+  useEffect(() => {
+    const el = escenario.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setAltoMin((m) => Math.max(m, el.offsetHeight)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [tab, sc, sa]);
+  useEffect(() => {
+    // Si cambia el ancho (girar el celular, achicar la ventana), se vuelve a medir.
+    let ancho = window.innerWidth;
+    const alCambiar = () => {
+      if (window.innerWidth !== ancho) {
+        ancho = window.innerWidth;
+        setAltoMin(0);
+      }
+    };
+    window.addEventListener("resize", alCambiar);
+    return () => window.removeEventListener("resize", alCambiar);
+  }, []);
+  const estiloEscenario = altoMin ? { minHeight: altoMin } : undefined;
+
   // Lleva el foco al módulo recién agregado, después de que aparece en pantalla.
   useEffect(() => {
     if (enfocar == null) return;
@@ -192,7 +217,7 @@ export function DemoTabs() {
       <div id="demo-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
         {tab === "creador" && (
           <div className="lp-demo">
-            <div className="lp-dstage">
+            <div className="lp-dstage" ref={escenario} style={estiloEscenario}>
               <span className="av-badge av-badge--ok"><i />Disponible</span>
               {sc === 0 && (
                 <Browser url="Panel · Marca">
@@ -360,7 +385,7 @@ export function DemoTabs() {
 
         {tab === "alumno" && (
           <div className="lp-demo" style={{ "--brand": dm } as CSSProperties}>
-            <div className="lp-dstage">
+            <div className="lp-dstage" ref={escenario} style={estiloEscenario}>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <span className="av-badge av-badge--ok"><i />Disponible</span>
               </div>

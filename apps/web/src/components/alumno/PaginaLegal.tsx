@@ -82,6 +82,7 @@ export function PrivacidadAcademia({ academia }: { academia: string }) {
           <li>La fecha en que aceptaste los términos y la privacidad.</li>
           <li>Tus inscripciones, el medio y el monto de pago que la academia registre, y tu avance (lecciones completadas, XP, nivel).</li>
           <li>Datos técnicos mínimos para mantener tu sesión y la seguridad del sitio.</li>
+          <li>Cómo usas las lecciones y los quizzes (por ejemplo, el tiempo que pasas en una lección o en responder una pregunta), para que la academia vea dónde ayudarte.</li>
         </ul>
       </Seccion>
       <Seccion titulo="3. Para qué se usan">
@@ -95,7 +96,7 @@ export function PrivacidadAcademia({ academia }: { academia: string }) {
       <Seccion titulo="4. Con quién se comparten">
         <p>
           Con la academia (responsable) y con los proveedores que hacen posible el sitio: alojamiento, base de datos y envío de correo, que actúan por encargo y
-          bajo confidencialidad. Si el pago se hace por una pasarela, esta tratará los datos de pago bajo sus propias condiciones.
+          bajo confidencialidad. La medición de uso de las lecciones se hace con PostHog: si aceptas la medición, se envía con un identificador anónimo, sin tu nombre ni tu correo; puedes cambiar tu elección en «Preferencias de medición» del pie de página. Si el pago se hace por una pasarela, esta tratará los datos de pago bajo sus propias condiciones.
         </p>
       </Seccion>
       <Seccion titulo="5. Cuánto tiempo">

@@ -121,9 +121,9 @@ export async function completarLeccionAction(_: EstadoForm, fd: FormData): Promi
 }
 
 /** Corrige una respuesta del quiz. El tenant sale del host y el alumno de la sesión. */
-export async function responderQuizAction(cursoId: string, moduloId: string, preguntaId: string, opcion: number): Promise<ResultadoResponder> {
+export async function responderQuizAction(cursoId: string, moduloId: string, preguntaId: string, opcion: number, duracionMs?: number): Promise<ResultadoResponder> {
   const tenant = await requireTenantPublico();
   const alumno = await getAlumnoActual();
   if (!alumno) return { ok: false, error: "Tu sesión expiró. Ingresa de nuevo." };
-  return responderPregunta(tenant.id, alumno.id, String(cursoId), String(moduloId), String(preguntaId), Number(opcion));
+  return responderPregunta(tenant.id, alumno.id, String(cursoId), String(moduloId), String(preguntaId), Number(opcion), duracionMs == null ? null : Number(duracionMs));
 }
