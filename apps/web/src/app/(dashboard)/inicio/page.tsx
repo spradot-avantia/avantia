@@ -3,8 +3,12 @@ import { EmptyState, LinkButton, PageHeader, SinAcademia } from "../../../compon
 import { ListaCursos, type CursoConUrl } from "../../../components/creador/cursos/ListaCursos";
 import { Checklist, type PasoChecklist } from "../../../components/creador/inicio/Checklist";
 import { CopiarEnlace } from "../../../components/creador/inicio/CopiarEnlace";
+import { ActividadReciente } from "../../../components/creador/inicio/ActividadReciente";
+import { NecesitanAyuda, TemasDificiles } from "../../../components/creador/inicio/Atencion";
 import { Kpis } from "../../../components/creador/inicio/Kpis";
 import "../../../components/creador/inicio/inicio.css";
+import { cargarActividadReciente, cargarTemasDificiles } from "../../../lib/creador/actividadReciente";
+import { dominioMedio, necesitanAyuda } from "../../../lib/creador/actividadReglas";
 import { listarCursos } from "../../../lib/creador/cursos";
 import { listarEstudiantes } from "../../../lib/creador/estudiantes";
 import { listarInscripciones } from "../../../lib/creador/inscripciones";
@@ -16,9 +20,27 @@ export const dynamic = "force-dynamic";
 
 async function cargar() {
   const tenant = await getCurrentTenant();
-  if (!tenant) return { tenant: null as TenantCreador | null, cursos: [] as CursoResumen[], inv: [] as Invitacion[], inscripciones: [] as Awaited<ReturnType<typeof listarInscripciones>> };
-  const [cursos, inv, inscripciones] = await Promise.all([listarCursos(), listarEstudiantes(), listarInscripciones({ conQuiz: false }).catch(() => [])]);
-  return { tenant, cursos, inv, inscripciones };
+  if (!tenant)
+    return {
+      tenant: null as TenantCreador | null,
+      cursos: [] as CursoResumen[],
+      inv: [] as Invitacion[],
+      inscripciones: [] as Awaited<ReturnType<typeof listarInscripciones>>,
+      actividad: [] as Awaited<ReturnType<typeof cargarActividadReciente>>,
+      temas: [] as Awaited<ReturnType<typeof cargarTemasDificiles>>,
+    };
+  // Lo secundario (dominio, actividad, temas) no tumba el Inicio si falla: se muestra vacío.
+  const [cursos, inv, inscripciones, actividad, temas] = await Promise.all([
+    listarCursos(),
+    listarEstudiantes(),
+    listarInscripciones().catch(() => []),
+    cargarActividadReciente().catch((e) => {
+      console.error("[inicio] actividad", e);
+      return [];
+    }),
+    cargarTemasDificiles().catch(() => []),
+  ]);
+  return { tenant, cursos, inv, inscripciones, actividad, temas };
 }
 
 export default async function InicioPage() {
@@ -29,10 +51,14 @@ export default async function InicioPage() {
     console.error("[inicio] no se pudo cargar", e);
     return <EmptyState titulo="No pudimos cargar tu inicio" descripcion="Revisa tu conexión e inténtalo de nuevo en unos minutos." />;
   }
-  const { tenant, cursos, inv, inscripciones } = datos;
+  const { tenant, cursos, inv, inscripciones, actividad, temas } = datos;
   const activas = inscripciones.filter((i) => i.estado === "activa");
   const avancePromedio = activas.length ? Math.round(activas.reduce((t, i) => t + i.avance, 0) / activas.length) : null;
   if (!tenant) return <SinAcademia />;
+  const dominio = dominioMedio(inscripciones);
+  const enRiesgo = necesitanAyuda(inscripciones);
+  const alumnosActivos = new Set(activas.map((i) => i.alumnoId)).size;
+  const ahora = Date.now();
 
   const publicados = cursos.filter((c) => c.estado === "publicado");
   const borradores = cursos.filter((c) => c.estado === "borrador");
@@ -147,36 +173,57 @@ export default async function InicioPage() {
 
       {hechos < pasos.length && <Checklist pasos={pasos} />}
 
-      {cursosUrl.length > 0 && (
-        <section className="ci-stack" style={{ gap: "var(--av-space-3)" }} aria-labelledby="ci-cursos-t">
-          <div className="ci-check__head">
-            <h2 className="ci-card__title" id="ci-cursos-t">
-              Tus cursos
-            </h2>
-            <LinkButton href="/cursos" variante="ghost">
-              Ver todos
-            </LinkButton>
-          </div>
-          <ListaCursos cursos={cursosUrl} compacto />
-        </section>
+      {publicados.length > 0 && (
+        <Kpis estudiantes={alumnosActivos} dominioMedio={dominio} avancePromedio={avancePromedio} necesitanAyuda={enRiesgo.length} />
       )}
 
-      <Kpis publicados={publicados.length} borradores={borradores.length} estudiantes={estudiantes} avancePromedio={avancePromedio} />
-      {!tenant.logoUrl && (
-        <section className="ci-card" aria-labelledby="ci-logo-t">
-          <h2 className="ci-card__title" id="ci-logo-t">
-            Sube el logo de tu academia
-          </h2>
-          <p className="ci-card__text">
-            Por ahora mostramos tus iniciales. Con tu logo, tus estudiantes reconocen tu marca en cada pantalla.
-          </p>
-          <div className="ci-actions">
-            <LinkButton href="/mi-academia" variante="secondary">
-              Subir logo
-            </LinkButton>
+      <div className="ci-inicio">
+        <div className="ci-inicio__main">
+          {publicados.length > 0 && (
+            <div className="ci-inicio__ayuda">
+              <NecesitanAyuda alumnos={enRiesgo} />
+            </div>
+          )}
+          {temas.length > 0 && (
+            <div className="ci-inicio__temas">
+              <TemasDificiles temas={temas} />
+            </div>
+          )}
+          {cursosUrl.length > 0 && (
+            <section className="ci-stack ci-inicio__cursos" style={{ gap: "var(--av-space-3)" }} aria-labelledby="ci-cursos-t">
+              <div className="ci-check__head">
+                <h2 className="ci-card__title" id="ci-cursos-t">
+                  Tus cursos
+                </h2>
+                <LinkButton href="/cursos" variante="ghost">
+                  Ver todos
+                </LinkButton>
+              </div>
+              <ListaCursos cursos={cursosUrl} compacto />
+            </section>
+          )}
+          {!tenant.logoUrl && (
+            <section className="ci-card ci-inicio__logo" aria-labelledby="ci-logo-t">
+              <h2 className="ci-card__title" id="ci-logo-t">
+                Sube el logo de tu academia
+              </h2>
+              <p className="ci-card__text">
+                Por ahora mostramos tus iniciales. Con tu logo, tus estudiantes reconocen tu marca en cada pantalla.
+              </p>
+              <div className="ci-actions">
+                <LinkButton href="/mi-academia" variante="secondary">
+                  Subir logo
+                </LinkButton>
+              </div>
+            </section>
+          )}
+        </div>
+        {publicados.length > 0 && (
+          <div className="ci-inicio__act">
+            <ActividadReciente items={actividad} ahora={ahora} />
           </div>
-        </section>
-      )}
+        )}
+      </div>
     </div>
   );
 }
