@@ -39,7 +39,31 @@ export function evaluarPago(
   return { ok: true };
 }
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** Categoría de Mercado Pago para cursos (items.category_id; mejora la aprobación antifraude). */
+export const CATEGORIA_CURSO = "learnings";
+
+/** Nombre del alumno → payer.name / payer.surname: primera palabra y el resto. */
+export function nombreComprador(nombre: string): { name?: string; surname?: string } {
+  const partes = nombre.trim().split(/\s+/).filter(Boolean);
+  if (partes.length === 0) return {};
+  const [name, ...resto] = partes;
+  return resto.length ? { name, surname: resto.join(" ") } : { name };
+}
+
+/** Descripción del ítem: texto plano en una línea, máx. 256 caracteres; cae al título. */
+export function descripcionItem(descripcion: string | null | undefined, titulo: string): string {
+  const t = (descripcion ?? "").replace(/\s+/g, " ").trim() || titulo.trim();
+  return t.length > 256 ? `${t.slice(0, 255)}…` : t;
+}
+
+/**
+ * Clave de idempotencia de la preferencia: estable por inscripción y precio, para que
+ * un doble clic o un reintento no creen dos preferencias. Cambia si cambia el precio.
+ */
+export const claveIdempotenciaPreferencia = (inscripcionId: string, precioCentavos: number) =>
+  `pref-${inscripcionId}-${precioCentavos}`;
+
+const UUID =/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const esUuid = (s: unknown): s is string => typeof s === "string" && UUID.test(s);
 /** Los ids de pago de Mercado Pago son numéricos. */
 export const esIdPago = (s: unknown): s is string => typeof s === "string" && /^\d{1,20}$/.test(s);

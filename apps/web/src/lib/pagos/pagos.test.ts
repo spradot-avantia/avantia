@@ -1,7 +1,7 @@
 import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { manifiestoFirma, parsearXSignature, verificarFirmaMercadoPago } from "./firma";
-import { evaluarPago, type PagoMercadoPago } from "./reglas";
+import { claveIdempotenciaPreferencia, descripcionItem, evaluarPago, nombreComprador, type PagoMercadoPago } from "./reglas";
 
 const SECRETO = "secreto-de-prueba";
 const AHORA = 1_763_550_000_000;
@@ -78,5 +78,28 @@ describe("evaluarPago", () => {
   });
   it("curso gratis nunca se acredita por pasarela", () => {
     expect(evaluarPago(aprobado, { ...esperado, montoCentavos: 0 })).toEqual({ ok: false, motivo: "monto" });
+  });
+});
+
+describe("datos de la preferencia", () => {
+  it("separa nombre y apellido del alumno", () => {
+    expect(nombreComprador("  María José   Pérez Soto ")).toEqual({ name: "María", surname: "José Pérez Soto" });
+    expect(nombreComprador("Ana")).toEqual({ name: "Ana" });
+    expect(nombreComprador("   ")).toEqual({});
+  });
+
+  it("arma la descripción del ítem en una línea y con tope de 256", () => {
+    expect(descripcionItem("Aprende\n\n  finanzas", "Título")).toBe("Aprende finanzas");
+    expect(descripcionItem(null, " Título ")).toBe("Título");
+    expect(descripcionItem("   ", "Título")).toBe("Título");
+    const larga = descripcionItem("x".repeat(400), "T");
+    expect(larga).toHaveLength(256);
+    expect(larga.endsWith("…")).toBe(true);
+  });
+
+  it("usa una clave de idempotencia estable por inscripción y precio", () => {
+    const id = "34f93f41-0615-4df3-bc1d-dfd0a9304f0d";
+    expect(claveIdempotenciaPreferencia(id, 100000)).toBe(claveIdempotenciaPreferencia(id, 100000));
+    expect(claveIdempotenciaPreferencia(id, 100000)).not.toBe(claveIdempotenciaPreferencia(id, 200000));
   });
 });

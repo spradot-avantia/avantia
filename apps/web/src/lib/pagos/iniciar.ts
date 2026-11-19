@@ -7,7 +7,14 @@ import { solicitarInscripcion } from "../alumno/inscripciones";
 import type { AlumnoSesion } from "../alumno/sesion";
 import { getMercadopagoClient } from "../mercadopago";
 import type { Tenant } from "../../types/tenant";
-import { MONEDA_PASARELA, pesosDeCentavos } from "./reglas";
+import {
+  CATEGORIA_CURSO,
+  MONEDA_PASARELA,
+  claveIdempotenciaPreferencia,
+  descripcionItem,
+  nombreComprador,
+  pesosDeCentavos,
+} from "./reglas";
 
 export type ResultadoIniciarPago = { ok: true; url: string } | { ok: false; error: string };
 
@@ -50,12 +57,16 @@ export async function iniciarPagoCurso(
           {
             id: curso.id,
             title: curso.titulo.slice(0, 120),
+            description: descripcionItem(curso.descripcion, curso.titulo),
+            category_id: CATEGORIA_CURSO,
             quantity: 1,
             unit_price: pesosDeCentavos(curso.precioCentavos),
             currency_id: MONEDA_PASARELA,
           },
         ],
-        payer: { email: alumno.correo },
+        payer: { email: alumno.correo, ...nombreComprador(alumno.nombre) },
+        // Curso digital: se aprueba o se rechaza al instante, sin pagos "pendientes" que dejen esperando.
+        binary_mode: true,
         external_reference: r.inscripcion.id,
         metadata: { tenant_id: tenant.id, curso_id: curso.id },
         back_urls: { success: retorno, pending: retorno, failure: retorno },
@@ -64,7 +75,7 @@ export async function iniciarPagoCurso(
         ...(notificacion ? { notification_url: notificacion } : {}),
         statement_descriptor: tenant.nombre.replace(/[^\p{L}\p{N} ]/gu, "").slice(0, 22) || undefined,
       },
-      requestOptions: { idempotencyKey: `pref-${r.inscripcion.id}-${curso.precioCentavos}-${Date.now()}` },
+      requestOptions: { idempotencyKey: claveIdempotenciaPreferencia(r.inscripcion.id, curso.precioCentavos) },
     });
     // Siempre init_point: con credenciales de prueba ya abre el checkout de prueba.
     if (!pref.init_point) return { ok: false, error: "No pudimos abrir el pago. Inténtalo de nuevo." };
