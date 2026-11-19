@@ -3,6 +3,7 @@ import { OnboardingFlow } from "../../../components/creador/marca/OnboardingFlow
 import { tieneAcceso } from "../../../lib/postulacion/acceso";
 import { createSupabaseServerClient } from "../../../lib/supabase/server";
 import { getCurrentTenant } from "../../../lib/creador/tenantActual";
+import { pagosHabilitados } from "../../../lib/pagos/iniciar";
 
 export const dynamic = "force-dynamic";
 
@@ -20,5 +21,5 @@ export default async function OnboardingPage() {
   }
 
   const dominioRaiz = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "avantia.app";
-  return <OnboardingFlow tenant={tenant} dominioRaiz={dominioRaiz} />;
+  return <OnboardingFlow tenant={tenant} dominioRaiz={dominioRaiz} cobrosEnLinea={pagosHabilitados()} />;
 }

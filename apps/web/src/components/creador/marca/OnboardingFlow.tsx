@@ -36,7 +36,16 @@ const TITULOS: Record<string, { h: string; p: string }> = {
 type EstadoSub = "idle" | "revisando" | "libre" | "no_disponible";
 
 /** tenant = null: la academia aún no existe y el paso 2 la crea (RQ-02). */
-export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador | null; dominioRaiz: string }) {
+export function OnboardingFlow({
+  tenant,
+  dominioRaiz,
+  cobrosEnLinea = false,
+}: {
+  tenant: TenantCreador | null;
+  dominioRaiz: string;
+  /** Pagos con Mercado Pago activos en este entorno (ADR 046). */
+  cobrosEnLinea?: boolean;
+}) {
   const router = useRouter();
   const [paso, setPaso] = useState("1");
   const [nombre, setNombre] = useState(tenant?.nombre ?? "");
@@ -214,6 +223,7 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
               <li>Registrar a tus estudiantes y dar acceso por invitación o por enlace.</li>
               <li>Publicar un curso y compartir su enlace.</li>
               <li>Poner tu logo y tu color para que se vea como tu academia.</li>
+              {cobrosEnLinea && <li>Ponerle precio a un curso y cobrar con Mercado Pago.</li>}
             </ul>
           </section>
           <section aria-labelledby="ob-pronto">
@@ -222,7 +232,7 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
             </h2>
             <ul className="mk-lista mk-lista--no" style={{ marginTop: 10 }}>
               <li>Sesiones en vivo (próximamente).</li>
-              <li>Cobros, comunidad y estructurar cursos con IA.</li>
+              <li>{cobrosEnLinea ? "Comunidad y estructurar cursos con IA." : "Cobros, comunidad y estructurar cursos con IA."}</li>
             </ul>
           </section>
         </div>
