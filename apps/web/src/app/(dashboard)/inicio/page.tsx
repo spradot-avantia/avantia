@@ -62,7 +62,11 @@ export default async function InicioPage() {
 
   const publicados = cursos.filter((c) => c.estado === "publicado");
   const borradores = cursos.filter((c) => c.estado === "borrador");
-  const estudiantes = new Set(inv.filter((i) => i.estado !== "revocada").map((i) => i.email)).size;
+  // Invitados o inscritos (por enlace o pago): una invitación aceptada también es una
+  // inscripción, así que se toma el mayor para no contar dos veces a la misma persona.
+  const invitados = new Set(inv.filter((i) => i.estado !== "revocada").map((i) => i.email)).size;
+  const inscritos = new Set(inscripciones.filter((i) => i.estado === "pendiente" || i.estado === "activa").map((i) => i.alumnoId)).size;
+  const estudiantes = Math.max(invitados, inscritos);
   const primerPublicado = publicados[publicados.length - 1] ?? null; // el publicado mas antiguo
   const borrador = borradores[0] ?? null;
   const urlPublicado = primerPublicado ? urlPublicaCurso(tenant, primerPublicado.slug) : null;

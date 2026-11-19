@@ -85,10 +85,11 @@ export async function listarCursos(): Promise<CursoResumen[]> {
     .order("created_at", { ascending: false });
   if (!cursos?.length) return [];
 
-  const [mods, lecs, invs] = await Promise.all([
+  const [mods, lecs, invs, inscs] = await Promise.all([
     db.from("modulos").select("curso_id").eq("tenant_id", tenant.id),
     db.from("lecciones").select("curso_id").eq("tenant_id", tenant.id),
     db.from("invitaciones").select("curso_id").eq("tenant_id", tenant.id).neq("estado", "revocada"),
+    db.from("inscripciones").select("curso_id").eq("tenant_id", tenant.id).in("estado", ["pendiente", "activa"]),
   ]);
   const contar = (filas: { curso_id: string }[] | null) => {
     const m = new Map<string, number>();
@@ -98,11 +99,14 @@ export async function listarCursos(): Promise<CursoResumen[]> {
   const cm = contar(mods.data);
   const cl = contar(lecs.data);
   const ci = contar(invs.data);
+  const cn = contar(inscs.data);
   return cursos.map((c) => ({
     ...mapCurso(c),
     totalModulos: cm.get(c.id) ?? 0,
     totalLecciones: cl.get(c.id) ?? 0,
-    totalEstudiantes: ci.get(c.id) ?? 0,
+    // Invitados o inscritos (por enlace o pago). Una invitación aceptada también es una
+    // inscripción: se toma el mayor para no contar dos veces a la misma persona.
+    totalEstudiantes: Math.max(ci.get(c.id) ?? 0, cn.get(c.id) ?? 0),
   }));
 }
 
