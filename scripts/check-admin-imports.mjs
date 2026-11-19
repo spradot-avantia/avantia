@@ -5,11 +5,12 @@
 // LISTA BLANCA (cada entrada debe justificarse; para agregar una, revisa que el
 // archivo filtre por tenant_id / no sea codigo de cliente y anotalo aqui):
 //   - lib/tenant/resolve.ts            resolver host -> tenant (cruza tenants por diseno)
-//   - app/api/tenants/resolve/route.ts resolucion de host para el middleware
-//   - app/api/tenants/domain/route.ts  alta de dominio propio (filtra por tenant)
+//   - app/api/alumno/tiempo-leccion/route.ts  tiempo activo del alumno (ADR 040): mismo patron de lib/alumno (sesion del
+//                                      alumno sin RLS posible); tenant del host, alumno de la sesion, cada query filtra por tenant_id
 //   - app/(admin)/admin/ (prefijo)     zona interna de Avantia (ADR 017): el layout exige esStaff() (deniega por
 //                                      defecto) y trabaja sobre TODAS las academias por diseno. Un archivo "use client"
 //                                      ahi sigue prohibido
+//   - lib/admin/analiticaCreadores.ts  analitica de /admin (ADR 043): verifica esStaff() antes de leer; cruza academias por diseno
 //   - lib/admin/actions.ts             acciones de /admin: cada una verifica esStaff() por si misma (una Server Action
 //                                      se puede invocar sin pasar por el layout); solo reciben ids/correos del equipo
 //   - lib/staff.ts                     tabla `staff` (plataforma, sin tenant_id, cerrada a clientes; ADR 016)
@@ -33,9 +34,9 @@ const RAIZ = join(process.cwd(), "apps", "web", "src");
 const BASE = "apps/web/src/";
 const LISTA_BLANCA = new Set([
   "lib/tenant/resolve.ts",
-  "app/api/tenants/resolve/route.ts",
-  "app/api/tenants/domain/route.ts",
+  "app/api/alumno/tiempo-leccion/route.ts",
   "app/(admin)/admin/", // prefijo: ver nota arriba
+  "lib/admin/analiticaCreadores.ts",
   "lib/admin/actions.ts",
   "lib/staff.ts",
   "lib/postulacion/acceso.ts",
