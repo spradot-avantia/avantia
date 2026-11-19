@@ -79,7 +79,7 @@ export default function Landing() {
         <section className="lp-hero" aria-labelledby="hero-title">
           <div className="lp-wrap lp-hero__grid">
             <div className="lp-hero__copy">
-              <span className="av-overline">Para expertos que ya enseñan online</span>
+              <span className="av-overline">Para Avanters: expertos que ya enseñan online</span>
               <h1 id="hero-title"><span>Tu academia online,</span> <span className="lp-hero__marca">con tu marca</span></h1>
               <p className="lp-sub">Sube tus cursos, recibe los pagos de tus alumnos y entrégales una experiencia con tu marca, a tu manera.</p>
               <PostularCta />
@@ -126,7 +126,7 @@ export default function Landing() {
               <span className="av-overline">Programa fundador</span>
               <h2 className="av-h2">Lanza tu academia gratis, con acompañamiento de nuestro equipo</h2>
               <span className="lp-cupos">{textoCupos()} disponibles en el primer grupo</span>
-              <p className="av-lede">Buscamos a {CUPOS_FUNDADOR_TOTAL} expertos que ya enseñan online para construir Avantia junto a ellos.</p>
+              <p className="av-lede">Buscamos a {CUPOS_FUNDADOR_TOTAL} Avanters, expertos que ya enseñan online, para construir Avantia junto a ellos.</p>
             </div>
             <div className="lp-fgrid">
               <div className="lp-fbox">
