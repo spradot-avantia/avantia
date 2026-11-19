@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<title>La regla 50/30/20 · Finanzas Claras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=block" rel="stylesheet">
+<style>
+  /* Video explicativo de la lección (demo, B-48). Marca de la academia ficticia, no de Avantia.
+     Se renderiza cuadro a cuadro con render.mjs: todas las animaciones son CSS y se adelantan
+     con document.getAnimations(). Duración total: 74 s. */
+  @property --n { syntax: "<integer>"; initial-value: 0; inherits: false; }
+  :root {
+    --marca: #0f766e; --marca-suave: #ccfbf1;
+    --nec: #0f766e; --gus: #d97706; --aho: #1d4ed8;
+    --fondo: #eef6f5; --tinta: #17212b; --suave: #50606a; --linea: #d3e4e1;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--fondo); }
+  body { font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: var(--tinta); position: relative; }
+
+  .marca { position: absolute; top: 56px; left: 72px; display: flex; align-items: center; gap: 18px; font-weight: 700; font-size: 30px; }
+  .marca i { width: 64px; height: 64px; border-radius: 18px; background: var(--marca); color: #fff; font-style: normal; display: grid; place-items: center; font-size: 26px; letter-spacing: .5px; }
+  .modulo { position: absolute; top: 72px; right: 72px; font-size: 24px; color: var(--suave); font-weight: 600; }
+
+  .esc { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 160px; opacity: 0;
+         animation: entra .9s var(--a) both, sale .6s var(--b) forwards; }
+  @keyframes entra { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  @keyframes sale { from { opacity: 1; } to { opacity: 0; transform: translateY(-20px); } }
+  .ap { opacity: 0; animation: entra .8s var(--d) both; }
+
+  h1 { font-size: 132px; font-weight: 800; letter-spacing: -3px; line-height: 1; }
+  h2 { font-size: 76px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.08; }
+  .sub { font-size: 40px; color: var(--suave); margin-top: 28px; font-weight: 500; max-width: 1300px; line-height: 1.35; }
+  .acento { color: var(--marca); }
+
+  /* Monto que cuenta hacia arriba */
+  .monto { font-size: 170px; font-weight: 800; letter-spacing: -4px; margin: 24px 0 8px; }
+  .monto::before { content: "$" counter(n); counter-reset: n var(--n); animation: cuenta 2.2s var(--d) both cubic-bezier(.2,.7,.2,1); }
+  @keyframes cuenta { from { --n: 0; } to { --n: 800; } }
+  .miles::after { content: ".000"; }
+
+  /* Barra del sueldo */
+  .barra { position: relative; height: 120px; border-radius: 28px; background: #dceae7; overflow: hidden; display: flex; margin-top: 36px; }
+  .llena { position: absolute; inset: 0; background: #b9c2cb; transform-origin: left; animation: llena 1.6s var(--d) both cubic-bezier(.3,.7,.2,1); }
+  @keyframes llena { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .seg { height: 100%; overflow: hidden; white-space: nowrap; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 46px;
+         width: 0; animation: crece 1.2s var(--d) both cubic-bezier(.3,.7,.2,1); }
+  @keyframes crece { from { width: 0; } to { width: var(--w); } }
+  .nec { background: var(--nec); } .gus { background: var(--gus); } .aho { background: var(--aho); }
+
+  .tarjetas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 56px; }
+  .tarjeta { background: #fff; border: 2px solid var(--linea); border-radius: 32px; padding: 52px 44px 40px; opacity: 0; animation: entra .8s var(--d) both; box-shadow: inset 0 14px 0 var(--c); overflow: hidden; }
+  .tarjeta .pct { font-size: 64px; font-weight: 800; color: var(--c); }
+  .tarjeta .que { font-size: 40px; font-weight: 700; margin-top: 4px; }
+  .tarjeta .cuanto { font-size: 34px; color: var(--suave); margin-top: 6px; font-weight: 600; }
+  .tarjeta ul { list-style: none; padding: 0; margin-top: 22px; display: grid; gap: 10px; }
+  .tarjeta li { font-size: 30px; color: var(--tinta); opacity: 0; animation: entra .6s var(--d) both; }
+  .tarjeta li::before { content: "· "; color: var(--c); font-weight: 800; }
+
+  /* Págate primero: flecha que lleva el ahorro apenas llega el sueldo */
+  .flujo { display: flex; align-items: center; gap: 48px; margin-top: 64px; }
+  .caja { border-radius: 32px; padding: 40px 52px; font-size: 40px; font-weight: 700; background: #fff; border: 2px solid var(--linea); }
+  .caja small { display: block; font-size: 28px; color: var(--suave); font-weight: 600; margin-bottom: 8px; }
+  .caja.ahorro { background: var(--aho); color: #fff; border-color: var(--aho); }
+  .caja.ahorro small { color: #dbe4ff; }
+  .flecha { width: 260px; height: 16px; background: var(--aho); border-radius: 8px; position: relative; transform-origin: left; animation: llena 1s var(--d) both; }
+  .flecha::after { content: ""; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border: 26px solid transparent; border-left: 34px solid var(--aho); border-right: 0; }
+
+  .reglas { display: grid; gap: 28px; margin-top: 56px; }
+  .regla { display: flex; gap: 28px; align-items: baseline; font-size: 46px; font-weight: 600; opacity: 0; animation: entra .8s var(--d) both; }
+  .regla b { color: var(--marca); font-weight: 800; min-width: 64px; }
+
+  .resumen { display: flex; gap: 28px; margin-top: 56px; }
+  .chip { font-size: 44px; font-weight: 800; padding: 26px 40px; border-radius: 999px; color: #fff; opacity: 0; animation: entra .7s var(--d) both; }
+  .cta { margin-top: 72px; font-size: 40px; font-weight: 700; color: var(--marca); background: var(--marca-suave); align-self: flex-start;
+         padding: 26px 44px; border-radius: 24px; opacity: 0; animation: entra .8s var(--d) both; }
+
+  .progreso { position: absolute; left: 0; bottom: 0; height: 10px; background: var(--marca); width: 100%; transform-origin: left; animation: llena 74s 0s linear both; }
+</style>
+</head>
+<body>
+  <div class="marca"><i>FC</i>Finanzas Claras</div>
+  <div class="modulo">Semana 1 · Tu presupuesto</div>
+
+  <!-- 1. Portada (0–6,5 s) -->
+  <section class="esc" style="--a:.2s; --b:6s">
+    <h1>La regla <span class="acento">50/30/20</span></h1>
+    <p class="sub ap" style="--d:1.2s">Cómo repartir tu sueldo en tres partes, sin planillas eternas.</p>
+  </section>
+
+  <!-- 2. El sueldo (6,5–14 s) -->
+  <section class="esc" style="--a:6.6s; --b:13.6s">
+    <h2 class="ap" style="--d:6.8s">Imagina que recibes al mes</h2>
+    <div class="monto miles" style="--d:7.6s; --fin:800"></div>
+    <p class="sub ap" style="--d:9.4s">líquidos, ya descontados impuestos y cotizaciones.</p>
+    <div class="barra"><div class="llena" style="--d:10.4s"></div></div>
+  </section>
+
+  <!-- 3. El reparto (14–46 s) -->
+  <section class="esc" style="--a:14.2s; --b:45.6s">
+    <h2 class="ap" style="--d:14.4s">Divídelo en tres partes</h2>
+    <div class="barra">
+      <div class="seg nec" style="--d:16s; --w:50%">50%</div>
+      <div class="seg gus" style="--d:25s; --w:30%">30%</div>
+      <div class="seg aho" style="--d:34s; --w:20%">20%</div>
+    </div>
+    <div class="tarjetas">
+      <div class="tarjeta" style="--c:var(--nec); --d:16.6s">
+        <div class="pct">50%</div><div class="que">Necesidades</div><div class="cuanto">$400.000</div>
+        <ul><li style="--d:18.4s">Arriendo o dividendo</li><li style="--d:19.6s">Comida y transporte</li><li style="--d:20.8s">Cuentas básicas</li></ul>
+      </div>
+      <div class="tarjeta" style="--c:var(--gus); --d:25.6s">
+        <div class="pct">30%</div><div class="que">Gustos</div><div class="cuanto">$240.000</div>
+        <ul><li style="--d:27.4s">Salidas y delivery</li><li style="--d:28.6s">Streaming y suscripciones</li><li style="--d:29.8s">Ropa y panoramas</li></ul>
+      </div>
+      <div class="tarjeta" style="--c:var(--aho); --d:34.6s">
+        <div class="pct">20%</div><div class="que">Ahorro y deudas</div><div class="cuanto">$160.000</div>
+        <ul><li style="--d:36.4s">Fondo de emergencia</li><li style="--d:37.6s">Pagar deudas caras</li><li style="--d:38.8s">Metas: viaje, estudios</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Págate primero (46–56 s) -->
+  <section class="esc" style="--a:46.2s; --b:55.6s">
+    <h2>El truco: <span class="acento">págate primero</span></h2>
+    <p class="sub ap" style="--d:47.4s">No ahorres «lo que sobra». Aparta el 20% el mismo día que llega el sueldo.</p>
+    <div class="flujo">
+      <div class="caja ap" style="--d:49s"><small>Día de pago</small>$800.000</div>
+      <div class="flecha" style="--d:50.2s"></div>
+      <div class="caja ahorro ap" style="--d:51.2s"><small>Transferencia automática</small>$160.000 al ahorro</div>
+    </div>
+  </section>
+
+  <!-- 5. Si no cuadra (56–65 s) -->
+  <section class="esc" style="--a:56.2s; --b:64.6s">
+    <h2>¿Tus necesidades pasan del 50%?</h2>
+    <div class="reglas">
+      <div class="regla" style="--d:57.6s"><b>1.</b>Es una guía, no una ley: parte por medir.</div>
+      <div class="regla" style="--d:59.4s"><b>2.</b>Recorta primero en gustos, no en ahorro.</div>
+      <div class="regla" style="--d:61.2s"><b>3.</b>Aunque sea un 5%, empieza este mes.</div>
+    </div>
+  </section>
+
+  <!-- 6. Resumen y repaso (65–74 s) -->
+  <section class="esc" style="--a:65.2s; --b:80s">
+    <h2>En resumen</h2>
+    <div class="resumen">
+      <div class="chip nec" style="--d:66.4s">50 necesidades</div>
+      <div class="chip gus" style="--d:67.2s">30 gustos</div>
+      <div class="chip aho" style="--d:68s">20 ahorro</div>
+    </div>
+    <div class="cta" style="--d:69.6s">Ahora, el repaso: 3 preguntas cortas →</div>
+  </section>
+
+  <div class="progreso"></div>
+</body>
+</html>
