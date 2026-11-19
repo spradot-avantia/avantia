@@ -152,6 +152,7 @@ function cursoBase(over: Partial<CursoCompleto> = {}): CursoCompleto {
     fechaInicio: null,
     fechaTermino: null,
     acceso: "enlace",
+    precioCentavos: 0,
     publishedAt: null,
     createdAt: "",
     updatedAt: "",
@@ -239,7 +240,7 @@ describe("módulos enriquecidos (ADR 029)", () => {
   it("los campos nuevos no bloquean la publicación", () => {
     const base = validarPublicacion({
       id: "c", slug: "s", titulo: "Curso de prueba", descripcion: "d".repeat(60), publico: null, estado: "borrador",
-      modalidad: "a_su_ritmo", fechaInicio: null, fechaTermino: null, acceso: "invitados", publishedAt: null, createdAt: "", updatedAt: "",
+      modalidad: "a_su_ritmo", fechaInicio: null, fechaTermino: null, acceso: "invitados", precioCentavos: 0, publishedAt: null, createdAt: "", updatedAt: "",
       objetivos: ["Algo"],
       modulos: [
         {

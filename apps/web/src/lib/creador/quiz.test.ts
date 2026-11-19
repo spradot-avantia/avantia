@@ -66,6 +66,7 @@ const curso = (quiz: PreguntaQuiz[] | undefined): CursoCompleto => ({
   fechaInicio: null,
   fechaTermino: null,
   acceso: "enlace",
+  precioCentavos: 0,
   publishedAt: null,
   createdAt: "",
   updatedAt: "",

@@ -13,7 +13,7 @@ const titulos: Titulos = {
 const insc = (p: Partial<FilaInscripcion>): FilaInscripcion => ({
   id: "i", alumnoId: "a", nombre: "N", correo: "", cursoId: "c1", cursoTitulo: "Onboarding", precioCentavos: 0,
   estado: "activa", origen: "invitacion", campana: null, creadaEn: "2026-11-01T00:00:00Z", avance: 0, completadas: 0,
-  totalLecciones: 4, xp: 0, dominio: null, ultimaActividad: "2026-11-18T00:00:00Z", sinActividad: false, ...p,
+  totalLecciones: 4, xp: 0, dominio: null, ultimaActividad: "2026-11-18T00:00:00Z", sinActividad: false, pago: null, ...p,
 });
 
 describe("armarActividad", () => {

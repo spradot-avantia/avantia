@@ -3,6 +3,7 @@
 import { useRef, useState, type ReactNode } from "react";
 import { despublicarCursoAction, publicarCursoAction } from "../../../lib/creador/actions";
 import { leccionLista } from "../../../lib/creador/reglasPublicacion";
+import { formatearPrecio } from "../../../lib/sitio/tipos";
 import { PASOS_EDITOR, type PasoEditor, type ResultadoValidacionPublicacion } from "../../../lib/creador/types";
 import { Button, LinkButton } from "../Button";
 import { Callout } from "../Callout";
@@ -116,6 +117,11 @@ export function PasoRevisar({ ctx, validacion }: { ctx: EditorCtx; validacion: R
       k: "Acceso",
       paso: "acceso",
       v: curso.acceso === "invitados" ? "Solo personas que yo invite" : "Cualquiera con el enlace",
+    },
+    {
+      k: "Precio",
+      paso: "acceso",
+      v: curso.precioCentavos > 0 ? `${formatearPrecio(curso.precioCentavos, "CLP")} · pago con Mercado Pago` : "Gratis",
     },
   ];
 

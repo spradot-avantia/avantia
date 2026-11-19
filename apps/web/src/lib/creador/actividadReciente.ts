@@ -3,7 +3,7 @@
 import { armarActividad, temasConDificultad, type ItemActividad, type TemaDificil, type Titulos } from "./actividadReglas";
 import { requireCreadorContext } from "./tenantActual";
 
-const TIPOS = ["leccion_completada", "curso_completado", "inscripcion_activada", "intento_quiz"];
+const TIPOS = ["leccion_completada", "curso_completado", "inscripcion_activada", "pago_registrado", "intento_quiz"];
 /** Eventos crudos a leer: los quiz llegan uno por respuesta y se agrupan después. */
 const MAX_EVENTOS = 120;
 const MAX_ENTREGAS = 10;

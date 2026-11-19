@@ -3,12 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FormAccion } from "../../../../../../components/alumno/FormAccion";
 import { FichaCurso } from "../../../../../../components/tenant/FichaCurso";
-import { inscribirseAction } from "../../../../../../lib/alumno/actions";
+import { inscribirseAction, pagarCursoAction } from "../../../../../../lib/alumno/actions";
 import { cargarCurso } from "../../../../../../lib/alumno/catalogo";
 import { getTenantPublico } from "../../../../../../lib/alumno/contexto";
 import { inscripcionDe } from "../../../../../../lib/alumno/inscripciones";
 import { getAlumnoActual } from "../../../../../../lib/alumno/sesion";
 import { limpiarCampana } from "../../../../../../lib/alumno/validacion";
+import { pagosHabilitados } from "../../../../../../lib/pagos/iniciar";
+import { formatearPrecio } from "../../../../../../lib/sitio/tipos";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +46,20 @@ export default async function CursoPage({ params, searchParams }: { params: { do
   const q = new URLSearchParams({ curso: curso.slug, origen });
   if (campana) q.set("campana", campana);
 
+  // Curso con precio y abierto por enlace: se paga con Mercado Pago (ADR 046).
+  const precio = curso.precioCentavos > 0 ? formatearPrecio(curso.precioCentavos, "CLP") : null;
+  const pagable = !!precio && curso.acceso === "enlace" && pagosHabilitados();
+  const formPago = (texto: string) => (
+    <FormAccion action={pagarCursoAction}>
+      <input type="hidden" name="curso" value={curso.slug} />
+      {campana && <input type="hidden" name="campana" value={campana} />}
+      <button type="submit" className="fc-cta">
+        {texto}
+      </button>
+      <p className="al-muted">Pagas con Mercado Pago. Al confirmarse el pago, el curso se abre de inmediato.</p>
+    </FormAccion>
+  );
+
   let cta: React.ReactNode;
   if (insc?.estado === "activa") {
     cta = (
@@ -51,12 +67,16 @@ export default async function CursoPage({ params, searchParams }: { params: { do
         Continuar el curso
       </Link>
     );
+  } else if (insc?.estado === "pendiente" && pagable) {
+    cta = formPago(`Pagar ${precio}`);
   } else if (insc?.estado === "pendiente") {
     cta = (
       <Link className="fc-cta" href="/mis-cursos">
         Ver mi inscripción (pendiente)
       </Link>
     );
+  } else if (alumno && !insc && pagable) {
+    cta = formPago(`Inscribirme por ${precio}`);
   } else if (alumno && !insc) {
     cta = (
       <FormAccion action={inscribirseAction}>
@@ -71,7 +91,7 @@ export default async function CursoPage({ params, searchParams }: { params: { do
   } else if (!alumno) {
     cta = (
       <Link className="fc-cta" href={`/registro?${q.toString()}`}>
-        {curso.acceso === "invitados" ? "Entrar al curso" : "Inscribirme"}
+        {curso.acceso === "invitados" ? "Entrar al curso" : pagable ? `Inscribirme por ${precio}` : "Inscribirme"}
       </Link>
     );
   } else {

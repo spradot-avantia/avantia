@@ -39,6 +39,7 @@ export interface EventosServidor {
   curso_completado: PropsBase;
   intento_quiz: PropsBase;
   correo_cambiado: PropsBase;
+  pago_registrado: PropsBase;
 }
 
 export type NombreEventoServidor = keyof EventosServidor;

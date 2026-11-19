@@ -127,6 +127,8 @@ export interface Curso {
   fechaInicio: string | null; // YYYY-MM-DD
   fechaTermino: string | null;
   acceso: AccesoCurso;
+  /** CLP sin decimales × 100 (columna precio_centavos). 0 = gratis. */
+  precioCentavos: number;
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -176,4 +178,5 @@ export type CampoCurso =
   | "modalidad"
   | "fechaInicio"
   | "fechaTermino"
-  | "acceso";
+  | "acceso"
+  | "precio";

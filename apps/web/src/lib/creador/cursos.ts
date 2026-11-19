@@ -29,6 +29,7 @@ export function mapCurso(r: any): Curso {
     fechaInicio: r.fecha_inicio,
     fechaTermino: r.fecha_termino,
     acceso: r.acceso,
+    precioCentavos: r.precio_centavos ?? 0,
     publishedAt: r.published_at,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -73,7 +74,7 @@ export function mapMaterial(r: any): Material {
 }
 
 const COLS_CURSO =
-  "id, slug, titulo, descripcion, publico, estado, modalidad, fecha_inicio, fecha_termino, acceso, published_at, created_at, updated_at";
+  "id, slug, titulo, descripcion, publico, estado, modalidad, fecha_inicio, fecha_termino, acceso, precio_centavos, published_at, created_at, updated_at";
 
 export async function listarCursos(): Promise<CursoResumen[]> {
   const { tenant, db } = await requireCreadorContext();
@@ -210,6 +211,17 @@ export async function updateCursoCampo(cursoId: string, campo: CampoCurso, valor
     return { ok: true, data: undefined };
   }
 
+  if (campo === "precio") {
+    // El editor trabaja en pesos (CLP sin decimales); la columna guarda centavos.
+    const { error } = await db
+      .from("cursos")
+      .update({ precio_centavos: (v.valor as number) * 100 })
+      .eq("tenant_id", tenant.id)
+      .eq("id", cursoId);
+    if (error) return { ok: false, error: "No pudimos guardar el precio. Inténtalo de nuevo." };
+    return { ok: true, data: undefined };
+  }
+
   const columnas: Record<string, string> = {
     titulo: "titulo",
     descripcion: "descripcion",
@@ -245,7 +257,7 @@ const CAMPOS_POR_PASO: Partial<Record<PasoEditor, CampoCurso[]>> = {
   esencial: ["titulo", "descripcion", "publico"],
   objetivo: ["objetivos"],
   modalidad: ["modalidad", "fechaInicio", "fechaTermino"],
-  acceso: ["acceso"],
+  acceso: ["acceso", "precio"],
 };
 
 /** Guarda varios campos de un paso, uno por uno; devuelve errores por campo. */

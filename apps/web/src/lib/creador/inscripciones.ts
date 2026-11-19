@@ -29,6 +29,8 @@ export interface FilaInscripcion {
   ultimaActividad: string | null;
   /** Activa y sin entrar hace 7 días o más. */
   sinActividad: boolean;
+  /** Último pago registrado (manual o por Mercado Pago, ADR 046). */
+  pago: { medio: string; referencia: string | null } | null;
 }
 
 const DIAS_SIN_ACTIVIDAD = 7;
@@ -44,13 +46,18 @@ export async function listarInscripciones(opciones: { conQuiz?: boolean } = {}):
     .order("created_at", { ascending: false });
   if (!insc?.length) return [];
 
-  const [alumnos, cursos, mods, lecs, prog] = await Promise.all([
+  const [alumnos, cursos, mods, lecs, prog, pagos] = await Promise.all([
     db.from("alumnos").select("id, nombre, correo, ultimo_ingreso_at").eq("tenant_id", tenant.id),
     db.from("cursos").select("id, titulo, precio_centavos").eq("tenant_id", tenant.id),
     db.from("modulos").select("id, curso_id").eq("tenant_id", tenant.id),
     db.from("lecciones").select("id, curso_id, modulo_id").eq("tenant_id", tenant.id),
     db.from("progreso").select("alumno_id, curso_id, leccion_id, completada_at, ultimo_acceso_at").eq("tenant_id", tenant.id),
+    db.from("pagos").select("inscripcion_id, medio, referencia_externa, created_at").eq("tenant_id", tenant.id).order("created_at", { ascending: true }),
   ]);
+  // El último pago de cada inscripción gana (orden ascendente + Map).
+  const pagoPorInsc = new Map(
+    (pagos.data ?? []).map((p) => [p.inscripcion_id as string, { medio: p.medio as string, referencia: (p.referencia_externa as string | null) ?? null }]),
+  );
   // XP y dominio del quiz: agregados en la base y solo de inscripciones activas (tope en dominioAlumnos).
   const quiz = conQuiz
     ? await resumenQuizPorAlumno(
@@ -96,6 +103,7 @@ export async function listarInscripciones(opciones: { conQuiz?: boolean } = {}):
       dominio: q?.dominio ?? null,
       ultimaActividad: ultima,
       sinActividad: i.estado === "activa" && (!ultima || new Date(ultima).getTime() < limite),
+      pago: pagoPorInsc.get(i.id) ?? null,
     };
   });
 }

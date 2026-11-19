@@ -186,6 +186,15 @@ export function TablaAlumnos({ filas }: { filas: FilaInscripcion[] }) {
                   Origen: {ORIGEN[f.origen]}
                   {f.campana ? ` · ${f.campana}` : ""}
                 </span>
+                {f.pago && (
+                  <span title={f.pago.referencia ? `Referencia: ${f.pago.referencia}` : undefined}>
+                    {f.pago.medio === "pasarela"
+                      ? `Pagado · Mercado Pago${f.pago.referencia ? ` · ref. ${f.pago.referencia}` : ""}`
+                      : f.pago.medio === "sin_costo"
+                        ? "Sin costo"
+                        : "Pago manual registrado"}
+                  </span>
+                )}
               </div>
             </div>
           </div>

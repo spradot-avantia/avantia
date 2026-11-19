@@ -7,7 +7,7 @@ export const DOMINIO_BAJO = 60;
 /** Acierto bajo en una sesión de quiz (marca el ítem como alerta). */
 export const ACIERTO_BAJO = 60;
 
-export type TipoActividad = "leccion" | "quiz" | "curso" | "inscripcion" | "tarea";
+export type TipoActividad = "leccion" | "quiz" | "curso" | "inscripcion" | "pago" | "tarea";
 export type TonoActividad = "ok" | "alerta" | "neutro";
 
 export interface ItemActividad {
@@ -92,6 +92,13 @@ export function armarActividad(
           id: e.id, alumnoId: e.alumnoId, alumno: nombre(e.alumnoId), tipo: "inscripcion",
           texto: `se inscribió en ${comillas(t.cursos.get(e.cursoId ?? ""), "un curso")}`,
           detalle: null, tono: "neutro", fecha: e.fecha,
+        });
+        break;
+      case "pago_registrado":
+        items.push({
+          id: e.id, alumnoId: e.alumnoId, alumno: nombre(e.alumnoId), tipo: "pago",
+          texto: `pagó ${comillas(t.cursos.get(e.cursoId ?? ""), "un curso")}`,
+          detalle: "Mercado Pago", tono: "ok", fecha: e.fecha,
         });
         break;
       case "intento_quiz": {

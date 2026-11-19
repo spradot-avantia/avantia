@@ -1728,3 +1728,8 @@ alter table quiz_respuestas add column if not exists duracion_ms integer
 revoke truncate, trigger, references on all tables in schema public from anon, authenticated;
 alter default privileges for role postgres in schema public
   revoke truncate, trigger, references on tables from anon, authenticated;
+
+-- Idempotencia de pagos de la pasarela (migración 0026, ADR 046): un pago de Mercado Pago se
+-- registra una sola vez por academia. Índice completo (no parcial) para ON CONFLICT de PostgREST.
+create unique index if not exists pagos_tenant_referencia_uidx
+  on pagos (tenant_id, referencia_externa);

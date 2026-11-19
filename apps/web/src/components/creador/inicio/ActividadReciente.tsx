@@ -7,6 +7,7 @@ const ICONO: Record<TipoActividad, string> = {
   quiz: "M9 9a3 3 0 1 1 3 3v2M12 18h.01",
   curso: "M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z",
   inscripcion: "M12 5v14M5 12h14",
+  pago: "M3 7h18v10H3zM3 11h18M7 15h3",
   tarea: "M14 3H6v18h12V7l-4-4zM14 3v4h4",
 };
 
@@ -15,6 +16,7 @@ const ETIQUETA: Record<TipoActividad, string> = {
   quiz: "Quiz",
   curso: "Curso terminado",
   inscripcion: "Inscripción",
+  pago: "Pago",
   tarea: "Tarea",
 };
 

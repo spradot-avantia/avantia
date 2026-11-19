@@ -45,6 +45,14 @@ export const objetivosCurso = z
 
 export const modalidadCurso = z.enum(["a_su_ritmo", "con_fechas"]);
 export const accesoCurso = z.enum(["invitados", "enlace"]);
+/** Precio en pesos chilenos, sin decimales (ADR 046). 0 = gratis. */
+export const PRECIO_MIN = 1000;
+export const PRECIO_MAX = 5_000_000;
+export const precioCurso = z
+  .number({ error: "Escribe el precio en pesos, solo números." })
+  .int("El precio va sin decimales.")
+  .refine((n) => n === 0 || n >= PRECIO_MIN, `El precio mínimo es $${PRECIO_MIN.toLocaleString("es-CL")} (o 0 si es gratis).`)
+  .refine((n) => n <= PRECIO_MAX, `El precio máximo es $${PRECIO_MAX.toLocaleString("es-CL")}.`);
 const fechaIso = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida.")
@@ -112,6 +120,7 @@ export function validarCampoCurso(
     objetivos: objetivosCurso,
     modalidad: modalidadCurso,
     acceso: accesoCurso,
+    precio: precioCurso,
     fechaInicio: fechaIso.nullable(),
     fechaTermino: fechaIso.nullable(),
   };

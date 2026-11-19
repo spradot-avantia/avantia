@@ -11,7 +11,8 @@ export type TipoEventoAlumno =
   | "curso_completado"
   | "intento_quiz"
   | "leccion_abierta"
-  | "correo_cambiado";
+  | "correo_cambiado"
+  | "pago_registrado";
 
 export async function registrarEvento(
   tenantId: string,

@@ -12,7 +12,8 @@ import {
   restablecerContrasena,
   type EstadoForm,
 } from "./cuentas";
-import { requireTenantPublico } from "./contexto";
+import { origenPublico, requireTenantPublico } from "./contexto";
+import { iniciarPagoCurso } from "../pagos/iniciar";
 import { solicitarInscripcion } from "./inscripciones";
 import { actualizarNombre, cambiarContrasena, confirmarCambioCorreo, solicitarCambioCorreo } from "./perfil";
 import { completarLeccion } from "./progreso";
@@ -101,6 +102,22 @@ export async function inscribirseAction(_: EstadoForm, fd: FormData): Promise<Es
     solicitud: txt(fd, "solicitud") === "1",
   });
   return r.ok ? destino("/mis-cursos") : { ok: false, error: r.error };
+}
+
+/**
+ * Pagar un curso con Mercado Pago: crea (o reutiliza) la inscripción pendiente y
+ * devuelve la URL del checkout. El precio sale de la base, no del formulario.
+ */
+export async function pagarCursoAction(_: EstadoForm, fd: FormData): Promise<EstadoForm> {
+  const tenant = await requireTenantPublico();
+  const slug = txt(fd, "curso");
+  const alumno = await getAlumnoActual();
+  if (!alumno) return destino(`/ingresar?next=${encodeURIComponent(`/curso/${slug}`)}`);
+  // Demo local sin TLS (finanzasclaras.cl en http): PAGOS_RETORNO_PROTO=http. Nunca en Vercel.
+  const origen = origenPublico();
+  const origenUrl = process.env.PAGOS_RETORNO_PROTO === "http" ? origen.replace(/^https:/, "http:") : origen;
+  const r = await iniciarPagoCurso(tenant, alumno, slug, { origenUrl, campana: limpiarCampana(txt(fd, "campana")) });
+  return r.ok ? destino(r.url) : { ok: false, error: r.error };
 }
 
 export async function completarLeccionAction(_: EstadoForm, fd: FormData): Promise<EstadoForm> {
