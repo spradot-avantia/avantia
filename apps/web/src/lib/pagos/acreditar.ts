@@ -12,7 +12,7 @@ import { esIdPago, esUuid, evaluarPago, type PagoMercadoPago } from "./reglas";
 
 export type ResultadoAcreditar =
   | { estado: "aprobado"; tenantId: string; inscripcionId: string; cursoId: string; alumnoId: string; nuevo: boolean }
-  | { estado: "pendiente" | "rechazado"; tenantId: string; inscripcionId: string; cursoId: string; alumnoId: string }
+  | { estado: "pendiente" | "rechazado"; tenantId: string; inscripcionId: string; cursoId: string; alumnoId: string; detalle?: string }
   | { estado: "invalido"; motivo: string };
 
 export async function obtenerPagoMercadoPago(paymentId: string): Promise<PagoMercadoPago> {
@@ -20,6 +20,7 @@ export async function obtenerPagoMercadoPago(paymentId: string): Promise<PagoMer
   return {
     id: String(p.id),
     status: p.status,
+    status_detail: p.status_detail,
     transaction_amount: p.transaction_amount,
     currency_id: p.currency_id,
     external_reference: p.external_reference,
@@ -65,7 +66,7 @@ export async function acreditarPago(
   const ev = evaluarPago(pago, { inscripcionId, tenantId, montoCentavos: curso.precio_centavos as number });
   if (!ev.ok) {
     if (ev.motivo === "pendiente") return { estado: "pendiente", ...base };
-    if (ev.motivo === "rechazado") return { estado: "rechazado", ...base };
+    if (ev.motivo === "rechazado") return { estado: "rechazado", ...base, detalle: pago.status_detail };
     console.error("[pagos] pago aprobado que no calza con la inscripción", paymentId, ev.motivo);
     return { estado: "invalido", motivo: ev.motivo };
   }

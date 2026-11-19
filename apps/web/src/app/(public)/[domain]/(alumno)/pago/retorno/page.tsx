@@ -2,13 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTenantPublico } from "../../../../../../lib/alumno/contexto";
+import { cargarCurso } from "../../../../../../lib/alumno/catalogo";
+import { inscripcionesDe } from "../../../../../../lib/alumno/inscripciones";
 import { getAlumnoActual } from "../../../../../../lib/alumno/sesion";
 import { acreditarPago } from "../../../../../../lib/pagos/acreditar";
+import { esUuid, mensajeRechazo } from "../../../../../../lib/pagos/reglas";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Estado del pago", robots: { index: false } };
 
-type Busqueda = { payment_id?: string; collection_id?: string };
+type Busqueda = { payment_id?: string; collection_id?: string; external_reference?: string };
 
 /**
  * Vuelta desde el checkout de Mercado Pago (ADR 046). No confía en el "status" del
@@ -56,10 +59,30 @@ export default async function RetornoPagoPage({ searchParams }: { searchParams: 
       </Marco>
     );
   }
+  // Rechazado o sin pago (volvió sin pagar): ofrecer reintentar desde la ficha del curso.
+  // El curso sale del pago consultado o de una inscripción PROPIA del alumno, nunca del query a ciegas.
+  let cursoId: string | null = propio ? r.cursoId : null;
+  if (!cursoId && esUuid(searchParams.external_reference)) {
+    const insc = (await inscripcionesDe(tenant.id, alumno.id)).find((i) => i.id === searchParams.external_reference);
+    cursoId = insc?.cursoId ?? null;
+  }
+  const curso = cursoId ? await cargarCurso(tenant.id, { id: cursoId }) : null;
+  const rechazado = propio && r.estado === "rechazado";
+
   return (
-    <Marco titulo="No se pudo completar el pago">
-      <p className="al-muted">Si el pago no se aprobó, no se hizo ningún cobro. Puedes intentarlo de nuevo desde la ficha del curso; si ves un cobro, escríbele a la academia.</p>
-      <Link className="al-btn al-btn--sec" href="/mis-cursos">
+    <Marco titulo={rechazado ? "Tu pago fue rechazado" : "No se completó el pago"}>
+      {rechazado && (
+        <p className="al-alert al-alert--error" role="alert">
+          {mensajeRechazo(r.detalle)}
+        </p>
+      )}
+      <p className="al-muted">No se hizo ningún cobro. Puedes intentarlo de nuevo{rechazado ? " con otra tarjeta o medio de pago" : ""}; si ves un cobro, escríbele a la academia.</p>
+      {curso && (
+        <Link className="al-btn al-btn--block" href={`/curso/${curso.slug}`}>
+          Intentar de nuevo
+        </Link>
+      )}
+      <Link className={curso ? "al-btn al-btn--sec al-btn--block" : "al-btn al-btn--sec"} href="/mis-cursos">
         Ir a mis cursos
       </Link>
     </Marco>

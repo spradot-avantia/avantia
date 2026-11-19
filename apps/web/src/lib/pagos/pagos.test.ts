@@ -1,7 +1,7 @@
 import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { manifiestoFirma, parsearXSignature, verificarFirmaMercadoPago } from "./firma";
-import { claveIdempotenciaPreferencia, descripcionItem, evaluarPago, nombreComprador, type PagoMercadoPago } from "./reglas";
+import { claveIdempotenciaPreferencia, descripcionItem, evaluarPago, mensajeRechazo, nombreComprador, type PagoMercadoPago } from "./reglas";
 
 const SECRETO = "secreto-de-prueba";
 const AHORA = 1_763_550_000_000;
@@ -101,5 +101,15 @@ describe("datos de la preferencia", () => {
     const id = "34f93f41-0615-4df3-bc1d-dfd0a9304f0d";
     expect(claveIdempotenciaPreferencia(id, 100000)).toBe(claveIdempotenciaPreferencia(id, 100000));
     expect(claveIdempotenciaPreferencia(id, 100000)).not.toBe(claveIdempotenciaPreferencia(id, 200000));
+  });
+});
+
+describe("mensaje de rechazo", () => {
+  it("traduce los motivos conocidos y cae a un mensaje genérico", () => {
+    expect(mensajeRechazo("cc_rejected_insufficient_amount")).toMatch(/saldo o cupo/);
+    expect(mensajeRechazo("cc_rejected_bad_filled_security_code")).toMatch(/CVV/);
+    const generico = mensajeRechazo("cc_rejected_other_reason");
+    expect(generico).toBe(mensajeRechazo(undefined));
+    expect(generico).toMatch(/otra tarjeta/);
   });
 });

@@ -5,6 +5,8 @@
 export interface PagoMercadoPago {
   id: string;
   status?: string;
+  /** Motivo fino del estado (p. ej. "cc_rejected_insufficient_amount"). */
+  status_detail?: string;
   transaction_amount?: number;
   currency_id?: string;
   external_reference?: string;
@@ -37,6 +39,27 @@ export function evaluarPago(
     return { ok: false, motivo: "monto" };
   }
   return { ok: true };
+}
+
+const RECHAZOS: Record<string, string> = {
+  cc_rejected_insufficient_amount: "La tarjeta no tiene saldo o cupo suficiente.",
+  cc_rejected_bad_filled_security_code: "El código de seguridad (CVV) no es correcto.",
+  cc_rejected_bad_filled_date: "La fecha de vencimiento no es correcta.",
+  cc_rejected_bad_filled_card_number: "El número de la tarjeta no es correcto.",
+  cc_rejected_bad_filled_other: "Algún dato de la tarjeta no es correcto.",
+  cc_rejected_call_for_authorize: "Tu banco pide que autorices este pago. Llámalo y vuelve a intentarlo.",
+  cc_rejected_card_disabled: "La tarjeta no está activa. Actívala con tu banco o usa otra.",
+  cc_rejected_duplicated_payment: "Ya hiciste un pago por este mismo monto. Revisa «Mis cursos» antes de volver a pagar.",
+  cc_rejected_max_attempts: "Llegaste al máximo de intentos con esta tarjeta. Usa otra o espera un rato.",
+  cc_rejected_high_risk: "Mercado Pago no pudo aprobar el pago. Prueba con otro medio de pago.",
+  cc_rejected_blacklist: "Mercado Pago no pudo aprobar el pago. Prueba con otro medio de pago.",
+  cc_rejected_card_error: "La tarjeta no pudo procesar el pago. Prueba con otra.",
+  rejected_by_bank: "Tu banco rechazó el pago. Prueba con otra tarjeta o medio de pago.",
+};
+
+/** Motivo de rechazo de Mercado Pago (status_detail) → mensaje claro para el alumno. */
+export function mensajeRechazo(statusDetail: string | null | undefined): string {
+  return RECHAZOS[statusDetail ?? ""] ?? "Tu medio de pago rechazó el cobro. Puedes intentarlo con otra tarjeta o medio de pago.";
 }
 
 /** Categoría de Mercado Pago para cursos (items.category_id; mejora la aprobación antifraude). */
