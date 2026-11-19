@@ -1722,3 +1722,9 @@ grant select, insert, update, delete on sesiones_leccion to service_role;
 
 alter table quiz_respuestas add column if not exists duracion_ms integer
   check (duracion_ms is null or duracion_ms between 0 and 600000);
+
+-- Defensa en profundidad (migración 0025): anon y authenticated no necesitan TRUNCATE (no pasa
+-- por RLS), TRIGGER ni REFERENCES. También para las tablas futuras creadas por el rol postgres.
+revoke truncate, trigger, references on all tables in schema public from anon, authenticated;
+alter default privileges for role postgres in schema public
+  revoke truncate, trigger, references on tables from anon, authenticated;
