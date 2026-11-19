@@ -26,7 +26,7 @@ export interface CreadorContext {
 }
 
 const COLUMNAS =
-  "id, slug, subdomain, custom_domain, nombre, frase, area, color_primario, logo_url, logo_modo, tipografia, forma, pais, moneda, onboarding_completado_at";
+  "id, slug, subdomain, custom_domain, nombre, frase, area, color_primario, color_primario_oscuro, logo_url, logo_modo, tipografia, forma, pais, moneda, onboarding_completado_at";
 
 function mapTenant(r: any): TenantCreador {
   return {
@@ -38,6 +38,7 @@ function mapTenant(r: any): TenantCreador {
     frase: r.frase,
     area: r.area,
     colorPrimario: r.color_primario ?? "#2563eb",
+    colorPrimarioOscuro: r.color_primario_oscuro ?? null,
     logoUrl: r.logo_url,
     logoModo: (r.logo_modo ?? "logo_y_nombre") as LogoModo,
     tipografia: tipografiaDe(r.tipografia),

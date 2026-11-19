@@ -12,6 +12,8 @@ export interface MarcaInput {
   frase?: string;
   area?: string;
   colorPrimario?: string;
+  /** null = automático (ADR 045). */
+  colorPrimarioOscuro?: string | null;
   logoModo?: "logo_y_nombre" | "solo_logo";
   pais?: string;
   moneda?: string;
@@ -23,6 +25,7 @@ function aFilas(d: MarcaInput): Record<string, unknown> {
   if (d.frase !== undefined) f.frase = d.frase || null;
   if (d.area !== undefined) f.area = d.area || null;
   if (d.colorPrimario !== undefined) f.color_primario = d.colorPrimario.toLowerCase();
+  if (d.colorPrimarioOscuro !== undefined) f.color_primario_oscuro = d.colorPrimarioOscuro ? d.colorPrimarioOscuro.toLowerCase() : null;
   if (d.logoModo !== undefined) f.logo_modo = d.logoModo;
   if (d.pais !== undefined) f.pais = d.pais || null;
   if (d.moneda !== undefined) f.moneda = d.moneda || null;

@@ -163,8 +163,8 @@ export default function Landing() {
           <div className="lp-onda" aria-hidden="true">
             <svg viewBox="0 0 1440 150" preserveAspectRatio="none">
               <defs>
-                <linearGradient id="ondaA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#1D4ED8" /><stop offset=".7" stopColor="#2563EB" /><stop offset="1" stopColor="#8B5CF6" /></linearGradient>
-                <linearGradient id="ondaB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#2563EB" /><stop offset=".55" stopColor="#4C7DF0" /><stop offset=".85" stopColor="#A9C2F9" /><stop offset="1" stopColor="#CDB9FC" /></linearGradient>
+                <linearGradient id="ondaA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" className="o1" /><stop offset=".7" className="o2" /><stop offset="1" className="o3" /></linearGradient>
+                <linearGradient id="ondaB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" className="o2" /><stop offset=".55" className="o4" /><stop offset=".85" className="o5" /><stop offset="1" className="o6" /></linearGradient>
               </defs>
               <path d="M0 78 C 220 18, 470 8, 720 48 S 1190 104, 1440 34 L 1440 150 L 0 150 Z" fill="url(#ondaA)" opacity=".34" />
               <path d="M0 104 C 260 54, 540 58, 800 92 S 1240 122, 1440 70 L 1440 150 L 0 150 Z" fill="url(#ondaB)" opacity=".48" />

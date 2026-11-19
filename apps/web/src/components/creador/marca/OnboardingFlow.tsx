@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { completarOnboardingAction, guardarMarcaAction } from "../../../lib/creador/actions";
 import { comprobarSubdominioAction, crearAcademiaAction } from "../../../lib/creador/actionsAlta";
 import { derivarSubdominio, errorSubdominio, normalizarSubdominio } from "../../../lib/creador/alta";
-import { iniciales, textoSobre } from "../../../lib/creador/color";
+import { cumpleAAEnOscuro, iniciales, textoSobre } from "../../../lib/creador/color";
 import type { LogoModo, TenantCreador } from "../../../lib/creador/types";
 import { modoLogoSugerido } from "../../../lib/creador/validacion";
 import { Button } from "../Button";
@@ -43,6 +43,7 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
   const [frase, setFrase] = useState(tenant?.frase ?? "");
   const [area, setArea] = useState(tenant?.area ?? "");
   const [color, setColor] = useState(tenant?.colorPrimario ?? "#2563eb");
+  const [colorOscuro, setColorOscuro] = useState<string | null>(tenant?.colorPrimarioOscuro ?? null);
   const [modo, setModo] = useState<LogoModo>(tenant?.logoModo ?? "logo_y_nombre");
   const { logo, seleccionar, quitar } = useLogo(tenant?.logoUrl ?? null);
   // Subdominio: se deriva del nombre hasta que la persona lo edita a mano.
@@ -152,6 +153,10 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
       setErrorColor("Este color es muy claro para leerse sobre blanco. Usa el ajuste automático o elige uno más oscuro.");
       return;
     }
+    if (colorOscuro !== null && !cumpleAAEnOscuro(colorOscuro)) {
+      setErrorColor("Tu color para modo oscuro se pierde sobre fondo oscuro. Usa el ajuste automático o elige uno más claro.");
+      return;
+    }
     setErrorColor(null);
     iniciar(async () => {
       const rl = await aplicarLogo(logo);
@@ -165,6 +170,7 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
         frase,
         area,
         colorPrimario: color,
+        colorPrimarioOscuro: colorOscuro,
         logoModo: hayLogo ? modo : "logo_y_nombre",
       });
       if (!r.ok) {
@@ -308,7 +314,7 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
           {logo.url && <ModoLogo value={modo} onChange={setModo} />}
           <div className="cr-field">
             <span className="cr-field__label">Color de tu academia</span>
-            <ColorPicker value={color} onChange={setColor} />
+            <ColorPicker value={color} onChange={setColor} oscuro={colorOscuro} onChangeOscuro={setColorOscuro} />
             {errorColor && (
               <span className="cr-field__error" role="alert">
                 {errorColor}

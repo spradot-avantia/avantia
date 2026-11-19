@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { signOutAction } from "../../lib/auth/actions";
-import { textoSobre } from "../../lib/creador/color";
+import { varsMarca } from "../../lib/creador/color";
 import type { TenantCreador } from "../../lib/creador/types";
 import { MobileMenu } from "./MobileMenu";
 import { IconoSvg, NavLinks, type ItemNav } from "./NavLinks";
@@ -44,6 +44,7 @@ export function AppShell({ tenant, mostrarAdmin, usuarioEmail, children }: Props
       logoUrl={tenant?.logoUrl}
       logoModo={tenant?.logoModo}
       color={color}
+      colorOscuro={tenant?.colorPrimarioOscuro}
     />
   );
   const sesion = usuarioEmail ? (
@@ -64,7 +65,7 @@ export function AppShell({ tenant, mostrarAdmin, usuarioEmail, children }: Props
   return (
     <div
       className="av-scope cr-shell"
-      style={{ ["--cr-brand" as string]: color, ["--cr-on-brand" as string]: textoSobre(color) }}
+      style={varsMarca("cr", color, tenant?.colorPrimarioOscuro)}
     >
       <aside className="cr-side" aria-label="Navegación principal">
         <div className="cr-side__brand">{marca}</div>

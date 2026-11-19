@@ -38,6 +38,8 @@ export interface TenantCreador {
   frase: string | null;
   area: string | null;
   colorPrimario: string;
+  /** Color para modo oscuro (ADR 045); null = automático a partir de colorPrimario. */
+  colorPrimarioOscuro: string | null;
   logoUrl: string | null;
   logoModo: LogoModo;
   /** Identidad visual (ADR 027): lista cerrada, default clasico + suave. */

@@ -147,6 +147,7 @@ export const marcaSchema = z.object({
   frase: fraseAcademia.optional(),
   area: areaAcademia.optional(),
   colorPrimario: colorHex.optional(),
+  colorPrimarioOscuro: colorHex.nullable().optional(),
   logoModo: z.enum(["logo_y_nombre", "solo_logo"]).optional(),
   pais: z.string().trim().max(60).optional(),
   moneda: z.string().trim().max(10).optional(),

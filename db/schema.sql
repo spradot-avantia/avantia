@@ -11,6 +11,8 @@ create table if not exists tenants (
   nombre text not null,
   logo_url text,
   color_primario text default '#000000',
+  -- Modo oscuro (ADR 045, migración 0024): null = automático a partir de color_primario.
+  color_primario_oscuro text,
   created_at timestamptz not null default now()
 );
 
@@ -126,6 +128,11 @@ alter table tenants add constraint tenants_forma_check
 alter table tenants drop constraint if exists tenants_color_primario_check;
 alter table tenants add constraint tenants_color_primario_check
   check (color_primario is null or color_primario ~* '^#[0-9a-f]{6}$');
+
+alter table tenants add column if not exists color_primario_oscuro text;
+alter table tenants drop constraint if exists tenants_color_primario_oscuro_check;
+alter table tenants add constraint tenants_color_primario_oscuro_check
+  check (color_primario_oscuro is null or color_primario_oscuro ~* '^#[0-9a-f]{6}$');
 
 drop trigger if exists tenants_set_updated_at on tenants;
 create trigger tenants_set_updated_at before update on tenants

@@ -126,7 +126,7 @@
 .lp-pieza.is-open, .lp-pieza:focus-within { z-index: 4; }
 .lp-pieza > button {
   width: 52px; height: 52px; padding: 0; display: grid; place-items: center; cursor: pointer;
-  border-radius: var(--av-radius-lg); border: 1px solid var(--av-line-strong); background: var(--av-bg); color: var(--av-subtle);
+  border-radius: var(--av-radius-lg); border: 1px solid var(--av-line-strong); background: var(--av-bg); color: var(--av-muted);
   transition: color 0.15s, border-color 0.15s, background 0.15s, scale 0.15s;
 }
 .lp-pieza__t { position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); font-size: var(--av-fs-xs); font-weight: var(--av-fw-medium); color: var(--av-muted); white-space: nowrap; pointer-events: none; }
@@ -336,6 +336,13 @@ button.lp-add-row:disabled { color: var(--av-muted); cursor: default; }
 .lp-fcta { display: flex; flex-direction: column; gap: var(--av-space-4); align-items: stretch; }
 .lp-onda { position: relative; width: 100%; height: 150px; margin-top: var(--av-space-7); line-height: 0; }
 .lp-onda svg { display: block; width: 100%; height: 100%; }
+/* Paradas de las ondas con tokens: en oscuro toman la variante clara sola (tema-oscuro.css) */
+.lp-onda .o1 { stop-color: var(--av-blue-700); }
+.lp-onda .o2 { stop-color: var(--av-blue-600); }
+.lp-onda .o3 { stop-color: var(--av-violet-500); }
+.lp-onda .o4 { stop-color: var(--av-blue-400); }
+.lp-onda .o5 { stop-color: var(--av-blue-200); }
+.lp-onda .o6 { stop-color: var(--av-violet-200); }
 
 /* ----- Equipo / testimonios (placeholders) ----- */
 .lp-team { display: grid; gap: var(--av-space-4); }

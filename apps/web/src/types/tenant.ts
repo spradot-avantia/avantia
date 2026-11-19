@@ -11,6 +11,8 @@ export interface Tenant {
     logoUrl: string | null;
     logoModo: "logo_y_nombre" | "solo_logo";
     colorPrimario: string;
+    /** Color para modo oscuro (ADR 045); null = automático. */
+    colorPrimarioOscuro: string | null;
     /** Identidad visual (ADR 027). */
     tipografia: Tipografia;
     forma: Forma;

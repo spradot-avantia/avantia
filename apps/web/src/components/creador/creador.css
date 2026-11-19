@@ -2,8 +2,9 @@
    Mobile-first: 360px -> 1440px. Inputs >= 16px (evita zoom en iOS). Targets >= 44px. */
 
 .cr-shell {
-  --cr-brand: var(--av-blue-600);
-  --cr-on-brand: #fff;
+  /* El color llega como -claro/-osc (varsMarca); en oscuro, tema-oscuro.css usa -osc (ADR 045). */
+  --cr-brand: var(--cr-brand-claro, var(--av-blue-600));
+  --cr-on-brand: var(--cr-on-brand-claro, #fff);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -178,6 +179,8 @@
 
 /* ---- Marca de la academia ---- */
 .cr-mark {
+  --cr-brand: var(--cr-brand-claro, var(--av-blue-600));
+  --cr-on-brand: var(--cr-on-brand-claro, #fff);
   display: flex;
   align-items: center;
   gap: var(--av-space-3);
