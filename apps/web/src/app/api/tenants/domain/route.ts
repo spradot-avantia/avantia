@@ -1,44 +1,59 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "../../../../lib/supabase/admin";
+import { getCreadorContext } from "../../../../lib/creador/tenantActual";
+import { validarDominioPropio } from "../../../../lib/tenant/dominio";
+import { dominiosRaizTenant } from "../../../../lib/tenant/resolve";
 
-const DOMAIN_REGEX = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i;
-
+/**
+ * POST /api/tenants/domain { domain }
+ * Guarda el dominio propio de la academia de la SESIÓN. El tenant nunca sale del
+ * body (antes se aceptaba `tenantId` y se escribía con service role sin sesión:
+ * cualquiera podía cambiar el dominio de cualquier academia). Escribe con el
+ * cliente con RLS (`tenants_update_propio`).
+ *
+ * MOCK: solo guarda el dominio, sin provisionarlo en Vercel ni validar DNS
+ * (RQ-30). Cuando exista la integración, acá va
+ * POST https://api.vercel.com/v10/projects/${VERCEL_PROJECT_ID}/domains.
+ */
 export async function POST(request: Request) {
-  const { tenantId, domain } = (await request.json()) as {
-    tenantId?: string;
-    domain?: string;
-  };
-
-  if (!tenantId || !domain || !DOMAIN_REGEX.test(domain)) {
-    return NextResponse.json(
-      { error: "Falta tenantId o el dominio no tiene un formato válido" },
-      { status: 400 }
-    );
+  const ctx = await getCreadorContext();
+  if (!ctx || ctx.modo !== "sesion") {
+    return NextResponse.json({ error: "Inicia sesión para conectar un dominio." }, { status: 401 });
   }
 
-  // MOCK: por ahora solo guardamos el dominio, sin provisionarlo de verdad.
-  // Cuando exista la cuenta de Vercel (ver Supuestos_y_Pendientes.md), acá
-  // va la llamada real:
-  //   POST https://api.vercel.com/v10/projects/${VERCEL_PROJECT_ID}/domains
-  //   Authorization: Bearer ${VERCEL_API_TOKEN}
-  //   body: { name: domain }
-  // y el estado/los registros DNS a verificar saldrían de esa respuesta en
-  // vez de estar hardcodeados como acá abajo.
-  const { error } = await supabaseAdmin
-    .from("tenants")
-    .update({ custom_domain: domain })
-    .eq("id", tenantId);
+  let body: { domain?: unknown };
+  try {
+    body = (await request.json()) as { domain?: unknown };
+  } catch {
+    return NextResponse.json({ error: "Body inválido" }, { status: 400 });
+  }
 
-  if (error) {
-    return NextResponse.json(
-      { error: "No se pudo guardar el dominio" },
-      { status: 500 }
-    );
+  const hostsPlataforma = [process.env.PLATFORM_HOSTS, process.env.MARKETING_HOSTS, process.env.PANEL_HOST_SUFFIX]
+    .flatMap((v) => (v ?? "").split(","))
+    .map((h) => h.trim())
+    .filter(Boolean);
+  const v = validarDominioPropio(body.domain, { dominiosRaiz: dominiosRaizTenant(), hostsPlataforma });
+  if (!v.ok) {
+    return NextResponse.json({ error: v.motivo }, { status: 400 });
+  }
+
+  const { data, error } = await ctx.db
+    .from("tenants")
+    .update({ custom_domain: v.dominio })
+    .eq("id", ctx.tenant.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error?.code === "23505") {
+    return NextResponse.json({ error: "Ese dominio ya lo usa otra academia." }, { status: 409 });
+  }
+  if (error || !data) {
+    console.error("[tenants/domain] no se pudo guardar", error?.code ?? "sin fila");
+    return NextResponse.json({ error: "No se pudo guardar el dominio" }, { status: 500 });
   }
 
   return NextResponse.json({
-    domain,
+    domain: v.dominio,
     status: "pendiente_verificacion",
-    registrosDns: [{ tipo: "CNAME", nombre: domain, valor: "cname.vercel-dns.com (mock)" }],
+    registrosDns: [{ tipo: "CNAME", nombre: v.dominio, valor: "cname.vercel-dns.com (mock)" }],
   });
 }

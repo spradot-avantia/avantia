@@ -29,3 +29,28 @@ export function classifyHost(rawHost: string, config: HostConfig): HostKind {
   if (LOCAL_HOSTS.has(host) || host === config.panelHost.toLowerCase()) return "panel";
   return "tenant";
 }
+
+/** Cómo buscar la academia dueña de un host público (ver `tenantLookupPorHost`). */
+export type BusquedaTenant = { por: "subdominio"; valor: string } | { por: "dominio"; valor: string };
+
+function normalizarHost(rawHost: string): string {
+  return rawHost.split(":")[0].trim().toLowerCase().replace(/\.$/, "");
+}
+
+/**
+ * Decide si un host de academia se busca por subdominio o por dominio propio.
+ * Pura (sin I/O). `<sub>.<dominio raíz>` y `<sub>.localhost` → subdominio (un solo
+ * segmento); cualquier otro host → dominio propio exacto. Así `finanzasclaras.cl`
+ * nunca cae en la academia de subdominio `finanzasclaras`, y viceversa.
+ */
+export function tenantLookupPorHost(rawHost: string, dominiosRaiz: string[]): BusquedaTenant | null {
+  const host = normalizarHost(rawHost);
+  if (!host) return null;
+  const raices = [...dominiosRaiz.map(normalizarHost), "localhost"].filter(Boolean);
+  for (const raiz of raices) {
+    if (!host.endsWith(`.${raiz}`)) continue;
+    const sub = host.slice(0, -(raiz.length + 1));
+    if (sub && !sub.includes(".")) return { por: "subdominio", valor: sub };
+  }
+  return { por: "dominio", valor: host };
+}
