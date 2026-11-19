@@ -6,13 +6,7 @@ import styles from "../../dashboard.module.css";
 
 type Estado = { domain: string; status: "verificado" | "pendiente_verificacion" };
 
-export function DomainForm({
-  tenantId,
-  initialDomain,
-}: {
-  tenantId: string;
-  initialDomain: string | null;
-}) {
+export function DomainForm({ initialDomain }: { initialDomain: string | null }) {
   const [input, setInput] = useState("");
   const [estado, setEstado] = useState<Estado | null>(
     initialDomain ? { domain: initialDomain, status: "pendiente_verificacion" } : null
@@ -29,7 +23,7 @@ export function DomainForm({
       const res = await fetch("/api/tenants/domain", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tenantId, domain: input }),
+        body: JSON.stringify({ domain: input }),
       });
       const data = await res.json();
 

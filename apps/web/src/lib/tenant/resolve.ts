@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "../supabase/admin";
 import type { Tenant } from "../../types/tenant";
 import { formaDe, tipografiaDe } from "./identidad";
+import { tenantLookupPorHost } from "./host";
 
 // Cache en memoria simple: hostname/slug -> tenant no cambia seguido, así que
 // evitamos pegarle a la base de datos en cada render. Ojo: esto vive por
@@ -44,10 +45,31 @@ function mapRowToTenant(data: {
 const TENANT_COLUMNS =
   "id, slug, custom_domain, subdomain, nombre, frase, logo_url, logo_modo, color_primario, tipografia, forma";
 
+/**
+ * Dominios bajo los que una academia vive como `<subdominio>.<raíz>`: el dominio
+ * raíz público, los de TENANT_ROOT_DOMAINS (coma) y los hosts de plataforma y
+ * marketing sin `www.` (p. ej. goavantia.com, dev.goavantia.com).
+ */
+export function dominiosRaizTenant(): string[] {
+  const lista = (v: string | undefined) => (v ?? "").split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
+  const raices = [
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "avantia.app",
+    ...lista(process.env.TENANT_ROOT_DOMAINS),
+    ...lista(process.env.PLATFORM_HOSTS).map((h) => h.replace(/^www\./, "")),
+    ...lista(process.env.MARKETING_HOSTS).map((h) => h.replace(/^www\./, "")),
+  ];
+  return Array.from(new Set(raices));
+}
+
 export async function resolveTenantByHostname(
   hostname: string
 ): Promise<Tenant | null> {
-  const cacheKey = `hostname:${hostname}`;
+  // Subdominio solo bajo un dominio raíz conocido; si no, dominio propio exacto.
+  // Nunca se mezclan (antes un `.or()` tomaba el primer segmento de cualquier host).
+  const busqueda = tenantLookupPorHost(hostname, dominiosRaizTenant());
+  if (!busqueda) return null;
+
+  const cacheKey = `${busqueda.por}:${busqueda.valor}`;
   const cached = cache.get(cacheKey);
   if (cached && cached.expiresAt > Date.now()) {
     return cached.tenant;
@@ -56,7 +78,7 @@ export async function resolveTenantByHostname(
   const { data, error } = await supabaseAdmin
     .from("tenants")
     .select(TENANT_COLUMNS)
-    .or(`custom_domain.eq.${hostname},subdomain.eq.${hostname.split(".")[0]}`)
+    .eq(busqueda.por === "subdominio" ? "subdomain" : "custom_domain", busqueda.valor)
     .maybeSingle();
 
   if (error || !data) {

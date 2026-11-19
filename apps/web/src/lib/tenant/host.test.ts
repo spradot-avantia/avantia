@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classifyHost } from "./host";
+import { classifyHost, tenantLookupPorHost } from "./host";
 import { validarSubdominio } from "./reservados";
 
 const cfg = { panelHost: "app.avantia.app", marketingHosts: ["avantia.app", "www.avantia.app"] };
@@ -44,5 +44,26 @@ describe("validarSubdominio", () => {
     for (const s of ["app", "www", "admin", "ab", "-juan", "juan-", "Jua n", "a".repeat(41)]) {
       expect(validarSubdominio(s).ok).toBe(false);
     }
+  });
+});
+
+describe("tenantLookupPorHost", () => {
+  const raices = ["goavantia.com", "dev.goavantia.com"];
+  it("subdominio bajo un dominio raíz", () => {
+    expect(tenantLookupPorHost("finanzas.goavantia.com", raices)).toEqual({ por: "subdominio", valor: "finanzas" });
+    expect(tenantLookupPorHost("finanzas.dev.goavantia.com", raices)).toEqual({ por: "subdominio", valor: "finanzas" });
+  });
+  it("subdominio local con puerto y mayúsculas", () => {
+    expect(tenantLookupPorHost("Prueba.localhost:3000", raices)).toEqual({ por: "subdominio", valor: "prueba" });
+  });
+  it("dominio propio: nunca se toma su primer segmento como subdominio", () => {
+    expect(tenantLookupPorHost("finanzasclaras.cl", raices)).toEqual({ por: "dominio", valor: "finanzasclaras.cl" });
+    expect(tenantLookupPorHost("www.academiadejuan.com", raices)).toEqual({ por: "dominio", valor: "www.academiadejuan.com" });
+  });
+  it("varios niveles bajo la raíz no son un subdominio válido", () => {
+    expect(tenantLookupPorHost("a.b.goavantia.com", ["goavantia.com"])).toEqual({ por: "dominio", valor: "a.b.goavantia.com" });
+  });
+  it("host vacío", () => {
+    expect(tenantLookupPorHost("", raices)).toBeNull();
   });
 });
