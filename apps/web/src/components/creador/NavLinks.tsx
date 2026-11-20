@@ -74,9 +74,9 @@ export function NavLinks({ items, etiqueta = "Secciones" }: { items: ItemNav[]; 
         return (
           <span key={it.href} style={{ display: "contents" }}>
             {it.separador && <span className="cr-nav__sep" aria-hidden="true" />}
-            <Link href={it.href} aria-current={activo ? "page" : undefined}>
+            <Link href={it.href} aria-current={activo ? "page" : undefined} title={it.label}>
               {it.icono && <IconoSvg>{TRAZOS[it.icono]}</IconoSvg>}
-              {it.label}
+              <span className="cr-nav__txt">{it.label}</span>
             </Link>
           </span>
         );

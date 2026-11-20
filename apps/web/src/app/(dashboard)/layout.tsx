@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AppShell } from "../../components/creador";
+import { COOKIE_MENU } from "../../lib/creador/menuLateral";
 import { rutaActual } from "../../lib/auth/panel";
 import { demoPermitido, getUsuarioActual } from "../../lib/auth/usuario";
 import { getCurrentTenant } from "../../lib/creador/tenantActual";
@@ -28,7 +30,12 @@ export default async function DashboardLayout({
     redirect(staff ? "/admin" : "/onboarding");
   }
   return (
-    <AppShell tenant={tenant} mostrarAdmin={staff} usuarioEmail={usuario?.email ?? null}>
+    <AppShell
+      tenant={tenant}
+      mostrarAdmin={staff}
+      usuarioEmail={usuario?.email ?? null}
+      menuPlegado={cookies().get(COOKIE_MENU)?.value !== "abierto"}
+    >
       {children}
     </AppShell>
   );

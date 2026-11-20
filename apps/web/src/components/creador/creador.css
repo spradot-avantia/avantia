@@ -175,6 +175,75 @@
   .cr-main {
     padding: var(--av-space-6) var(--av-gutter);
   }
+
+  /* Menú lateral plegable (ADR 048): botón para plegar/desplegar; plegado = barra de íconos. */
+  .cr-side__toggle {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: var(--av-target);
+    height: var(--av-target);
+    margin: 0 var(--av-space-4) var(--av-space-3);
+    border: 1px solid var(--av-line-strong);
+    border-radius: var(--av-radius-md);
+    background: var(--av-surface);
+    color: var(--av-ink-2);
+    cursor: pointer;
+  }
+  .cr-side__toggle svg {
+    transform: rotate(180deg);
+    transition: transform 0.15s;
+  }
+  .cr-side__toggle:focus-visible {
+    outline: 2px solid var(--av-blue-600);
+    outline-offset: 2px;
+  }
+  .cr-shell[data-menu="plegado"] .cr-side {
+    width: 76px;
+    align-items: center;
+  }
+  .cr-shell[data-menu="plegado"] .cr-side__toggle {
+    margin: 0 0 var(--av-space-3);
+  }
+  .cr-shell[data-menu="plegado"] .cr-side__toggle svg {
+    transform: none;
+  }
+  .cr-shell[data-menu="plegado"] .cr-side__brand {
+    padding: var(--av-space-4) 0 var(--av-space-3);
+  }
+  .cr-shell[data-menu="plegado"] .cr-side .cr-mark__name,
+  .cr-shell[data-menu="plegado"] .cr-side .cr-nav__txt {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .cr-shell[data-menu="plegado"] .cr-side .cr-nav {
+    width: 100%;
+    padding: 0 var(--av-space-3);
+  }
+  .cr-shell[data-menu="plegado"] .cr-side .cr-nav a,
+  .cr-shell[data-menu="plegado"] .cr-side .cr-nav__salir {
+    justify-content: center;
+    padding: 0;
+  }
+  .cr-shell[data-menu="plegado"] .cr-side .cr-nav__sep {
+    margin: var(--av-space-3) var(--av-space-2);
+  }
+  .cr-shell[data-menu="plegado"] .cr-side .au-user {
+    width: 100%;
+  }
+  .cr-shell[data-menu="plegado"] .cr-side .au-user__mail,
+  .cr-shell[data-menu="plegado"] .cr-side__foot {
+    display: none;
+  }
+}
+@media (min-width: 900px) and (prefers-reduced-motion: reduce) {
+  .cr-side__toggle svg {
+    transition: none;
+  }
 }
 
 /* ---- Marca de la academia ---- */
