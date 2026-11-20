@@ -137,21 +137,30 @@ export function dominioMedio(insc: FilaInscripcion[]): number | null {
   return Math.round(con.reduce((s, i) => s + i.dominio!.pct, 0) / con.length);
 }
 
+/** Dominio alto: este % o más de las preguntas dominadas. */
+export const DOMINIO_ALTO = 80;
+
 export interface AlumnoEnRiesgo {
-  inscripcionId: string;
+  alumnoId: string;
   alumno: string;
-  curso: string;
+  correo: string;
+  /** Cursos en riesgo de este alumno (sin repetir). */
+  cursos: string[];
+  /** Motivo de la inscripción más urgente. */
   motivo: string;
+  dominioBajo: boolean;
+  sinEntrar: boolean;
   /** Mayor = más urgente. */
   gravedad: number;
 }
 
 /**
- * Inscripciones activas que necesitan al creador: dominio bajo (aprende poco) o 7+ días sin entrar
- * (se está yendo). Las dos cosas juntas van primero.
+ * Estudiantes (no inscripciones) que necesitan al creador: dominio bajo (aprende poco) o 7+ días
+ * sin entrar (se está yendo) en alguna inscripción activa. Un estudiante en dos cursos cuenta una
+ * vez, con su motivo más urgente; así «Necesitan ayuda» nunca supera a «Estudiantes activos».
  */
 export function necesitanAyuda(insc: FilaInscripcion[]): AlumnoEnRiesgo[] {
-  const out: AlumnoEnRiesgo[] = [];
+  const porAlumno = new Map<string, AlumnoEnRiesgo>();
   for (const i of insc) {
     if (i.estado !== "activa") continue;
     const bajo = i.dominio !== null && i.dominio.pct < DOMINIO_BAJO;
@@ -159,15 +168,99 @@ export function necesitanAyuda(insc: FilaInscripcion[]): AlumnoEnRiesgo[] {
     const motivos: string[] = [];
     if (bajo) motivos.push(`domina ${i.dominio!.pct} % (${i.dominio!.dominadas} de ${i.dominio!.total} preguntas)`);
     if (i.sinActividad) motivos.push(i.ultimaActividad ? "7 días o más sin entrar" : "no ha entrado al curso");
-    out.push({
-      inscripcionId: i.id,
-      alumno: i.nombre,
-      curso: i.cursoTitulo,
-      motivo: motivos.join(" · "),
-      gravedad: (bajo ? 2 : 0) + (i.sinActividad ? 1 : 0) + (bajo ? (DOMINIO_BAJO - i.dominio!.pct) / 100 : 0),
-    });
+    const gravedad = (bajo ? 2 : 0) + (i.sinActividad ? 1 : 0) + (bajo ? (DOMINIO_BAJO - i.dominio!.pct) / 100 : 0);
+    const previo = porAlumno.get(i.alumnoId);
+    if (!previo) {
+      porAlumno.set(i.alumnoId, {
+        alumnoId: i.alumnoId, alumno: i.nombre, correo: i.correo, cursos: [i.cursoTitulo],
+        motivo: motivos.join(" · "), dominioBajo: bajo, sinEntrar: i.sinActividad, gravedad,
+      });
+      continue;
+    }
+    if (!previo.cursos.includes(i.cursoTitulo)) previo.cursos.push(i.cursoTitulo);
+    previo.dominioBajo ||= bajo;
+    previo.sinEntrar ||= i.sinActividad;
+    if (gravedad > previo.gravedad) {
+      previo.gravedad = gravedad;
+      previo.motivo = motivos.join(" · ");
+    }
   }
-  return out.sort((a, b) => b.gravedad - a.gravedad);
+  return Array.from(porAlumno.values()).sort((a, b) => b.gravedad - a.gravedad);
+}
+
+export interface DistribucionAvance {
+  terminaron: number;
+  enProgreso: number;
+  sinIniciar: number;
+  total: number;
+}
+
+/** Inscripciones activas según avance: 100 % terminaron, 0 % sin iniciar, el resto en progreso. */
+export function distribucionAvance(insc: FilaInscripcion[]): DistribucionAvance {
+  const d = { terminaron: 0, enProgreso: 0, sinIniciar: 0, total: 0 };
+  for (const i of insc) {
+    if (i.estado !== "activa") continue;
+    d.total += 1;
+    if (i.avance >= 100) d.terminaron += 1;
+    else if (i.avance <= 0) d.sinIniciar += 1;
+    else d.enProgreso += 1;
+  }
+  return d;
+}
+
+export interface DistribucionDominio {
+  bajo: number;
+  medio: number;
+  alto: number;
+  sinQuiz: number;
+  total: number;
+}
+
+/** Inscripciones activas según dominio: bajo (< 60 %), medio, alto (≥ 80 %) o sin quiz respondido. */
+export function distribucionDominio(insc: FilaInscripcion[]): DistribucionDominio {
+  const d = { bajo: 0, medio: 0, alto: 0, sinQuiz: 0, total: 0 };
+  for (const i of insc) {
+    if (i.estado !== "activa") continue;
+    d.total += 1;
+    if (!i.dominio) d.sinQuiz += 1;
+    else if (i.dominio.pct < DOMINIO_BAJO) d.bajo += 1;
+    else if (i.dominio.pct >= DOMINIO_ALTO) d.alto += 1;
+    else d.medio += 1;
+  }
+  return d;
+}
+
+/** Estudiantes con inscripción activa por curso, el curso con más primero. */
+export function estudiantesPorCurso(insc: FilaInscripcion[]): { cursoId: string; curso: string; n: number }[] {
+  const m = new Map<string, { cursoId: string; curso: string; alumnos: Set<string> }>();
+  for (const i of insc) {
+    if (i.estado !== "activa") continue;
+    const g = m.get(i.cursoId) ?? { cursoId: i.cursoId, curso: i.cursoTitulo, alumnos: new Set<string>() };
+    g.alumnos.add(i.alumnoId);
+    m.set(i.cursoId, g);
+  }
+  return Array.from(m.values(), (g) => ({ cursoId: g.cursoId, curso: g.curso, n: g.alumnos.size })).sort((a, b) => b.n - a.n);
+}
+
+export interface ActividadAlumno {
+  alumnoId: string;
+  alumno: string;
+  /** Su acción más reciente. */
+  ultima: ItemActividad;
+  /** Cuántas acciones más tiene en el feed. */
+  mas: number;
+}
+
+/** Una fila por estudiante (su última acción + cuántas más), los más recientes primero. */
+export function agruparPorAlumno(items: ItemActividad[], maxAlumnos = 5): ActividadAlumno[] {
+  const grupos = new Map<string, ActividadAlumno>();
+  const ordenados = [...items].sort((a, b) => b.fecha.localeCompare(a.fecha));
+  for (const it of ordenados) {
+    const g = grupos.get(it.alumnoId);
+    if (g) g.mas += 1;
+    else grupos.set(it.alumnoId, { alumnoId: it.alumnoId, alumno: it.alumno, ultima: it, mas: 0 });
+  }
+  return Array.from(grupos.values()).slice(0, maxAlumnos);
 }
 
 export interface TemaDificil {

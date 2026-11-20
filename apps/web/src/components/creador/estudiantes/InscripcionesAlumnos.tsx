@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { activarInscripcionAction, rechazarInscripcionAction } from "../../../lib/creador/actions";
 import type { FilaInscripcion } from "../../../lib/creador/inscripciones";
 import { MEDIOS_PAGO } from "../../../lib/creador/mediosPago";
@@ -149,7 +149,11 @@ export function PorActivar({ filas }: { filas: FilaInscripcion[] }) {
 }
 
 /** Estudiantes con cuenta: inscripción, avance, XP y quién lleva días sin entrar. */
-export function TablaAlumnos({ filas }: { filas: FilaInscripcion[] }) {
+export function TablaAlumnos({ filas: todas, destacado }: { filas: FilaInscripcion[]; destacado?: string }) {
+  // El estudiante que viene del Inicio (?alumno=) va primero y destacado; el resto mantiene su orden.
+  const filas = destacado
+    ? [...todas.filter((f) => f.alumnoId === destacado), ...todas.filter((f) => f.alumnoId !== destacado)]
+    : todas;
   if (filas.length === 0) {
     return (
       <EmptyState
@@ -173,12 +177,20 @@ export function TablaAlumnos({ filas }: { filas: FilaInscripcion[] }) {
   } as const;
   return (
     <ul className="ci-list">
-      {filas.map((f) => (
-        <li key={f.id} className="ci-row ci-row--compact ci-card ea-fila">
+      {filas.map((f, i) => (
+        <li
+          key={f.id}
+          id={f.alumnoId === destacado && i === 0 ? "es-destacado" : undefined}
+          tabIndex={f.alumnoId === destacado && i === 0 ? -1 : undefined}
+          className={`ci-row ci-row--compact ci-card ea-fila${f.alumnoId === destacado ? " ea-fila--destacada" : ""}`}
+        >
           <div className="ea-id">
             <Avatar nombre={f.nombre || f.correo} />
             <div className="ea-datos">
-              <span className="ci-row__title">{f.nombre}</span>
+              <span className="ci-row__title">
+                {f.nombre}
+                {f.alumnoId === destacado && <span className="ci-sr"> (seleccionado desde el Inicio)</span>}
+              </span>
               <span className="ea-correo">{f.correo}</span>
               <div className="ea-sub">
                 <span>{f.cursoTitulo}</span>
@@ -234,13 +246,28 @@ export function TablaAlumnos({ filas }: { filas: FilaInscripcion[] }) {
 export function InscripcionesAlumnos({
   inscripciones,
   vistaInicial,
+  alumnoDestacado,
 }: {
   inscripciones: FilaInscripcion[];
   vistaInicial?: "por-activar";
+  /** alumnoId que llega desde el Inicio (?alumno=): se muestra primero, destacado y a la vista. */
+  alumnoDestacado?: string;
 }) {
   const porActivar = inscripciones.filter((i) => i.estado === "pendiente");
   const alumnos = inscripciones.filter((i) => i.estado !== "pendiente");
-  const [vista, setVista] = useState<"estudiantes" | "por-activar">(vistaInicial ?? (porActivar.length > 0 ? "por-activar" : "estudiantes"));
+  const destacado = alumnoDestacado && alumnos.some((a) => a.alumnoId === alumnoDestacado) ? alumnoDestacado : undefined;
+  const [vista, setVista] = useState<"estudiantes" | "por-activar">(
+    destacado ? "estudiantes" : (vistaInicial ?? (porActivar.length > 0 ? "por-activar" : "estudiantes")),
+  );
+
+  useEffect(() => {
+    if (!destacado) return;
+    const fila = document.getElementById("es-destacado");
+    if (!fila) return;
+    const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    fila.scrollIntoView({ behavior: reducido ? "auto" : "smooth", block: "center" });
+    fila.focus({ preventScroll: true });
+  }, [destacado]);
   const pestanas = [
     { id: "estudiantes" as const, texto: `Estudiantes (${alumnos.length})` },
     { id: "por-activar" as const, texto: `Por activar (${porActivar.length})` },
@@ -273,7 +300,7 @@ export function InscripcionesAlumnos({
         ))}
       </div>
       <div role="tabpanel" id="es-panel" aria-labelledby={`es-tab-${vista}`}>
-        {vista === "por-activar" ? <PorActivar filas={porActivar} /> : <TablaAlumnos filas={alumnos} />}
+        {vista === "por-activar" ? <PorActivar filas={porActivar} /> : <TablaAlumnos filas={alumnos} destacado={destacado} />}
       </div>
     </section>
   );

@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { armarActividad, dominioMedio, haceCuanto, necesitanAyuda, temasConDificultad, type Titulos } from "./actividadReglas";
+import {
+  agruparPorAlumno,
+  armarActividad,
+  distribucionAvance,
+  distribucionDominio,
+  dominioMedio,
+  estudiantesPorCurso,
+  haceCuanto,
+  necesitanAyuda,
+  temasConDificultad,
+  type Titulos,
+} from "./actividadReglas";
 import type { FilaInscripcion } from "./inscripciones";
 
 const titulos: Titulos = {
@@ -65,10 +76,59 @@ describe("dominioMedio y necesitanAyuda", () => {
     expect(dominioMedio([insc({})])).toBeNull();
   });
   it("lista dominio bajo y sin actividad, lo más urgente primero", () => {
-    const r = necesitanAyuda(filas);
+    const r = necesitanAyuda(filas.map((f) => ({ ...f, alumnoId: `a${f.id}` })));
     expect(r.map((x) => x.alumno)).toEqual(["Luis", "Eva"]);
     expect(r[0].motivo).toContain("domina 30 %");
     expect(r[0].motivo).toContain("sin entrar");
+  });
+  it("cuenta una vez al estudiante con dos inscripciones en riesgo", () => {
+    const r = necesitanAyuda([
+      insc({ id: "1", alumnoId: "s", nombre: "Sam", cursoTitulo: "A", sinActividad: true }),
+      insc({ id: "2", alumnoId: "s", nombre: "Sam", cursoId: "c2", cursoTitulo: "B", dominio: { dominadas: 1, total: 10, pct: 10 } }),
+    ]);
+    expect(r).toHaveLength(1);
+    expect(r[0]).toMatchObject({ cursos: ["A", "B"], dominioBajo: true, sinEntrar: true });
+    expect(r[0].motivo).toContain("domina 10 %");
+  });
+});
+
+describe("distribuciones y estudiantes por curso", () => {
+  const filas = [
+    insc({ id: "1", alumnoId: "a", avance: 100, dominio: { dominadas: 9, total: 10, pct: 90 } }),
+    insc({ id: "2", alumnoId: "b", avance: 40, dominio: { dominadas: 7, total: 10, pct: 70 } }),
+    insc({ id: "3", alumnoId: "c", avance: 0, dominio: { dominadas: 2, total: 10, pct: 20 } }),
+    insc({ id: "4", alumnoId: "a", cursoId: "c2", cursoTitulo: "Otro", avance: 10 }),
+    insc({ id: "5", alumnoId: "d", estado: "cancelada", avance: 50 }),
+  ];
+  it("reparte avance y dominio de las inscripciones activas", () => {
+    expect(distribucionAvance(filas)).toEqual({ terminaron: 1, enProgreso: 2, sinIniciar: 1, total: 4 });
+    expect(distribucionDominio(filas)).toEqual({ bajo: 1, medio: 1, alto: 1, sinQuiz: 1, total: 4 });
+  });
+  it("cuenta estudiantes únicos por curso", () => {
+    expect(estudiantesPorCurso(filas)).toEqual([
+      { cursoId: "c1", curso: "Onboarding", n: 3 },
+      { cursoId: "c2", curso: "Otro", n: 1 },
+    ]);
+  });
+});
+
+describe("agruparPorAlumno", () => {
+  const it_ = (id: string, alumnoId: string, fecha: string) =>
+    ({ id, alumnoId, alumno: alumnoId.toUpperCase(), tipo: "leccion", texto: "x", detalle: null, tono: "neutro", fecha }) as const;
+  it("deja una fila por estudiante con su última acción y cuántas más", () => {
+    const g = agruparPorAlumno([
+      it_("1", "a", "2026-11-18T10:00:00Z"),
+      it_("2", "b", "2026-11-18T11:00:00Z"),
+      it_("3", "a", "2026-11-18T12:00:00Z"),
+      it_("4", "a", "2026-11-17T12:00:00Z"),
+    ]);
+    expect(g.map((x) => [x.alumnoId, x.ultima.id, x.mas])).toEqual([
+      ["a", "3", 2],
+      ["b", "2", 0],
+    ]);
+  });
+  it("respeta el máximo de estudiantes", () => {
+    expect(agruparPorAlumno([it_("1", "a", "2026-11-18"), it_("2", "b", "2026-11-17")], 1)).toHaveLength(1);
   });
 });
 
