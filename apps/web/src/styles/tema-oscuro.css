@@ -232,6 +232,33 @@
   :root .av-scope .pg-barra__pista i {
     background: color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 60%, var(--av-surface));
   }
+  /* Cabecera del panel (cr-header): en oscuro, banda oscura teñida con el color de la academia y
+     texto claro, no un bloque claro del color -osc (pensado para texto y acentos, no para fondos
+     grandes). Texto ink sobre la banda ≥ 7:1 incluso con un color de academia muy claro
+     (ver contrasteTokens.test.ts). El botón primario usa el par -osc/on-osc, que ya cumple AA. */
+  :root .av-scope .cr-header {
+    background: color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 18%, var(--av-surface));
+    border: 1px solid color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 40%, var(--av-line-strong));
+    color: var(--av-ink);
+  }
+  :root .av-scope .cr-header .av-btn--primary {
+    background: var(--cr-brand);
+    border-color: var(--cr-brand);
+    color: var(--cr-on-brand);
+  }
+  :root .av-scope .cr-header .av-btn--primary:hover {
+    background: color-mix(in srgb, var(--cr-brand) 85%, var(--av-ink));
+  }
+  :root .av-scope .cr-header .av-btn--secondary {
+    border-color: color-mix(in srgb, var(--cr-brand) 70%, var(--av-ink));
+    color: var(--av-ink);
+  }
+  :root .av-scope .cr-header .av-btn--secondary:hover {
+    background: color-mix(in srgb, var(--cr-brand) 18%, transparent);
+  }
+  :root .av-scope .cr-header :focus-visible {
+    outline-color: var(--av-blue-400);
+  }
   :root .av-scope .pg-chip--espera { background: #3a2a0c; color: #ffcf85; }
   :root .av-scope .pg-chip--ej { background: #3a1d0c; color: #ffb48a; }
   :root .av-scope .pg-input--ej,

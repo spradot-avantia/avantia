@@ -56,4 +56,21 @@ describe("tokens en oscuro", () => {
   ])("%s sobre %s ≥ 4,5", (t, f) => {
     expect(contraste(oscuro[t], oscuro[f])).toBeGreaterThanOrEqual(4.5);
   });
+
+  // Cabecera del panel en oscuro: color-mix(in srgb, <marca -osc> 18%, surface) con texto ink.
+  // Se prueba con colores de academia extremos (muy claro, saturados y oscuro).
+  const mezcla = (a: string, b: string, pa: number) => {
+    const c = (h: string, i: number) => parseInt(h.slice(i, i + 2), 16);
+    return `#${[1, 3, 5]
+      .map((i) => Math.round(c(a, i) * pa + c(b, i) * (1 - pa)).toString(16).padStart(2, "0"))
+      .join("")}`;
+  };
+  it.each(["#ffffff", "#ffd400", "#8fb1ff", "#ff6b6b", "#4fcf9f", "#1d4ed8"])(
+    "texto de la cabecera sobre la banda teñida con %s ≥ 4,5",
+    (marca) => {
+      const banda = mezcla(marca, oscuro.surface, 0.18);
+      expect(contraste(oscuro.ink, banda)).toBeGreaterThanOrEqual(4.5);
+      expect(contraste(oscuro["ink-2"], banda)).toBeGreaterThanOrEqual(4.5);
+    },
+  );
 });
