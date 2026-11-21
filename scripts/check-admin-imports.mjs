@@ -24,6 +24,11 @@
 //   - app/(public)/[domain]/(alumno)/perfil/page.tsx  Server Component del perfil del alumno; query filtrada por tenant.id y alumno.id
 //   - lib/creador/tareas.ts            SOLO el bucket `entregas` (leer/borrar objetos), tras comprobar con RLS que la fila es de la academia (ADR 038)
 //   - lib/creador/tenantActual.ts      SOLO rama DEMO provisional (RQ-01); se elimina con el login real
+//   - app/api/alumno/tiempo-leccion/route.ts  tiempo activo del alumno (ADR 040): sesion del alumno sin RLS posible (ADR 018);
+//     tenant del host y alumno de la sesion, nunca del body; cada query filtra por tenant_id
+//   - lib/admin/analiticaCreadores.ts  analitica de /admin (ADR 043): verifica esStaff() antes de leer; cruza academias por diseno
+//   - lib/pagos/acreditar.ts           acreditacion de pagos (ADR 046): el webhook no tiene sesion; el tenant sale del pago
+//     consultado a Mercado Pago con nuestro token (no del request) y cada query filtra por tenant_id
 // Prohibido: Server Actions de alta/auth (lib/creador/actionsAlta.ts, lib/auth/**)
 // y cualquier archivo "use client".
 import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -56,6 +61,9 @@ const LISTA_BLANCA = new Set([
   "app/(public)/[domain]/(alumno)/perfil/page.tsx",
   "lib/creador/tareas.ts",
   "lib/creador/tenantActual.ts",
+  "app/api/alumno/tiempo-leccion/route.ts",
+  "lib/admin/analiticaCreadores.ts",
+  "lib/pagos/acreditar.ts",
   "lib/supabase/admin.ts",
 ]);
 const PATRON = /(?:from\s*|import\s*\(\s*|require\s*\(\s*|import\s+)["'][^"']*supabase\/admin(?:\.[tj]sx?)?["']/;
