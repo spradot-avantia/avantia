@@ -7,7 +7,8 @@ const MARKETING_HOSTS = (process.env.MARKETING_HOSTS ?? "avantia.app,www.avantia
   .split(",")
   .map((h) => h.trim())
   .filter(Boolean);
-const PLATFORM_HOSTS = (process.env.PLATFORM_HOSTS ?? "")
+const TARJETAS = new Set(["/javiera", "/samuel"]);
+const PLATFORM_HOSTS =(process.env.PLATFORM_HOSTS ?? "")
   .split(",")
   .map((h) => h.trim())
   .filter(Boolean);
@@ -39,6 +40,18 @@ export async function middleware(request: NextRequest) {
     marketingHosts: MARKETING_HOSTS,
     platformHosts: PLATFORM_HOSTS,
   });
+
+  // Tarjetas de contacto de los fundadores: /Javiera, /SAMUEL, etc. llevan a la ruta
+  // en minúsculas (las rutas de Next distinguen mayúsculas). Solo en hosts de Avantia.
+  if (kind !== "tenant") {
+    const ruta = request.nextUrl.pathname;
+    const minus = ruta.toLowerCase();
+    if (ruta !== minus && TARJETAS.has(minus)) {
+      const url = request.nextUrl.clone();
+      url.pathname = minus;
+      return NextResponse.redirect(url, 308);
+    }
+  }
 
   if (kind === "plataforma") {
     // "/" siempre es la landing; el inicio del panel vive en /inicio.
