@@ -1,8 +1,12 @@
 "use client";
 
+import { useState } from "react";
+import { PRECIO_MIN } from "../../../lib/creador/validacion";
 import type { AccesoCurso } from "../../../lib/creador/types";
 import { Badge } from "../Badge";
+import { Field, Input } from "../Field";
 import type { EditorCtx } from "./contexto";
+import { errorDe } from "./util";
 
 const OPCIONES: ReadonlyArray<{ id: AccesoCurso; titulo: string; texto: string; recomendado?: boolean }> = [
   {
@@ -18,9 +22,13 @@ const OPCIONES: ReadonlyArray<{ id: AccesoCurso; titulo: string; texto: string; 
   },
 ];
 
-/** Paso 5: quien puede inscribirse. */
+const pesos = (n: number) => (n > 0 ? n.toLocaleString("es-CL") : "");
+
+/** Paso 5: quien puede inscribirse y cuanto cuesta. */
 export function PasoAcceso({ ctx }: { ctx: EditorCtx }) {
   const { curso, setCurso } = ctx;
+  // Texto tal como lo escribe el creador ("19.990"); al curso va el número en pesos.
+  const [precioTexto, setPrecioTexto] = useState(() => pesos(Math.round(curso.precioCentavos / 100)));
 
   const elegir = (a: AccesoCurso) => {
     if (a === curso.acceso) return;
@@ -29,9 +37,19 @@ export function PasoAcceso({ ctx }: { ctx: EditorCtx }) {
     ctx.anunciar(a === "invitados" ? "Acceso: solo personas que invites" : "Acceso: cualquiera con el enlace");
   };
 
+  const cambiarPrecio = (texto: string) => {
+    const digitos = texto.replace(/\D/g, "").slice(0, 9);
+    const n = digitos ? Number(digitos) : 0;
+    setPrecioTexto(digitos ? n.toLocaleString("es-CL") : "");
+    setCurso((c) => ({ ...c, precioCentavos: n * 100 }));
+    ctx.guardarCampo("precio", n);
+  };
+
+  const errorPrecio = errorDe(ctx, "precio");
+
   return (
     <div className="ed-form">
-      <p className="ed-lede">Elige quién puede inscribirse. Podrás cambiarlo cuando quieras.</p>
+      <p className="ed-lede">Elige quién puede inscribirse y cuánto cuesta. Podrás cambiarlo cuando quieras.</p>
 
       <fieldset className="ed-radios">
         <legend className="cr-field__label">¿Quién puede entrar al curso?</legend>
@@ -47,6 +65,25 @@ export function PasoAcceso({ ctx }: { ctx: EditorCtx }) {
           </label>
         ))}
       </fieldset>
+
+      <Field
+        id="ed-precio"
+        label="Precio (CLP)"
+        ayuda={`En pesos chilenos, sin decimales. Déjalo vacío si el curso es gratis. Mínimo $${PRECIO_MIN.toLocaleString("es-CL")}. ${ctx.cobrosEnLinea ? "Tus estudiantes pagan con Mercado Pago." : "Coordinas el pago con tus estudiantes y, cuando te pagan, activas su inscripción en Estudiantes."}`}
+        error={errorPrecio}
+      >
+        <Input
+          id="ed-precio"
+          value={precioTexto}
+          inputMode="numeric"
+          autoComplete="off"
+          placeholder="Gratis"
+          conAyuda
+          invalido={!!errorPrecio}
+          onChange={(e) => cambiarPrecio(e.target.value)}
+          onBlur={() => ctx.marcarTocado("precio")}
+        />
+      </Field>
     </div>
   );
 }

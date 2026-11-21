@@ -5,6 +5,7 @@ import { leccionLista } from "../../lib/creador/reglasPublicacion";
 import { colorTexto, textoSobre } from "../../lib/creador/color";
 import type { CursoCompleto, Leccion, TenantCreador } from "../../lib/creador/types";
 import { urlEmbebible } from "../../lib/creador/validacion";
+import { formatearPrecio } from "../../lib/sitio/tipos";
 import { TenantMark } from "../creador/TenantMark";
 import { MarkdownMinimo } from "./MarkdownMinimo";
 import { DescripcionModulo, ObjetivosModulo } from "./PresentacionModulo";
@@ -93,7 +94,8 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
     curso.modalidad === "con_fechas" && curso.fechaInicio
       ? `Del ${fecha(curso.fechaInicio)}${curso.fechaTermino ? ` al ${fecha(curso.fechaTermino)}` : ""}`
       : "A su ritmo";
-  const cta = curso.acceso === "invitados" ? "Entrar al curso" : "Inscribirme";
+  const precio = curso.precioCentavos > 0 ? formatearPrecio(curso.precioCentavos, "CLP") : null;
+  const cta = curso.acceso === "invitados" ? "Entrar al curso" : precio ? `Inscribirme por ${precio}` : "Inscribirme";
   const objetivos = curso.objetivos.filter((o) => o.trim());
 
   return (
@@ -111,6 +113,8 @@ export function FichaCurso({ tenant, curso, preview = false, ctaHref, cta: ctaPr
           <span>
             {plural(curso.modulos.length, "módulo", "módulos")} · {plural(totalLecciones, "lección", "lecciones")}
           </span>
+          <span aria-hidden="true">·</span>
+          <span>{precio ?? "Gratis"}</span>
         </p>
         {preview ? <h2 className="fc-title">{curso.titulo}</h2> : <h1 className="fc-title">{curso.titulo}</h1>}
         {curso.descripcion && <p className="fc-desc">{curso.descripcion}</p>}

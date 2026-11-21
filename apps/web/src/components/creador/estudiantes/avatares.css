@@ -54,6 +54,16 @@
 .ea-fila .ci-alum__lado {
   justify-content: space-between;
 }
+/* Estudiante que llega desde el Inicio (?alumno=): borde y anillo de la marca, sin cambiar el contenido. */
+.ea-fila--destacada {
+  border-color: var(--av-blue-600);
+  box-shadow: var(--av-ring);
+  scroll-margin-block: var(--av-space-6);
+}
+.ea-fila--destacada:focus-visible {
+  outline: 2px solid var(--av-blue-600);
+  outline-offset: 2px;
+}
 @media (min-width: 720px) {
   .ea-fila .ci-alum__lado {
     flex: none;

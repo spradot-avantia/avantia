@@ -3,7 +3,7 @@
 import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { guardarMarcaAction } from "../../../lib/creador/actions";
-import { iniciales } from "../../../lib/creador/color";
+import { cumpleAAEnOscuro, iniciales } from "../../../lib/creador/color";
 import type { LogoModo, TenantCreador } from "../../../lib/creador/types";
 import { modoLogoSugerido } from "../../../lib/creador/validacion";
 import { Button } from "../Button";
@@ -24,11 +24,13 @@ interface Valores {
   frase: string;
   area: string;
   color: string;
+  /** null = automático (ADR 045). */
+  colorOscuro: string | null;
   modo: LogoModo;
 }
 
 function desde(t: TenantCreador): Valores {
-  return { nombre: t.nombre, frase: t.frase ?? "", area: t.area ?? "", color: t.colorPrimario, modo: t.logoModo };
+  return { nombre: t.nombre, frase: t.frase ?? "", area: t.area ?? "", color: t.colorPrimario, colorOscuro: t.colorPrimarioOscuro, modo: t.logoModo };
 }
 
 /** Mi academia > Marca: nombre, logo, cómo se muestra, color. Guardar/descartar. */
@@ -48,6 +50,7 @@ export function MarcaForm({ tenant }: { tenant: TenantCreador }) {
     v.frase !== b.frase ||
     v.area !== b.area ||
     v.color.toLowerCase() !== b.color.toLowerCase() ||
+    (v.colorOscuro ?? "").toLowerCase() !== (b.colorOscuro ?? "").toLowerCase() ||
     v.modo !== b.modo ||
     !!logo.file ||
     logo.quitado;
@@ -70,6 +73,8 @@ export function MarcaForm({ tenant }: { tenant: TenantCreador }) {
     const nuevos: Record<string, string> = {};
     if (v.nombre.trim().length < 2) nuevos.nombre = "El nombre necesita al menos 2 caracteres. Escribe cómo se llama tu academia.";
     if (!cumpleAASobreBlanco(v.color)) nuevos.color = "Este color es muy claro para leerse sobre blanco. Usa el ajuste automático o elige uno más oscuro.";
+    if (v.colorOscuro !== null && !cumpleAAEnOscuro(v.colorOscuro))
+      nuevos.color = "Tu color para modo oscuro se pierde sobre fondo oscuro. Usa el ajuste automático o elige uno más claro.";
     setErrores(nuevos);
     if (Object.keys(nuevos).length) return;
 
@@ -86,6 +91,7 @@ export function MarcaForm({ tenant }: { tenant: TenantCreador }) {
         frase: v.frase,
         area: v.area,
         colorPrimario: v.color,
+        colorPrimarioOscuro: v.colorOscuro,
         logoModo: modo,
       });
       if (!r.ok) {
@@ -158,7 +164,12 @@ export function MarcaForm({ tenant }: { tenant: TenantCreador }) {
 
       <div className="cr-field">
         <span className="cr-field__label">Color de tu academia</span>
-        <ColorPicker value={v.color} onChange={(c) => cambiar("color", c)} />
+        <ColorPicker
+          value={v.color}
+          onChange={(c) => cambiar("color", c)}
+          oscuro={v.colorOscuro}
+          onChangeOscuro={(c) => cambiar("colorOscuro", c)}
+        />
         {errores.color && (
           <span className="cr-field__error" role="alert">
             {errores.color}

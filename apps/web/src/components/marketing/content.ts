@@ -56,6 +56,46 @@ export const FAQS: { q: string; a: string }[] = [
 export const CONTACTO = "contacto@goavantia.com";
 
 /**
+ * Datos de la tarjeta /contacto (la abre el QR de eventos). Mientras un valor
+ * sea null, su botón no se muestra: no inventar números ni enlaces.
+ */
+export const WHATSAPP: string | null = "56963438490"; // solo dígitos con código de país, ej. "56912345678"
+export const LINKEDIN_URL: string | null = "https://www.linkedin.com/company/goavantia/"; // página de empresa en LinkedIn
+
+/** Tarjetas personales de los fundadores (/javiera, /samuel), cada una con su QR. */
+export interface PersonaContacto {
+  slug: string;
+  nombre: string;
+  apellido: string;
+  cargo: string;
+  whatsapp: string; // solo dígitos con código de país
+  agenda: string | null; // página de reservas; null = sin enlace de agenda
+  foto?: string; // ruta en /public (cuadrada, ~384 px); sin foto se muestran las iniciales
+}
+
+export const PERSONAS = {
+  javiera: {
+    slug: "javiera",
+    nombre: "Javiera",
+    apellido: "Mena",
+    cargo: "CEO",
+    whatsapp: "56963438490",
+    // Su Google Calendar: es la misma agenda de la landing.
+    agenda: process.env.NEXT_PUBLIC_AGENDA_URL?.trim() || null,
+    foto: "/equipo/javiera.jpg",
+  },
+  samuel: {
+    slug: "samuel",
+    nombre: "Samuel",
+    apellido: "Prado",
+    cargo: "CTO",
+    whatsapp: "56992715488",
+    agenda: "https://calendar.app.google/GpZYGi29qtgdJm84A",
+    foto: "/equipo/samuel.jpg",
+  },
+} satisfies Record<string, PersonaContacto>;
+
+/**
  * Página de reservas de Google Calendar ("Agenda de citas") para la reunión de
  * 20 minutos. Se configura en NEXT_PUBLIC_AGENDA_URL; sin ella, cae a un correo.
  */

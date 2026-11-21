@@ -2,9 +2,10 @@
  * Modo oscuro automático (ADR 044, Propuesta). Sigue la preferencia del sistema
  * o del navegador (prefers-color-scheme): no hay interruptor.
  *
- * Alcance: solo las pantallas de Avantia, que viven dentro de .av-scope (landing,
- * postulación, acceso, onboarding, panel del creador y admin). Los sitios de las
- * academias y la experiencia del alumno NO usan .av-scope y siguen en claro.
+ * Alcance: las pantallas de Avantia (.av-scope: landing, postulación, acceso, onboarding,
+ * panel del creador y admin) y, desde el ADR 045, la experiencia del alumno (.al). La página
+ * de inicio pública de la academia (plantillas .st) sigue en claro: tiene colores fijos propios.
+ * El color de la academia usa su variante oscura (--cr-brand-osc / --al-brand-osc, ver varsMarca).
  *
  * Cómo funciona: se redefinen los tokens --av-* (los componentes ya los usan) y se
  * corrigen los pocos colores fijos. Las vistas previas de una academia dentro de
@@ -13,19 +14,25 @@
  * correcciones de componentes llevan :root delante para ganarle a la regla original.
  *
  * Contrastes (texto sobre --av-bg / --av-surface): ink 16,0 / 14,5; ink-2 11,7 / 10,6;
- * muted 7,7 / 6,9; enlaces (blue-700) 8,9 / 8,0. Blanco sobre blue-600: 4,7.
+ * muted 7,7 / 6,9; subtle 5,7 / 5,1 (4,5 sobre surface-2); enlaces (blue-700) 8,9 / 8,0;
+ * blue-400 (texto de acento e íconos) 6,7 / 6,1. Blanco sobre blue-600: 4,7.
+ * Bordes con significado (blue-200): 3,6 / 3,3. blue-600 sobre fondo oscuro da 3,6–4,0:
+ * en oscuro se usa solo como relleno, no como texto ni ícono (ver "Landing").
+ * Los pares críticos se comprueban en src/styles/contrasteTokens.test.ts.
  */
 
 @media (prefers-color-scheme: dark) {
   :root:has(.av-scope),
-  .av-scope {
+  .av-scope,
+  :root:has(.al),
+  .al {
     color-scheme: dark;
 
     /* Neutros: tinta clara sobre azul-marino profundo */
     --av-ink: #e9ecf8;
     --av-ink-2: #c5cbe2;
     --av-muted: #9aa4c6;
-    --av-subtle: #6f789b;
+    --av-subtle: #838cae;
     --av-line: #262d47;
     --av-line-strong: #343c5e;
     --av-line-dashed: #4c5579;
@@ -38,10 +45,11 @@
 
     /* Azul: blue-600 sigue siendo relleno (botones); blue-700 es texto/enlace, más claro */
     --av-blue-50: #172452;
-    --av-blue-200: #34509f;
+    --av-blue-200: #4a68c0;
     --av-blue-400: #6f97f7;
     --av-blue-600: #336af0;
     --av-blue-700: #8fb1ff;
+    --av-gradient: linear-gradient(90deg, #6f97f7 0%, #a585fa 100%);
 
     --av-violet-50: #231b47;
     --av-violet-200: #4d3a8f;
@@ -116,7 +124,20 @@
     --av-shadow-md: 0 16px 42px rgba(10, 16, 41, 0.1);
     --av-shadow-lg: 0 32px 78px rgba(10, 16, 41, 0.14);
     --av-ring: 0 0 0 3px rgba(76, 125, 240, 0.35);
+    --av-gradient: linear-gradient(90deg, #2563eb 0%, #8b5cf6 100%);
     color: var(--av-ink);
+  }
+
+  /* ---- Color de la academia en oscuro (ADR 045): la variante que cumple AA sobre fondo oscuro ---- */
+  :root .cr-shell,
+  :root .cr-mark:not(.av-claro *) {
+    --cr-brand: var(--cr-brand-osc, var(--cr-brand-claro, var(--av-blue-600)));
+    --cr-on-brand: var(--cr-on-brand-osc, var(--cr-on-brand-claro, #fff));
+  }
+  :root .al {
+    --al-brand: var(--al-brand-osc, var(--al-brand-claro, var(--av-blue-600)));
+    --al-brand-text: var(--al-brand-osc, var(--al-brand-text-claro, var(--av-blue-700)));
+    --al-on-brand: var(--al-on-brand-osc, var(--al-on-brand-claro, #fff));
   }
 
   /* ---- Marca Avantia: el logotipo (texto azul marino) pasa a blanco ---- */
@@ -148,6 +169,28 @@
   }
   :root .av-scope .lp-switch::after {
     background: #e9ecf8;
+  }
+  /* Acento como texto o ícono: blue-600 da 3,6:1 sobre surface; blue-400 da 6,1 */
+  :root .av-scope .lp-hero__marca,
+  :root .av-scope .lp-trust svg,
+  :root .av-scope .lp-arrow,
+  :root .av-scope .lp-faq summary svg,
+  :root .av-scope .lp-foot nav .av-link:hover {
+    color: var(--av-blue-400);
+  }
+  /* Bordes de estado (activo, foco): blue-400 en vez de blue-600 para llegar a 3:1 */
+  :root .av-scope .lp-step.is-on {
+    border-color: var(--av-blue-400);
+    box-shadow: 0 0 0 1px var(--av-blue-400);
+  }
+  :root .av-scope .lp-mod-row--edit:focus-within,
+  :root .av-scope .lp-ui-field--edit:focus-within,
+  :root .av-scope .lp-ui-select:focus-visible,
+  :root .av-scope .lp-cookies__acc .av-btn--secondary {
+    border-color: var(--av-blue-400);
+  }
+  :root .av-scope .lp-mod-row--edit .lp-mod-edit:focus-within .lp-mod-in {
+    border-bottom-color: var(--av-blue-400);
   }
 
   /* "4 cupos de 5": píldora azul translúcida con borde, texto y check claros */
@@ -188,6 +231,33 @@
   :root .av-scope .pg-puntos i.is-ahora,
   :root .av-scope .pg-barra__pista i {
     background: color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 60%, var(--av-surface));
+  }
+  /* Cabecera del panel (cr-header): en oscuro, banda oscura teñida con el color de la academia y
+     texto claro, no un bloque claro del color -osc (pensado para texto y acentos, no para fondos
+     grandes). Texto ink sobre la banda ≥ 7:1 incluso con un color de academia muy claro
+     (ver contrasteTokens.test.ts). El botón primario usa el par -osc/on-osc, que ya cumple AA. */
+  :root .av-scope .cr-header {
+    background: color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 18%, var(--av-surface));
+    border: 1px solid color-mix(in srgb, var(--cr-brand, var(--av-blue-600)) 40%, var(--av-line-strong));
+    color: var(--av-ink);
+  }
+  :root .av-scope .cr-header .av-btn--primary {
+    background: var(--cr-brand);
+    border-color: var(--cr-brand);
+    color: var(--cr-on-brand);
+  }
+  :root .av-scope .cr-header .av-btn--primary:hover {
+    background: color-mix(in srgb, var(--cr-brand) 85%, var(--av-ink));
+  }
+  :root .av-scope .cr-header .av-btn--secondary {
+    border-color: color-mix(in srgb, var(--cr-brand) 70%, var(--av-ink));
+    color: var(--av-ink);
+  }
+  :root .av-scope .cr-header .av-btn--secondary:hover {
+    background: color-mix(in srgb, var(--cr-brand) 18%, transparent);
+  }
+  :root .av-scope .cr-header :focus-visible {
+    outline-color: var(--av-blue-400);
   }
   :root .av-scope .pg-chip--espera { background: #3a2a0c; color: #ffcf85; }
   :root .av-scope .pg-chip--ej { background: #3a1d0c; color: #ffb48a; }

@@ -6,7 +6,7 @@ import { Cabecera } from "../../../../components/alumno/Cabecera";
 import "../../../../components/alumno/alumno.css";
 import { idSeudonimo } from "../../../../lib/analitica/identidad";
 import { getAlumnoActual } from "../../../../lib/alumno/sesion";
-import { colorTexto, textoSobre } from "../../../../lib/creador/color";
+import { varsMarca } from "../../../../lib/creador/color";
 import { clasesFuentes } from "../../../../lib/tenant/fuentes";
 import { clasesIdentidad } from "../../../../lib/tenant/identidad";
 import { resolveTenantByHostname } from "../../../../lib/tenant/resolve";
@@ -26,7 +26,7 @@ export default async function AlumnoLayout({ children, params }: { children: Rea
   const alumno = await getAlumnoActual();
   const color = tenant.theme.colorPrimario;
   return (
-    <div className={`al ${clasesFuentes} ${clasesIdentidad(tenant.theme.tipografia, tenant.theme.forma)}`} style={{ ["--al-brand" as string]: color, ["--al-on-brand" as string]: textoSobre(color), ["--al-brand-text" as string]: colorTexto(color) }}>
+    <div className={`al ${clasesFuentes} ${clasesIdentidad(tenant.theme.tipografia, tenant.theme.forma)}`} style={varsMarca("al", color, tenant.theme.colorPrimarioOscuro)}>
       {/* Primero: sus efectos deben correr antes que los de RastreoLeccion/QuizPlayer (ADR 040). */}
       <AnaliticaProvider tenantId={tenant.id} distinctId={alumno ? idSeudonimo(tenant.id, alumno.id) : null} />
       <a className="al-skip" href="#contenido">

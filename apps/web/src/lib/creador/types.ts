@@ -38,6 +38,8 @@ export interface TenantCreador {
   frase: string | null;
   area: string | null;
   colorPrimario: string;
+  /** Color para modo oscuro (ADR 045); null = automático a partir de colorPrimario. */
+  colorPrimarioOscuro: string | null;
   logoUrl: string | null;
   logoModo: LogoModo;
   /** Identidad visual (ADR 027): lista cerrada, default clasico + suave. */
@@ -125,6 +127,8 @@ export interface Curso {
   fechaInicio: string | null; // YYYY-MM-DD
   fechaTermino: string | null;
   acceso: AccesoCurso;
+  /** CLP sin decimales × 100 (columna precio_centavos). 0 = gratis. */
+  precioCentavos: number;
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -174,4 +178,5 @@ export type CampoCurso =
   | "modalidad"
   | "fechaInicio"
   | "fechaTermino"
-  | "acceso";
+  | "acceso"
+  | "precio";

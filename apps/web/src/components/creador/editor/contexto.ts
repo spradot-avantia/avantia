@@ -23,4 +23,6 @@ export interface EditorCtx {
   /** Espera los guardados pendientes y navega (p. ej. a la vista previa). */
   salir: (href: string) => Promise<void>;
   urlPublica: string;
+  /** Pasarela de pago activa (ADR 046). Sin ella, el creador cobra por fuera y activa la inscripción. */
+  cobrosEnLinea?: boolean;
 }

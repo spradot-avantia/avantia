@@ -5,7 +5,7 @@ import { mapCurso, mapLeccion } from "../creador/cursos";
 import type { CursoCompleto, Curso } from "../creador/types";
 
 const COLS_CURSO =
-  "id, slug, titulo, descripcion, publico, estado, modalidad, fecha_inicio, fecha_termino, acceso, published_at, created_at, updated_at";
+  "id, slug, titulo, descripcion, publico, estado, modalidad, fecha_inicio, fecha_termino, acceso, precio_centavos, published_at, created_at, updated_at";
 
 export interface CursoParaAlumno extends CursoCompleto {
   /** dia_liberacion por lección (ADR 004); null = disponible desde el inicio. */

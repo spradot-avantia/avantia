@@ -79,7 +79,7 @@ export default function Landing() {
         <section className="lp-hero" aria-labelledby="hero-title">
           <div className="lp-wrap lp-hero__grid">
             <div className="lp-hero__copy">
-              <span className="av-overline">Para expertos que ya enseñan online</span>
+              <span className="av-overline">Para Avanters: expertos que ya enseñan online</span>
               <h1 id="hero-title"><span>Tu academia online,</span> <span className="lp-hero__marca">con tu marca</span></h1>
               <p className="lp-sub">Sube tus cursos, recibe los pagos de tus alumnos y entrégales una experiencia con tu marca, a tu manera.</p>
               <PostularCta />
@@ -126,7 +126,7 @@ export default function Landing() {
               <span className="av-overline">Programa fundador</span>
               <h2 className="av-h2">Lanza tu academia gratis, con acompañamiento de nuestro equipo</h2>
               <span className="lp-cupos">{textoCupos()} disponibles en el primer grupo</span>
-              <p className="av-lede">Buscamos a {CUPOS_FUNDADOR_TOTAL} expertos que ya enseñan online para construir Avantia junto a ellos.</p>
+              <p className="av-lede">Buscamos a {CUPOS_FUNDADOR_TOTAL} Avanters, expertos que ya enseñan online, para construir Avantia junto a ellos.</p>
             </div>
             <div className="lp-fgrid">
               <div className="lp-fbox">
@@ -163,8 +163,8 @@ export default function Landing() {
           <div className="lp-onda" aria-hidden="true">
             <svg viewBox="0 0 1440 150" preserveAspectRatio="none">
               <defs>
-                <linearGradient id="ondaA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#1D4ED8" /><stop offset=".7" stopColor="#2563EB" /><stop offset="1" stopColor="#8B5CF6" /></linearGradient>
-                <linearGradient id="ondaB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#2563EB" /><stop offset=".55" stopColor="#4C7DF0" /><stop offset=".85" stopColor="#A9C2F9" /><stop offset="1" stopColor="#CDB9FC" /></linearGradient>
+                <linearGradient id="ondaA" x1="0" y1="0" x2="1" y2="0"><stop offset="0" className="o1" /><stop offset=".7" className="o2" /><stop offset="1" className="o3" /></linearGradient>
+                <linearGradient id="ondaB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" className="o2" /><stop offset=".55" className="o4" /><stop offset=".85" className="o5" /><stop offset="1" className="o6" /></linearGradient>
               </defs>
               <path d="M0 78 C 220 18, 470 8, 720 48 S 1190 104, 1440 34 L 1440 150 L 0 150 Z" fill="url(#ondaA)" opacity=".34" />
               <path d="M0 104 C 260 54, 540 58, 800 92 S 1240 122, 1440 70 L 1440 150 L 0 150 Z" fill="url(#ondaB)" opacity=".48" />

@@ -45,7 +45,7 @@
 
 | Tema | Estado actual | Fuente |
 |---|---|---|
-| Onboarding de Mercado Pago Connect | No hay documentado cómo un tenant conecta su cuenta para recibir el split payment, ni qué pasa si no lo hace | — |
+| Onboarding de Mercado Pago Connect | Fase 1 en dev con una sola cuenta de prueba ([ADR 046](../decisiones/046-checkout-pro-cuenta-de-prueba-en-dev.md), Propuesta). Falta para producción: cómo cada academia conecta su cuenta (OAuth o token por academia como transición), credenciales reales, verificación en Chile y qué pasa si la academia no conecta (hoy: pago manual) | ADR 020, Q7, Q10 |
 | Separación de rol "equipo de Avantia" vs. "dueño de una academia" | Hay sesión y `STAFF_EMAILS` protege `/admin`, pero ambos paneles (el interno de Avantia y el de cada tenant) conviven en el mismo host de panel sin ninguna distinción de acceso | `app/(dashboard)/page.tsx` |
 | Sesiones en vivo y actividades en el Espacio del Creador | "Próximamente" en la UI; sin backend | [Reconciliación](../producto/Reconciliacion_Diseno_Creador.md) filas 12 y 21 |
 | Migraciones `0001`–`0003` sin confirmar como aplicadas en la base remota | Verificar en Supabase y probar RLS/Storage | `db/migrations/` |

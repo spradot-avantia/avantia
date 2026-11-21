@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { completarOnboardingAction, guardarMarcaAction } from "../../../lib/creador/actions";
 import { comprobarSubdominioAction, crearAcademiaAction } from "../../../lib/creador/actionsAlta";
 import { derivarSubdominio, errorSubdominio, normalizarSubdominio } from "../../../lib/creador/alta";
-import { iniciales, textoSobre } from "../../../lib/creador/color";
+import { cumpleAAEnOscuro, iniciales, textoSobre } from "../../../lib/creador/color";
 import type { LogoModo, TenantCreador } from "../../../lib/creador/types";
 import { modoLogoSugerido } from "../../../lib/creador/validacion";
 import { Button } from "../Button";
@@ -36,13 +36,23 @@ const TITULOS: Record<string, { h: string; p: string }> = {
 type EstadoSub = "idle" | "revisando" | "libre" | "no_disponible";
 
 /** tenant = null: la academia aún no existe y el paso 2 la crea (RQ-02). */
-export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador | null; dominioRaiz: string }) {
+export function OnboardingFlow({
+  tenant,
+  dominioRaiz,
+  cobrosEnLinea = false,
+}: {
+  tenant: TenantCreador | null;
+  dominioRaiz: string;
+  /** Pagos con Mercado Pago activos en este entorno (ADR 046). */
+  cobrosEnLinea?: boolean;
+}) {
   const router = useRouter();
   const [paso, setPaso] = useState("1");
   const [nombre, setNombre] = useState(tenant?.nombre ?? "");
   const [frase, setFrase] = useState(tenant?.frase ?? "");
   const [area, setArea] = useState(tenant?.area ?? "");
   const [color, setColor] = useState(tenant?.colorPrimario ?? "#2563eb");
+  const [colorOscuro, setColorOscuro] = useState<string | null>(tenant?.colorPrimarioOscuro ?? null);
   const [modo, setModo] = useState<LogoModo>(tenant?.logoModo ?? "logo_y_nombre");
   const { logo, seleccionar, quitar } = useLogo(tenant?.logoUrl ?? null);
   // Subdominio: se deriva del nombre hasta que la persona lo edita a mano.
@@ -152,6 +162,10 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
       setErrorColor("Este color es muy claro para leerse sobre blanco. Usa el ajuste automático o elige uno más oscuro.");
       return;
     }
+    if (colorOscuro !== null && !cumpleAAEnOscuro(colorOscuro)) {
+      setErrorColor("Tu color para modo oscuro se pierde sobre fondo oscuro. Usa el ajuste automático o elige uno más claro.");
+      return;
+    }
     setErrorColor(null);
     iniciar(async () => {
       const rl = await aplicarLogo(logo);
@@ -165,6 +179,7 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
         frase,
         area,
         colorPrimario: color,
+        colorPrimarioOscuro: colorOscuro,
         logoModo: hayLogo ? modo : "logo_y_nombre",
       });
       if (!r.ok) {
@@ -208,6 +223,7 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
               <li>Registrar a tus estudiantes y dar acceso por invitación o por enlace.</li>
               <li>Publicar un curso y compartir su enlace.</li>
               <li>Poner tu logo y tu color para que se vea como tu academia.</li>
+              {cobrosEnLinea && <li>Ponerle precio a un curso y cobrar con Mercado Pago.</li>}
             </ul>
           </section>
           <section aria-labelledby="ob-pronto">
@@ -216,7 +232,7 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
             </h2>
             <ul className="mk-lista mk-lista--no" style={{ marginTop: 10 }}>
               <li>Sesiones en vivo (próximamente).</li>
-              <li>Cobros, comunidad y estructurar cursos con IA.</li>
+              <li>{cobrosEnLinea ? "Comunidad y estructurar cursos con IA." : "Cobros, comunidad y estructurar cursos con IA."}</li>
             </ul>
           </section>
         </div>
@@ -308,7 +324,7 @@ export function OnboardingFlow({ tenant, dominioRaiz }: { tenant: TenantCreador 
           {logo.url && <ModoLogo value={modo} onChange={setModo} />}
           <div className="cr-field">
             <span className="cr-field__label">Color de tu academia</span>
-            <ColorPicker value={color} onChange={setColor} />
+            <ColorPicker value={color} onChange={setColor} oscuro={colorOscuro} onChangeOscuro={setColorOscuro} />
             {errorColor && (
               <span className="cr-field__error" role="alert">
                 {errorColor}

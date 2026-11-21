@@ -25,6 +25,8 @@ interface Props {
   cursoInicial: CursoCompleto;
   pasoInicial: PasoEditor;
   urlPublica: string;
+  /** Pasarela de pago activa en este entorno (ADR 046); si no, el creador cobra por fuera. */
+  cobrosEnLinea: boolean;
 }
 
 const IDS = PASOS_EDITOR.map((p) => p.id);
@@ -34,7 +36,7 @@ function limpiar(c: CursoCompleto): CursoCompleto {
 }
 
 /** Editor de curso de 6 pasos con autoguardado. Todo el estado vive aqui. */
-export function EditorCurso({ cursoInicial, pasoInicial, urlPublica }: Props) {
+export function EditorCurso({ cursoInicial, pasoInicial, urlPublica, cobrosEnLinea }: Props) {
   const router = useRouter();
   const auto = useAutosave();
   const { programar, cancelar } = auto;
@@ -147,6 +149,7 @@ export function EditorCurso({ cursoInicial, pasoInicial, urlPublica }: Props) {
     resincronizar,
     salir,
     urlPublica,
+    cobrosEnLinea,
   };
 
   const hayCamposInvalidos = Object.keys(erroresCampo).length > 0;

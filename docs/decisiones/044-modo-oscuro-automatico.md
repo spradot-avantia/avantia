@@ -1,7 +1,7 @@
 # 044 — Modo oscuro automático en las pantallas de Avantia
 
 - **Fecha:** 2026-11-17
-- **Estado:** Propuesta (espera la aprobación de Samuel)
+- **Estado:** Propuesta (espera la aprobación de Samuel). **Reemplazada en parte por 045** (2026-11-19): el alcance se extiende a la experiencia del alumno con un color de marca para oscuro por academia.
 
 ## Contexto
 

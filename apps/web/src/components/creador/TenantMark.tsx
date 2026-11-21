@@ -1,4 +1,4 @@
-import { iniciales, textoSobre } from "../../lib/creador/color";
+import { iniciales, varsMarca } from "../../lib/creador/color";
 import type { LogoModo } from "../../lib/creador/types";
 import "./creador.css";
 
@@ -8,13 +8,15 @@ interface Props {
   logoModo?: LogoModo;
   /** Color primario del tenant (#rrggbb). */
   color: string;
+  /** Color para modo oscuro (ADR 045); sin él se calcula solo. */
+  colorOscuro?: string | null;
   grande?: boolean;
 }
 
 /** Logo (si hay) o iniciales sobre el color del tenant, mas el nombre. */
-export function TenantMark({ nombre, logoUrl, logoModo = "logo_y_nombre", color, grande }: Props) {
+export function TenantMark({ nombre, logoUrl, logoModo = "logo_y_nombre", color, colorOscuro, grande }: Props) {
   const solo = !!logoUrl && logoModo === "solo_logo";
-  const estilo = { ["--cr-brand" as string]: color, ["--cr-on-brand" as string]: textoSobre(color) };
+  const estilo = varsMarca("cr", color, colorOscuro);
   return (
     <div className={`cr-mark${grande ? " cr-mark--lg" : ""}${solo ? " cr-mark--solo" : ""}`} style={estilo}>
       {logoUrl ? (

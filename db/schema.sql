@@ -11,6 +11,8 @@ create table if not exists tenants (
   nombre text not null,
   logo_url text,
   color_primario text default '#000000',
+  -- Modo oscuro (ADR 045, migración 0024): null = automático a partir de color_primario.
+  color_primario_oscuro text,
   created_at timestamptz not null default now()
 );
 
@@ -126,6 +128,11 @@ alter table tenants add constraint tenants_forma_check
 alter table tenants drop constraint if exists tenants_color_primario_check;
 alter table tenants add constraint tenants_color_primario_check
   check (color_primario is null or color_primario ~* '^#[0-9a-f]{6}$');
+
+alter table tenants add column if not exists color_primario_oscuro text;
+alter table tenants drop constraint if exists tenants_color_primario_oscuro_check;
+alter table tenants add constraint tenants_color_primario_oscuro_check
+  check (color_primario_oscuro is null or color_primario_oscuro ~* '^#[0-9a-f]{6}$');
 
 drop trigger if exists tenants_set_updated_at on tenants;
 create trigger tenants_set_updated_at before update on tenants
@@ -1715,3 +1722,14 @@ grant select, insert, update, delete on sesiones_leccion to service_role;
 
 alter table quiz_respuestas add column if not exists duracion_ms integer
   check (duracion_ms is null or duracion_ms between 0 and 600000);
+
+-- Defensa en profundidad (migración 0025): anon y authenticated no necesitan TRUNCATE (no pasa
+-- por RLS), TRIGGER ni REFERENCES. También para las tablas futuras creadas por el rol postgres.
+revoke truncate, trigger, references on all tables in schema public from anon, authenticated;
+alter default privileges for role postgres in schema public
+  revoke truncate, trigger, references on tables from anon, authenticated;
+
+-- Idempotencia de pagos de la pasarela (migración 0026, ADR 046): un pago de Mercado Pago se
+-- registra una sola vez por academia. Índice completo (no parcial) para ON CONFLICT de PostgREST.
+create unique index if not exists pagos_tenant_referencia_uidx
+  on pagos (tenant_id, referencia_externa);

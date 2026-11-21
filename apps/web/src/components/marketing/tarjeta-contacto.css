@@ -1,0 +1,256 @@
+/* Tarjeta de contacto (components/marketing/TarjetaContacto.tsx): mobile-first (360–390 px).
+   Botones = los de la landing (.av-btn); sin degradados ni sombras de color. */
+
+.ct {
+  min-height: 100dvh;
+  background: var(--av-bg);
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 16px;
+}
+
+.ct-card {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ct-logo {
+  align-self: flex-start;
+}
+
+.ct-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ct-title {
+  font-size: var(--av-fs-h2);
+  font-weight: var(--av-fw-semibold);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--av-ink);
+  text-wrap: balance;
+}
+
+.ct-lede {
+  color: var(--av-muted);
+  font-size: var(--av-fs-base);
+  line-height: 1.5;
+}
+
+/* ---- Mini vista del producto (ejemplo) ---- */
+
+.ct-demo {
+  position: relative;
+  margin: 6px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 14px 14px;
+  background: var(--av-surface);
+  border: 1.5px dashed var(--av-line-dashed);
+  border-radius: var(--av-radius-lg);
+}
+
+/* Etiqueta sobre el borde punteado, con el fondo de la página como recorte. */
+.ct-demo__tag {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  transform: translateY(-50%);
+  padding: 0 6px;
+  background: var(--av-bg);
+  color: var(--av-muted);
+}
+
+.ct-demo__dom {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--av-radius-full);
+  background: var(--av-surface-2);
+  color: var(--av-muted);
+  font-size: var(--av-fs-xs);
+  font-weight: var(--av-fw-medium);
+}
+
+.ct-demo__curso {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* El color de la academia de ejemplo (--ct-academia), no el de Avantia. */
+.ct-demo__play {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--av-radius-md);
+  color: #fff;
+  background: var(--ct-academia);
+}
+
+.ct-demo__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ct-demo__info b {
+  font-size: var(--av-fs-sm);
+  font-weight: var(--av-fw-semibold);
+}
+
+.ct-demo__bar {
+  height: 6px;
+  border-radius: var(--av-radius-full);
+  background: var(--av-surface-2);
+  overflow: hidden;
+}
+
+.ct-demo__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ct-academia);
+}
+
+.ct-demo__meta {
+  font-size: var(--av-fs-xs);
+  color: var(--av-muted);
+}
+
+.ct-demo__ok {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: var(--av-radius-md);
+  background: var(--av-success-bg);
+  color: var(--av-success);
+  font-size: var(--av-fs-sm);
+  font-weight: var(--av-fw-semibold);
+}
+
+/* ---- Acciones ---- */
+
+.ct-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ct-btn {
+  width: 100%;
+}
+
+.ct-nota {
+  margin-top: -4px;
+  text-align: center;
+  font-size: var(--av-fs-xs);
+  color: var(--av-muted);
+}
+
+.ct-agenda {
+  text-align: center;
+  font-size: var(--av-fs-sm);
+  color: var(--av-muted);
+}
+
+.ct-agenda a {
+  display: inline-block;
+  padding: 12px 2px;
+  font-weight: var(--av-fw-semibold);
+}
+
+/* Accesos secundarios: una línea de enlaces de texto. */
+.ct-enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 4px;
+  border-top: 1px solid var(--av-line);
+  padding-top: 8px;
+}
+
+.ct-enlaces a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--av-target);
+  padding: 0 10px;
+  font-size: var(--av-fs-sm);
+  font-weight: var(--av-fw-medium);
+}
+
+.ct-foot {
+  margin-top: auto;
+  text-align: center;
+  font-size: var(--av-fs-xs);
+  color: var(--av-muted);
+}
+
+.ct-foot a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--av-target);
+}
+
+/* ---- Persona (tarjetas de fundadores: /javiera, /samuel) ---- */
+
+.ct-persona {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ct-persona__ini {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--av-radius-full);
+  background: var(--av-blue-50);
+  color: var(--av-blue-700);
+  font-size: var(--av-fs-lg);
+  font-weight: var(--av-fw-semibold);
+  letter-spacing: 0.02em;
+}
+
+.ct-persona__txt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ct-persona__txt h1 {
+  font-size: var(--av-fs-xl);
+  font-weight: var(--av-fw-semibold);
+  line-height: 1.2;
+  color: var(--av-ink);
+}
+
+.ct-persona__txt span {
+  font-size: var(--av-fs-sm);
+  color: var(--av-muted);
+}
+
+.ct-persona__foto {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--av-radius-full);
+  object-fit: cover;
+  box-shadow: 0 0 0 2px var(--av-surface), 0 0 0 3px var(--av-line-strong);
+}

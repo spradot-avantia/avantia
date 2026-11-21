@@ -13,7 +13,7 @@ import { getCurrentTenant } from "../../../lib/creador/tenantActual";
 
 export const dynamic = "force-dynamic";
 
-export default async function EstudiantesPage({ searchParams }: { searchParams: { curso?: string; ver?: string } }) {
+export default async function EstudiantesPage({ searchParams }: { searchParams: { curso?: string; ver?: string; alumno?: string } }) {
   let opciones: CursoOpcion[];
   let filas: FilaEstudiante[];
   let inscripciones: FilaInscripcion[];
@@ -69,7 +69,11 @@ export default async function EstudiantesPage({ searchParams }: { searchParams: 
             <summary>Registrar estudiantes por correo</summary>
             <RegistrarEstudiantes cursos={opciones} cursoInicial={inicial} />
           </details>
-          <InscripcionesAlumnos inscripciones={inscripciones} vistaInicial={searchParams.ver === "por-activar" ? "por-activar" : undefined} />
+          <InscripcionesAlumnos
+            inscripciones={inscripciones}
+            vistaInicial={searchParams.ver === "por-activar" ? "por-activar" : undefined}
+            alumnoDestacado={typeof searchParams.alumno === "string" ? searchParams.alumno : undefined}
+          />
           {filas.length > 0 && (
             <section className="ci-stack" style={{ gap: "var(--av-space-3)" }} aria-labelledby="ci-reg-t">
               <h2 className="ci-card__title" id="ci-reg-t">

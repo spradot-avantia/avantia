@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { EmptyState, LinkButton, SinAcademia } from "../../../../../components/creador";
 import { EditorCurso } from "../../../../../components/creador/editor/EditorCurso";
 import { cargarCursoParaEditor } from "../../../../../lib/creador/editorData";
+import { pagosHabilitados } from "../../../../../lib/pagos/iniciar";
 import { PASOS_EDITOR, type PasoEditor } from "../../../../../lib/creador/types";
 
 export const dynamic = "force-dynamic";
@@ -33,5 +34,5 @@ export default async function EditarCursoPage({
     );
   }
 
-  return <EditorCurso cursoInicial={carga.curso} pasoInicial={pasoDe(searchParams.paso)} urlPublica={carga.urlPublica} />;
+  return <EditorCurso cursoInicial={carga.curso} pasoInicial={pasoDe(searchParams.paso)} urlPublica={carga.urlPublica} cobrosEnLinea={pagosHabilitados()} />;
 }

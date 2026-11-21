@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { signOutAction } from "../../lib/auth/actions";
-import { textoSobre } from "../../lib/creador/color";
+import { varsMarca } from "../../lib/creador/color";
 import type { TenantCreador } from "../../lib/creador/types";
+import { BotonMenuLateral } from "./BotonMenuLateral";
 import { MobileMenu } from "./MobileMenu";
 import { IconoSvg, NavLinks, type ItemNav } from "./NavLinks";
 import { TenantMark } from "./TenantMark";
@@ -27,6 +28,8 @@ interface Props {
   mostrarAdmin?: boolean;
   /** Correo del usuario con sesion (null en modo demo local). */
   usuarioEmail?: string | null;
+  /** Menú lateral plegado a íconos en escritorio (ADR 048). Por defecto, plegado. */
+  menuPlegado?: boolean;
   children: ReactNode;
 }
 
@@ -35,7 +38,7 @@ interface Props {
  * + menu desplegable en movil. La firma de Avantia vive SOLO aqui (panel del
  * creador), nunca en el sitio publico de la academia.
  */
-export function AppShell({ tenant, mostrarAdmin, usuarioEmail, children }: Props) {
+export function AppShell({ tenant, mostrarAdmin, usuarioEmail, menuPlegado = true, children }: Props) {
   const color = tenant?.colorPrimario ?? "#2563eb";
   const items = mostrarAdmin ? [...ITEMS, { href: "/admin", label: "Administración", separador: true, icono: "admin" as const }] : ITEMS;
   const marca = (
@@ -44,6 +47,7 @@ export function AppShell({ tenant, mostrarAdmin, usuarioEmail, children }: Props
       logoUrl={tenant?.logoUrl}
       logoModo={tenant?.logoModo}
       color={color}
+      colorOscuro={tenant?.colorPrimarioOscuro}
     />
   );
   const sesion = usuarioEmail ? (
@@ -56,7 +60,7 @@ export function AppShell({ tenant, mostrarAdmin, usuarioEmail, children }: Props
           <IconoSvg>
             <path d="M9 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H9M15 8l4 4-4 4M19 12H9" />
           </IconoSvg>
-          Cerrar sesión
+          <span className="cr-nav__txt">Cerrar sesión</span>
         </button>
       </form>
     </div>
@@ -64,10 +68,12 @@ export function AppShell({ tenant, mostrarAdmin, usuarioEmail, children }: Props
   return (
     <div
       className="av-scope cr-shell"
-      style={{ ["--cr-brand" as string]: color, ["--cr-on-brand" as string]: textoSobre(color) }}
+      data-menu={menuPlegado ? "plegado" : "abierto"}
+      style={varsMarca("cr", color, tenant?.colorPrimarioOscuro)}
     >
-      <aside className="cr-side" aria-label="Navegación principal">
+      <aside className="cr-side" id="cr-side" aria-label="Navegación principal">
         <div className="cr-side__brand">{marca}</div>
+        <BotonMenuLateral plegadoInicial={menuPlegado} />
         <NavLinks items={items} />
         {sesion}
         <p className="cr-side__foot">{FIRMA}</p>

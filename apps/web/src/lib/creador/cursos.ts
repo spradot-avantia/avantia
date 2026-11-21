@@ -29,6 +29,7 @@ export function mapCurso(r: any): Curso {
     fechaInicio: r.fecha_inicio,
     fechaTermino: r.fecha_termino,
     acceso: r.acceso,
+    precioCentavos: r.precio_centavos ?? 0,
     publishedAt: r.published_at,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -73,7 +74,7 @@ export function mapMaterial(r: any): Material {
 }
 
 const COLS_CURSO =
-  "id, slug, titulo, descripcion, publico, estado, modalidad, fecha_inicio, fecha_termino, acceso, published_at, created_at, updated_at";
+  "id, slug, titulo, descripcion, publico, estado, modalidad, fecha_inicio, fecha_termino, acceso, precio_centavos, published_at, created_at, updated_at";
 
 export async function listarCursos(): Promise<CursoResumen[]> {
   const { tenant, db } = await requireCreadorContext();
@@ -84,10 +85,11 @@ export async function listarCursos(): Promise<CursoResumen[]> {
     .order("created_at", { ascending: false });
   if (!cursos?.length) return [];
 
-  const [mods, lecs, invs] = await Promise.all([
+  const [mods, lecs, invs, inscs] = await Promise.all([
     db.from("modulos").select("curso_id").eq("tenant_id", tenant.id),
     db.from("lecciones").select("curso_id").eq("tenant_id", tenant.id),
     db.from("invitaciones").select("curso_id").eq("tenant_id", tenant.id).neq("estado", "revocada"),
+    db.from("inscripciones").select("curso_id").eq("tenant_id", tenant.id).in("estado", ["pendiente", "activa"]),
   ]);
   const contar = (filas: { curso_id: string }[] | null) => {
     const m = new Map<string, number>();
@@ -97,11 +99,14 @@ export async function listarCursos(): Promise<CursoResumen[]> {
   const cm = contar(mods.data);
   const cl = contar(lecs.data);
   const ci = contar(invs.data);
+  const cn = contar(inscs.data);
   return cursos.map((c) => ({
     ...mapCurso(c),
     totalModulos: cm.get(c.id) ?? 0,
     totalLecciones: cl.get(c.id) ?? 0,
-    totalEstudiantes: ci.get(c.id) ?? 0,
+    // Invitados o inscritos (por enlace o pago). Una invitación aceptada también es una
+    // inscripción: se toma el mayor para no contar dos veces a la misma persona.
+    totalEstudiantes: Math.max(ci.get(c.id) ?? 0, cn.get(c.id) ?? 0),
   }));
 }
 
@@ -210,6 +215,17 @@ export async function updateCursoCampo(cursoId: string, campo: CampoCurso, valor
     return { ok: true, data: undefined };
   }
 
+  if (campo === "precio") {
+    // El editor trabaja en pesos (CLP sin decimales); la columna guarda centavos.
+    const { error } = await db
+      .from("cursos")
+      .update({ precio_centavos: (v.valor as number) * 100 })
+      .eq("tenant_id", tenant.id)
+      .eq("id", cursoId);
+    if (error) return { ok: false, error: "No pudimos guardar el precio. Inténtalo de nuevo." };
+    return { ok: true, data: undefined };
+  }
+
   const columnas: Record<string, string> = {
     titulo: "titulo",
     descripcion: "descripcion",
@@ -245,7 +261,7 @@ const CAMPOS_POR_PASO: Partial<Record<PasoEditor, CampoCurso[]>> = {
   esencial: ["titulo", "descripcion", "publico"],
   objetivo: ["objetivos"],
   modalidad: ["modalidad", "fechaInicio", "fechaTermino"],
-  acceso: ["acceso"],
+  acceso: ["acceso", "precio"],
 };
 
 /** Guarda varios campos de un paso, uno por uno; devuelve errores por campo. */

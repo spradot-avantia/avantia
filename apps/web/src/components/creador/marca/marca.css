@@ -594,3 +594,36 @@
 .mk-prev .mk-prev__panel .cr-mark__name {
   font-family: var(--tn-font-display, inherit);
 }
+
+/* ---- Color en modo oscuro (ADR 045): modos y vista previa doble ---- */
+.mk-oscuro {
+  margin: var(--av-space-2) 0 0;
+  padding: var(--av-space-4) 0 0;
+  border: 0;
+  border-top: 1px solid var(--av-line);
+  display: grid;
+  gap: var(--av-space-3);
+  min-width: 0;
+}
+.mk-oscuro > legend { float: left; width: 100%; padding: 0; margin-bottom: var(--av-space-1); }
+.mk-oscuro__ayuda { margin: 0; color: var(--av-muted); font-size: var(--av-fs-sm); clear: both; }
+.mk-oscuro__modos { display: flex; flex-wrap: wrap; gap: var(--av-space-2) var(--av-space-4); }
+.mk-oscuro__modo {
+  display: inline-flex; align-items: center; gap: var(--av-space-2);
+  min-height: var(--av-target); cursor: pointer;
+}
+.mk-oscuro__modo input { width: 20px; height: 20px; margin: 0; accent-color: var(--av-blue-600); }
+.mk-oscuro__modo small { color: var(--av-muted); font-size: var(--av-fs-xs); font-family: var(--av-font-mono); }
+/* Las muestras usan fondos fijos a propósito: muestran tu color sobre el fondo claro y el oscuro. */
+.mk-muestras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--av-space-3); }
+.mk-muestra {
+  margin: 0; padding: var(--av-space-3); border-radius: var(--av-radius-md);
+  border: 1px solid var(--av-line-strong); display: grid; gap: var(--av-space-2); align-content: start; min-width: 0;
+}
+.mk-muestra__tit { font-size: var(--av-fs-xs); font-weight: var(--av-fw-semibold); opacity: 0.85; }
+.mk-muestra__link { font-weight: var(--av-fw-semibold); text-decoration: underline; text-underline-offset: 3px; }
+.mk-muestra__btn {
+  justify-self: start; padding: 6px 12px; border-radius: var(--av-radius-sm);
+  font-size: var(--av-fs-sm); font-weight: var(--av-fw-semibold);
+}
+.mk-muestra__ratios { list-style: none; margin: 0; padding: 0; font-size: var(--av-fs-xs); font-variant-numeric: tabular-nums; }
