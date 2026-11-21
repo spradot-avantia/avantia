@@ -27,7 +27,21 @@ const firmar = (dataId: string, secreto = SECRETO) => {
 describe("POST /api/webhooks/mercadopago", () => {
   beforeEach(() => {
     process.env.MERCADOPAGO_WEBHOOK_SECRET = SECRETO;
+    process.env.MERCADOPAGO_ACCESS_TOKEN = "TEST-token";
+    delete process.env.PAGOS_HABILITADOS;
     acreditar.mockClear();
+  });
+
+  it("pasarela apagada (sin token) → 404 y no acredita, aunque la firma sea válida", async () => {
+    delete process.env.MERCADOPAGO_ACCESS_TOKEN;
+    expect((await POST(peticion("123", firmar("123")))).status).toBe(404);
+    expect(acreditar).not.toHaveBeenCalled();
+  });
+
+  it("PAGOS_HABILITADOS=false → 404 aunque haya token", async () => {
+    process.env.PAGOS_HABILITADOS = "false";
+    expect((await POST(peticion("123", firmar("123")))).status).toBe(404);
+    expect(acreditar).not.toHaveBeenCalled();
   });
 
   it("sin firma → 401 y no acredita", async () => {

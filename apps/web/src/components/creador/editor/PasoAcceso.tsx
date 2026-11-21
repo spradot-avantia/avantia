@@ -69,7 +69,7 @@ export function PasoAcceso({ ctx }: { ctx: EditorCtx }) {
       <Field
         id="ed-precio"
         label="Precio (CLP)"
-        ayuda={`En pesos chilenos, sin decimales. Déjalo vacío si el curso es gratis. Mínimo $${PRECIO_MIN.toLocaleString("es-CL")}. Tus estudiantes pagan con Mercado Pago.`}
+        ayuda={`En pesos chilenos, sin decimales. Déjalo vacío si el curso es gratis. Mínimo $${PRECIO_MIN.toLocaleString("es-CL")}. ${ctx.cobrosEnLinea ? "Tus estudiantes pagan con Mercado Pago." : "Coordinas el pago con tus estudiantes y, cuando te pagan, activas su inscripción en Estudiantes."}`}
         error={errorPrecio}
       >
         <Input

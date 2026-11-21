@@ -6,6 +6,7 @@ import { cargarCurso } from "../../../../../../lib/alumno/catalogo";
 import { inscripcionesDe } from "../../../../../../lib/alumno/inscripciones";
 import { getAlumnoActual } from "../../../../../../lib/alumno/sesion";
 import { acreditarPago } from "../../../../../../lib/pagos/acreditar";
+import { pagosHabilitados } from "../../../../../../lib/pagos/habilitados";
 import { esUuid, mensajeRechazo } from "../../../../../../lib/pagos/reglas";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,8 @@ type Busqueda = { payment_id?: string; collection_id?: string; external_referenc
  * Solo muestra el resultado si el pago es de esta academia y de este alumno.
  */
 export default async function RetornoPagoPage({ searchParams }: { searchParams: Busqueda }) {
+  // Sin pasarela (producción hoy: el pago se coordina por fuera) esta página no existe.
+  if (!pagosHabilitados()) notFound();
   const tenant = await getTenantPublico();
   if (!tenant) notFound();
   const alumno = await getAlumnoActual();

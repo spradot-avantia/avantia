@@ -121,7 +121,7 @@ export function PasoRevisar({ ctx, validacion }: { ctx: EditorCtx; validacion: R
     {
       k: "Precio",
       paso: "acceso",
-      v: curso.precioCentavos > 0 ? `${formatearPrecio(curso.precioCentavos, "CLP")} · pago con Mercado Pago` : "Gratis",
+      v: curso.precioCentavos > 0 ? `${formatearPrecio(curso.precioCentavos, "CLP")} · ${ctx.cobrosEnLinea ? "pago con Mercado Pago" : "pago coordinado contigo"}` : "Gratis",
     },
   ];
 

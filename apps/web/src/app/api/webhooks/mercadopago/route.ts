@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { acreditarPago } from "../../../../lib/pagos/acreditar";
 import { verificarFirmaMercadoPago } from "../../../../lib/pagos/firma";
+import { pagosHabilitados } from "../../../../lib/pagos/habilitados";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +11,8 @@ export const dynamic = "force-dynamic";
  * la API en acreditarPago (idempotente, la misma que usa la página de retorno).
  */
 export async function POST(req: Request) {
+  // Sin pasarela activa no se acredita nada (el pago se coordina por fuera).
+  if (!pagosHabilitados()) return NextResponse.json({ error: "pagos deshabilitados" }, { status: 404 });
   const url = new URL(req.url);
   const dataId = url.searchParams.get("data.id") ?? url.searchParams.get("id");
   const valida = verificarFirmaMercadoPago({

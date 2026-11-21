@@ -18,10 +18,9 @@ import {
 
 export type ResultadoIniciarPago = { ok: true; url: string } | { ok: false; error: string };
 
-/** Pagos con pasarela activos solo si hay credenciales (y no se apagaron a propósito). */
-export function pagosHabilitados(): boolean {
-  return process.env.PAGOS_HABILITADOS !== "false" && !!process.env.MERCADOPAGO_ACCESS_TOKEN;
-}
+import { pagosHabilitados } from "./habilitados";
+
+export { pagosHabilitados };
 
 /** URL pública https del webhook, si existe (en local sin túnel no hay: el retorno acredita). */
 function urlNotificacion(): string | undefined {
