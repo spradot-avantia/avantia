@@ -55,6 +55,7 @@ export function Kpis({ dominioMedio, dominio, avancePromedio, avance, estudiante
   const maxCurso = Math.max(1, ...porCurso.map((c) => c.n));
   const bajos = enRiesgo.filter((a) => a.dominioBajo).length;
   const sinEntrar = enRiesgo.filter((a) => a.sinEntrar).length;
+  const rapidos = enRiesgo.filter((a) => a.rapidoSinDominio).length;
   return (
     <section aria-label="Resumen de tu academia" className="ci-kpis">
       <div className="ci-kpi ci-kpi--dest">
@@ -138,6 +139,10 @@ export function Kpis({ dominioMedio, dominio, avancePromedio, avance, estudiante
               ))}
             </span>
             <ul className="ci-leyenda ci-leyenda--plana">
+              <li>
+                <span>Avanzó sin dominar</span>
+                <strong>{rapidos}</strong>
+              </li>
               <li>
                 <span>Dominio bajo</span>
                 <strong>{bajos}</strong>
