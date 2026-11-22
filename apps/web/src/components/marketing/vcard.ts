@@ -24,7 +24,9 @@ export function respuestaVCard(opts: { persona?: PersonaContacto; whatsapp: stri
   return new Response(lineas.join("\r\n") + "\r\n", {
     headers: {
       "Content-Type": "text/vcard; charset=utf-8",
-      "Content-Disposition": `attachment; filename="${archivo}"`,
+      // inline (no attachment): Safari en iPhone abre la ficha con «Crear contacto nuevo»
+      // en vez de bajar el archivo. Chrome en Android igual lo descarga y lo abre en Contactos.
+      "Content-Disposition": `inline; filename="${archivo}"`,
     },
   });
 }

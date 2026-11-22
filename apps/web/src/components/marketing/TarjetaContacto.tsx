@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CONTACTO, LINKEDIN_URL, THEMES, type PersonaContacto } from "./content";
 import { SITE_NAME, SITE_URL } from "@/lib/seo";
+import { GuardarContacto } from "./GuardarContacto";
 import "./landing.css";
 import "./tarjeta-contacto.css";
 
@@ -133,10 +134,20 @@ export function TarjetaContacto({
         </figure>
 
         <div className="ct-acciones">
-          <a className="av-btn av-btn--primary av-btn--lg ct-btn" href={vcfHref} download>
+          <GuardarContacto
+            className="av-btn av-btn--primary av-btn--lg ct-btn"
+            vcfHref={vcfHref}
+            datos={{
+              nombre: persona ? `${persona.nombre} ${persona.apellido}` : SITE_NAME,
+              telefono: whatsapp ? `+${whatsapp}` : null,
+              correo: CONTACTO,
+              empresa: "Avantia Tecnología SpA",
+              cargo: persona?.cargo ?? null,
+            }}
+          >
             <Ico d={ICONOS.guardar} /> Guardar contacto
-          </a>
-          <p className="ct-nota">Se descarga una tarjeta para tu agenda.</p>
+          </GuardarContacto>
+          <p className="ct-nota">Se abre en tus contactos para guardarlo.</p>
           {whatsapp && (
             <a className="av-btn av-btn--secondary av-btn--lg ct-btn" href={`https://wa.me/${whatsapp}`} {...EXTERNO}>
               <Ico d={ICONOS.whatsapp} /> {persona ? "Escríbeme por WhatsApp" : "Escríbenos por WhatsApp"}
