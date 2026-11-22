@@ -4,7 +4,9 @@ import type { Dominio } from "../alumno/dominioReglas";
 import { calcularXp, porcentaje } from "../alumno/xp";
 import { claveAlumnoCurso, resumenQuizPorAlumno, type ResumenQuizAlumno } from "./dominioAlumnos";
 import { MEDIOS_PAGO } from "./mediosPago";
+import { avanceSinDominio, ritmoPorModulo, type AvanceSinDominio, type ModuloRitmo, type RespuestaRitmo } from "./ritmoReglas";
 import { requireCreadorContext } from "./tenantActual";
+import { todasLasFilas } from "./todasLasFilas";
 import type { Resultado } from "./types";
 
 export type EstadoInscripcion = "pendiente" | "activa" | "rechazada" | "vencida" | "cancelada";
@@ -31,6 +33,10 @@ export interface FilaInscripcion {
   sinActividad: boolean;
   /** Último pago registrado (manual o por Mercado Pago, ADR 046). */
   pago: { medio: string; referencia: string | null } | null;
+  /** Tiempo activo y quiz al primer intento por módulo, en orden (vacío con `conQuiz: false`). */
+  modulos: ModuloRitmo[];
+  /** Módulo que completó mucho más rápido que la clase sin dominarlo (ritmoReglas); null si no hay. */
+  avanceSinDominio: AvanceSinDominio | null;
 }
 
 const DIAS_SIN_ACTIVIDAD = 7;
@@ -49,7 +55,7 @@ export async function listarInscripciones(opciones: { conQuiz?: boolean } = {}):
   const [alumnos, cursos, mods, lecs, prog, pagos] = await Promise.all([
     db.from("alumnos").select("id, nombre, correo, ultimo_ingreso_at").eq("tenant_id", tenant.id),
     db.from("cursos").select("id, titulo, precio_centavos").eq("tenant_id", tenant.id),
-    db.from("modulos").select("id, curso_id").eq("tenant_id", tenant.id),
+    db.from("modulos").select("id, curso_id, titulo, orden").eq("tenant_id", tenant.id).order("orden"),
     db.from("lecciones").select("id, curso_id, modulo_id").eq("tenant_id", tenant.id),
     db.from("progreso").select("alumno_id, curso_id, leccion_id, completada_at, ultimo_acceso_at").eq("tenant_id", tenant.id),
     db.from("pagos").select("inscripcion_id, medio, referencia_externa, created_at").eq("tenant_id", tenant.id).order("created_at", { ascending: true }),
@@ -66,18 +72,50 @@ export async function listarInscripciones(opciones: { conQuiz?: boolean } = {}):
         insc.filter((i) => i.estado === "activa").map((i) => ({ alumnoId: i.alumno_id, cursoId: i.curso_id })),
       )
     : new Map<string, ResumenQuizAlumno>();
+  // Ritmo por módulo: tiempo activo por lección (migración 0023) y respuestas al primer intento.
+  // Tolera que la tabla no exista (sin tiempos). Agregado por alumno y lección / módulo.
+  const segPorAlumnoLeccion = new Map<string, number>();
+  const respPorAlumnoCurso = new Map<string, RespuestaRitmo[]>();
+  if (conQuiz) {
+    const [sesiones, respuestas] = await Promise.all([
+      todasLasFilas<{ alumno_id: string; leccion_id: string; activo_seg: number }>((a, b) =>
+        db.from("sesiones_leccion").select("alumno_id, leccion_id, activo_seg").eq("tenant_id", tenant.id).range(a, b),
+      ),
+      todasLasFilas<{ alumno_id: string; curso_id: string; modulo_id: string; acierto: boolean; duracion_ms: number | null }>((a, b) =>
+        db
+          .from("quiz_respuestas")
+          .select("alumno_id, curso_id, modulo_id, acierto, duracion_ms")
+          .eq("tenant_id", tenant.id)
+          .eq("primer_intento", true)
+          .range(a, b),
+      ),
+    ]);
+    for (const s of sesiones) {
+      const k = `${s.alumno_id}:${s.leccion_id}`;
+      segPorAlumnoLeccion.set(k, (segPorAlumnoLeccion.get(k) ?? 0) + (s.activo_seg ?? 0));
+    }
+    for (const r of respuestas) {
+      const k = claveAlumnoCurso(r.alumno_id, r.curso_id);
+      (respPorAlumnoCurso.get(k) ?? respPorAlumnoCurso.set(k, []).get(k)!).push({
+        moduloId: r.modulo_id, acierto: r.acierto, primerIntento: true, duracionMs: r.duracion_ms,
+      });
+    }
+  }
   const porAlumno = new Map((alumnos.data ?? []).map((a) => [a.id as string, a]));
   const porCurso = new Map((cursos.data ?? []).map((c) => [c.id as string, c]));
   const limite = Date.now() - DIAS_SIN_ACTIVIDAD * 86400000;
 
-  return insc.map((i) => {
+  const filas: FilaInscripcion[] = insc.map((i) => {
     const a = porAlumno.get(i.alumno_id);
     const c = porCurso.get(i.curso_id);
-    const estructura = {
-      modulos: (mods.data ?? [])
-        .filter((m) => m.curso_id === i.curso_id)
-        .map((m) => ({ lecciones: (lecs.data ?? []).filter((l) => l.modulo_id === m.id).map((l) => ({ id: l.id as string })) })),
-    };
+    const modulosCurso = (mods.data ?? [])
+      .filter((m) => m.curso_id === i.curso_id)
+      .map((m) => ({
+        id: m.id as string,
+        titulo: (m.titulo as string) ?? "Módulo",
+        leccionIds: (lecs.data ?? []).filter((l) => l.modulo_id === m.id).map((l) => l.id as string),
+      }));
+    const estructura = { modulos: modulosCurso.map((m) => ({ lecciones: m.leccionIds.map((id) => ({ id })) })) };
     const propios = (prog.data ?? []).filter((p) => p.alumno_id === i.alumno_id && p.curso_id === i.curso_id);
     const hechas = new Set(propios.filter((p) => p.completada_at).map((p) => p.leccion_id as string));
     const d = calcularXp(estructura, hechas);
@@ -104,8 +142,22 @@ export async function listarInscripciones(opciones: { conQuiz?: boolean } = {}):
       ultimaActividad: ultima,
       sinActividad: i.estado === "activa" && (!ultima || new Date(ultima).getTime() < limite),
       pago: pagoPorInsc.get(i.id) ?? null,
+      modulos:
+        conQuiz && i.estado === "activa"
+          ? ritmoPorModulo(
+              modulosCurso,
+              hechas,
+              new Map(modulosCurso.flatMap((m) => m.leccionIds).map((id) => [id, segPorAlumnoLeccion.get(`${i.alumno_id}:${id}`) ?? 0])),
+              respPorAlumnoCurso.get(claveAlumnoCurso(i.alumno_id, i.curso_id)) ?? [],
+            )
+          : [],
+      avanceSinDominio: null,
     };
   });
+  // La comparación es contra la clase: se calcula con todas las inscripciones activas a la vez.
+  const marcas = avanceSinDominio(filas.filter((f) => f.modulos.length > 0).map((f) => ({ clave: f.id, cursoId: f.cursoId, modulos: f.modulos })));
+  for (const f of filas) f.avanceSinDominio = marcas.get(f.id) ?? null;
+  return filas;
 }
 
 /** Activa una inscripción pendiente y registra el pago manual (diseño 04.1). */

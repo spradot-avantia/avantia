@@ -24,7 +24,7 @@ const titulos: Titulos = {
 const insc = (p: Partial<FilaInscripcion>): FilaInscripcion => ({
   id: "i", alumnoId: "a", nombre: "N", correo: "", cursoId: "c1", cursoTitulo: "Onboarding", precioCentavos: 0,
   estado: "activa", origen: "invitacion", campana: null, creadaEn: "2026-11-01T00:00:00Z", avance: 0, completadas: 0,
-  totalLecciones: 4, xp: 0, dominio: null, ultimaActividad: "2026-11-18T00:00:00Z", sinActividad: false, pago: null, ...p,
+  totalLecciones: 4, xp: 0, dominio: null, ultimaActividad: "2026-11-18T00:00:00Z", sinActividad: false, pago: null, modulos: [], avanceSinDominio: null, ...p,
 });
 
 describe("armarActividad", () => {
@@ -89,6 +89,16 @@ describe("dominioMedio y necesitanAyuda", () => {
     expect(r).toHaveLength(1);
     expect(r[0]).toMatchObject({ cursos: ["A", "B"], dominioBajo: true, sinEntrar: true });
     expect(r[0].motivo).toContain("domina 10 %");
+  });
+  it("incluye a quien avanzó rápido sin dominar, con el módulo, el tiempo y el acierto", () => {
+    const avanceSinDominio = { moduloId: "m1", moduloTitulo: "Presupuesto", activoSeg: 240, medianaSeg: 720, aciertos: 1, respondidas: 3 };
+    const r = necesitanAyuda([
+      insc({ id: "1", alumnoId: "e", nombre: "Eva", sinActividad: true }),
+      insc({ id: "2", alumnoId: "m", nombre: "Matías", avanceSinDominio }),
+    ]);
+    expect(r.map((x) => x.alumno)).toEqual(["Matías", "Eva"]);
+    expect(r[0]).toMatchObject({ rapidoSinDominio: true, dominioBajo: false });
+    expect(r[0].motivo).toBe("avanzó rápido sin dominar: «Presupuesto» en 4 min (la clase tarda 12 min), 1 de 3 al primer intento");
   });
 });
 

@@ -13,7 +13,7 @@ function mailto(a: AlumnoEnRiesgo): string {
   return `mailto:${encodeURIComponent(a.correo)}?subject=${encodeURIComponent(asunto)}`;
 }
 
-/** Quién necesita al creador hoy: dominio bajo o se está alejando (lo más urgente primero). */
+/** Quién necesita al creador hoy: dominio bajo, avanza sin dominar o se está alejando (lo más urgente primero). */
 export function NecesitanAyuda({ alumnos }: { alumnos: AlumnoEnRiesgo[] }) {
   return (
     <section className="ci-card" aria-labelledby="ci-ayuda-t">
@@ -24,7 +24,7 @@ export function NecesitanAyuda({ alumnos }: { alumnos: AlumnoEnRiesgo[] }) {
         {alumnos.length > 0 && <span className="ci-cuenta ci-cuenta--alerta">{alumnos.length}</span>}
       </div>
       {alumnos.length === 0 ? (
-        <p className="ci-muted">Nadie con dominio bajo ni sin entrar hace una semana. Buen ritmo.</p>
+        <p className="ci-muted">Nadie con dominio bajo, avanzando sin dominar ni sin entrar hace una semana. Buen ritmo.</p>
       ) : (
         <>
           <ul className="ci-ayuda">

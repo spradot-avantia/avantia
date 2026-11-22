@@ -1,6 +1,7 @@
 // Reglas puras del Inicio del creador: actividad reciente por alumno, dominio medio y
 // quién necesita ayuda. Sin base de datos: la carga vive en actividadReciente.ts.
 import type { FilaInscripcion } from "./inscripciones";
+import { duracionCorta } from "./ritmoReglas";
 
 /** Dominio bajo: menos de este % de las preguntas dominadas. */
 export const DOMINIO_BAJO = 60;
@@ -150,36 +151,48 @@ export interface AlumnoEnRiesgo {
   motivo: string;
   dominioBajo: boolean;
   sinEntrar: boolean;
+  /** Completó un módulo mucho más rápido que la clase sin dominarlo (ritmoReglas). */
+  rapidoSinDominio: boolean;
   /** Mayor = más urgente. */
   gravedad: number;
 }
 
 /**
- * Estudiantes (no inscripciones) que necesitan al creador: dominio bajo (aprende poco) o 7+ días
- * sin entrar (se está yendo) en alguna inscripción activa. Un estudiante en dos cursos cuenta una
- * vez, con su motivo más urgente; así «Necesitan ayuda» nunca supera a «Estudiantes activos».
+ * Estudiantes (no inscripciones) que necesitan al creador: avanzó rápido sin dominar un módulo
+ * (pasa de largo), dominio bajo (aprende poco) o 7+ días sin entrar (se está yendo) en alguna
+ * inscripción activa. Un estudiante en dos cursos cuenta una vez, con su motivo más urgente; así
+ * «Necesitan ayuda» nunca supera a «Estudiantes activos».
  */
 export function necesitanAyuda(insc: FilaInscripcion[]): AlumnoEnRiesgo[] {
   const porAlumno = new Map<string, AlumnoEnRiesgo>();
   for (const i of insc) {
     if (i.estado !== "activa") continue;
     const bajo = i.dominio !== null && i.dominio.pct < DOMINIO_BAJO;
-    if (!bajo && !i.sinActividad) continue;
+    const rapido = i.avanceSinDominio;
+    if (!bajo && !i.sinActividad && !rapido) continue;
     const motivos: string[] = [];
+    // El más concreto primero: dice en qué módulo y con qué evidencia.
+    if (rapido) {
+      motivos.push(
+        `avanzó rápido sin dominar: «${rapido.moduloTitulo}» en ${duracionCorta(rapido.activoSeg)} (la clase tarda ${duracionCorta(rapido.medianaSeg)}), ${rapido.aciertos} de ${rapido.respondidas} al primer intento`,
+      );
+    }
     if (bajo) motivos.push(`domina ${i.dominio!.pct} % (${i.dominio!.dominadas} de ${i.dominio!.total} preguntas)`);
     if (i.sinActividad) motivos.push(i.ultimaActividad ? "7 días o más sin entrar" : "no ha entrado al curso");
-    const gravedad = (bajo ? 2 : 0) + (i.sinActividad ? 1 : 0) + (bajo ? (DOMINIO_BAJO - i.dominio!.pct) / 100 : 0);
+    const gravedad =
+      (bajo ? 2 : 0) + (rapido ? 1.5 : 0) + (i.sinActividad ? 1 : 0) + (bajo ? (DOMINIO_BAJO - i.dominio!.pct) / 100 : 0);
     const previo = porAlumno.get(i.alumnoId);
     if (!previo) {
       porAlumno.set(i.alumnoId, {
         alumnoId: i.alumnoId, alumno: i.nombre, correo: i.correo, cursos: [i.cursoTitulo],
-        motivo: motivos.join(" · "), dominioBajo: bajo, sinEntrar: i.sinActividad, gravedad,
+        motivo: motivos.join(" · "), dominioBajo: bajo, sinEntrar: i.sinActividad, rapidoSinDominio: !!rapido, gravedad,
       });
       continue;
     }
     if (!previo.cursos.includes(i.cursoTitulo)) previo.cursos.push(i.cursoTitulo);
     previo.dominioBajo ||= bajo;
     previo.sinEntrar ||= i.sinActividad;
+    previo.rapidoSinDominio ||= !!rapido;
     if (gravedad > previo.gravedad) {
       previo.gravedad = gravedad;
       previo.motivo = motivos.join(" · ");

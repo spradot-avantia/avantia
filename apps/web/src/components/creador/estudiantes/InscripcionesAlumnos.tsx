@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { activarInscripcionAction, rechazarInscripcionAction } from "../../../lib/creador/actions";
 import type { FilaInscripcion } from "../../../lib/creador/inscripciones";
 import { MEDIOS_PAGO } from "../../../lib/creador/mediosPago";
+import { duracionCorta } from "../../../lib/creador/ritmoReglas";
 import { Badge } from "../Badge";
 import { Button } from "../Button";
 import { Callout } from "../Callout";
@@ -148,6 +149,38 @@ export function PorActivar({ filas }: { filas: FilaInscripcion[] }) {
   );
 }
 
+/**
+ * Ritmo por módulo: tiempo activo (lecciones + quiz) y acierto al primer intento. Solo módulos
+ * con actividad. Abierto si viene del Inicio o si avanzó rápido sin dominar algún módulo.
+ */
+function RitmoModulos({ fila, abierto }: { fila: FilaInscripcion; abierto: boolean }) {
+  const conActividad = fila.modulos.filter((m) => m.activoSeg > 0 || m.respondidas > 0);
+  if (fila.estado !== "activa" || conActividad.length === 0) return null;
+  const alerta = fila.avanceSinDominio?.moduloId;
+  return (
+    <details className="ea-ritmo" open={abierto}>
+      <summary>Ritmo por módulo</summary>
+      <ul className="ea-ritmo__lista">
+        {conActividad.map((m) => (
+          <li key={m.moduloId} className={`ea-ritmo__item${m.moduloId === alerta ? " ea-ritmo__item--alerta" : ""}`}>
+            <span className="ea-ritmo__mod">{m.titulo}</span>
+            <span className="ea-ritmo__dato">
+              {m.completo ? "Completado" : "En curso"}
+              {m.activoSeg > 0 ? ` · ${duracionCorta(m.activoSeg)} de estudio` : ""}
+              {m.respondidas > 0 ? ` · repaso ${m.aciertos} de ${m.respondidas} al primer intento` : m.completo ? " · sin repaso" : ""}
+            </span>
+            {m.moduloId === alerta && fila.avanceSinDominio && (
+              <span className="ea-ritmo__nota">
+                La clase tarda {duracionCorta(fila.avanceSinDominio.medianaSeg)} en este módulo. Pasó rápido y el repaso muestra que no lo domina: buen momento para escribirle.
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
 /** Estudiantes con cuenta: inscripción, avance, XP y quién lleva días sin entrar. */
 export function TablaAlumnos({ filas: todas, destacado }: { filas: FilaInscripcion[]; destacado?: string }) {
   // El estudiante que viene del Inicio (?alumno=) va primero y destacado; el resto mantiene su orden.
@@ -235,7 +268,9 @@ export function TablaAlumnos({ filas: todas, destacado }: { filas: FilaInscripci
               </dl>
             )}
             {f.estado === "activa" && f.sinActividad && <Badge tono="warning">Sin actividad</Badge>}
+            {f.estado === "activa" && f.avanceSinDominio && <Badge tono="warning">Avanzó rápido sin dominar</Badge>}
           </div>
+          <RitmoModulos fila={f} abierto={f.alumnoId === destacado || !!f.avanceSinDominio} />
         </li>
       ))}
     </ul>

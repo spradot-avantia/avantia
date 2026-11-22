@@ -64,6 +64,58 @@
   outline: 2px solid var(--av-blue-600);
   outline-offset: 2px;
 }
+/* Ritmo por módulo: ocupa todo el ancho de la fila, debajo de los datos. */
+.ea-fila {
+  flex-wrap: wrap;
+}
+.ea-ritmo {
+  flex: 1 0 100%;
+  min-width: 0;
+  font-size: var(--av-fs-sm);
+}
+.ea-ritmo > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--av-muted);
+  font-weight: var(--av-fw-semibold);
+}
+.ea-ritmo > summary:focus-visible {
+  outline: 2px solid var(--av-blue-600);
+  outline-offset: 2px;
+}
+.ea-ritmo__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--av-space-2);
+}
+.ea-ritmo__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--av-space-2) var(--av-space-3);
+  border-radius: var(--av-radius-md);
+  background: var(--av-surface-2, transparent);
+}
+.ea-ritmo__item--alerta {
+  background: var(--av-warning-bg);
+}
+.ea-ritmo__item--alerta .ea-ritmo__dato,
+.ea-ritmo__item--alerta .ea-ritmo__nota {
+  color: var(--av-warning-ink);
+}
+.ea-ritmo__mod {
+  font-weight: var(--av-fw-semibold);
+  overflow-wrap: anywhere;
+}
+.ea-ritmo__dato,
+.ea-ritmo__nota {
+  color: var(--av-muted);
+}
 @media (min-width: 720px) {
   .ea-fila .ci-alum__lado {
     flex: none;
