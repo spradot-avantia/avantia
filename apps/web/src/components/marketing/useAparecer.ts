@@ -3,9 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Aparición al entrar en pantalla, una sola vez (sin fijar el scroll). Devuelve
- * la ref del elemento y las clases `nombre` (por defecto `lp-pop`) / `is-in`. Sin JS, sin
- * IntersectionObserver o con movimiento reducido, el contenido se ve de inmediato.
+ * Se dispara cuando el elemento ya subió hasta el 75 % inferior de la pantalla (no apenas
+ * asoma por abajo), para que la animación se alcance a ver.
  */
 export function useAparecer<T extends HTMLElement = HTMLDivElement>(umbral = 0.25, nombre = "lp-pop") {
   const ref = useRef<T>(null);
@@ -23,7 +22,7 @@ export function useAparecer<T extends HTMLElement = HTMLDivElement>(umbral = 0.2
           obs.disconnect();
         }
       },
-      { threshold: umbral },
+      { threshold: umbral, rootMargin: "0px 0px -25% 0px" },
     );
     obs.observe(el);
     return () => obs.disconnect();

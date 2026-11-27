@@ -15,7 +15,7 @@ function FutureSketch({ icon }: { icon: string }) {
 }
 
 export function LoQueViene() {
-  const { ref, clase } = useAparecer<HTMLUListElement>(0.15, "lp-stagger");
+  const { ref, clase } = useAparecer<HTMLUListElement>(0.05, "lp-stagger");
 
   return (
     <>

@@ -1,5 +1,5 @@
 // Landing pública de Avantia (Server Component). Diseño: mockup "programa fundador".
-// Client Components solo donde hay estado: BrandStage y DemoTabs. Los CTA son
+// Client Components solo donde hay estado: BrandStage y VideoDemo. Los CTA son
 // enlaces a /postular (formulario sin cuenta; ADR 014) y /login.
 
 import Image from "next/image";
@@ -7,7 +7,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon, type IconName } from "./icons";
 import { BrandStage } from "./BrandStage";
-import { DemoTabs } from "./DemoTabs";
+import { VideoDemo } from "./VideoDemo";
 import { AntesDespues } from "./AntesDespues";
 import { LoQueViene } from "./LoQueViene";
 import { AvisoCookies, PreferenciasCookies } from "./AvisoCookies";
@@ -79,7 +79,7 @@ export default function Landing() {
         <section className="lp-hero" aria-labelledby="hero-title">
           <div className="lp-wrap lp-hero__grid">
             <div className="lp-hero__copy">
-              <span className="av-overline">Para Avanters: expertos que ya enseñan online</span>
+              <span className="av-overline">Para Avantians: expertos que ya enseñan online</span>
               <h1 id="hero-title"><span>Tu academia online,</span> <span className="lp-hero__marca">con tu marca</span></h1>
               <p className="lp-sub">Sube tus cursos, recibe los pagos de tus alumnos y entrégales una experiencia con tu marca, a tu manera.</p>
               <PostularCta />
@@ -106,9 +106,9 @@ export default function Landing() {
             <div className="lp-head">
               <span className="av-overline">Míralo funcionar</span>
               <h2 className="av-h2">Así se ve tu academia</h2>
-              <p className="av-lede">Pruébalo: escribe el nombre de tu academia y de tu curso, elige un color y tu dominio. Después mira en «Alumno» cómo lo verían tus estudiantes.</p>
+              <p className="av-lede">Mira en este video cómo se arma una academia en Avantia, de principio a fin.</p>
             </div>
-            <DemoTabs />
+            <VideoDemo />
           </div>
         </section>
 
@@ -126,7 +126,7 @@ export default function Landing() {
               <span className="av-overline">Programa fundador</span>
               <h2 className="av-h2">Lanza tu academia gratis, con acompañamiento de nuestro equipo</h2>
               <span className="lp-cupos">{textoCupos()} disponibles en el primer grupo</span>
-              <p className="av-lede">Buscamos a {CUPOS_FUNDADOR_TOTAL} Avanters, expertos que ya enseñan online, para construir Avantia junto a ellos.</p>
+              <p className="av-lede">Buscamos a {CUPOS_FUNDADOR_TOTAL} Avantians, expertos que ya enseñan online, para construir Avantia junto a ellos.</p>
             </div>
             <div className="lp-fgrid">
               <div className="lp-fbox">

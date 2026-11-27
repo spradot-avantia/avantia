@@ -158,10 +158,15 @@
 }
 
 /* Aparición al entrar en pantalla (una vez; useAparecer no la activa con movimiento reducido). */
-.lp-pop.is-in { transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.2, 0.9, 0.25, 1.15); }
+.lp-pop.is-in { transition: opacity 0.9s ease, transform 1.1s cubic-bezier(0.2, 0.9, 0.25, 1.1); }
 .lp-pop:not(.is-in) { opacity: 0; transform: translateY(28px) scale(0.94); }
-.lp-pop.is-in .lp-ico span { transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.2, 0.9, 0.25, 1.3); transition-delay: calc(var(--i, 0) * 70ms + 250ms); }
-.lp-pop:not(.is-in) .lp-ico span { opacity: 0; transform: scale(0.6); }
+.lp-pop.is-in .lp-ico span { transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.3); transition-delay: calc(var(--i, 0) * 120ms + 450ms); }
+/* Piezas de "Hoy": aparecen de a una, de izquierda a derecha. */
+.lp-pop.is-in .lp-pieza { transition: opacity 0.6s ease, translate 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.2); transition-delay: calc(var(--i, 0) * 180ms + 400ms); }
+.lp-pop:not(.is-in) .lp-pieza { opacity: 0; translate: 0 16px; }
+/* Mientras aparecen, las piezas no reaccionan al mouse ni al toque (ni muestran su burbuja). */
+.lp-scatter:not(.lp-piezas-listas) .lp-pieza { pointer-events: none; }
+.lp-pieza > button:disabled { cursor: default; }
 .lp-unified { min-height: 120px; border-radius: var(--av-radius-lg); background: var(--av-surface); border: 1px solid var(--av-blue-200); box-shadow: var(--av-shadow-sm); display: flex; flex-direction: column; justify-content: center; gap: var(--av-space-4); padding: var(--av-space-4); }
 .lp-u-head { display: flex; align-items: center; gap: var(--av-space-3); }
 .lp-u-star { width: 42px; height: 42px; border-radius: var(--av-radius-md); background: var(--av-blue-600); color: #fff; display: grid; place-items: center; flex: none; }
@@ -305,8 +310,8 @@ button.lp-add-row:disabled { color: var(--av-muted); cursor: default; }
 .lp-sinfecha { align-self: flex-start; }
 /* Fade intercalado de las tarjetas al entrar en pantalla (una vez). */
 .lp-stagger.is-in .lp-fcard {
-  transition: opacity 0.5s ease, translate 0.5s var(--av-ease-out), transform 0.24s var(--av-ease-out), box-shadow 0.24s var(--av-ease-out), border-color 0.24s;
-  transition-delay: calc(var(--i, 0) * 90ms), calc(var(--i, 0) * 90ms), 0s, 0s, 0s;
+  transition: opacity 0.9s ease, translate 0.9s var(--av-ease-out), transform 0.24s var(--av-ease-out), box-shadow 0.24s var(--av-ease-out), border-color 0.24s;
+  transition-delay: calc(var(--i, 0) * 160ms), calc(var(--i, 0) * 160ms), 0s, 0s, 0s;
 }
 .lp-stagger:not(.is-in) .lp-fcard { opacity: 0; translate: 0 18px; }
 .lp-sketch { height: 68px; border-radius: var(--av-radius-md); background: var(--av-blue-50); display: flex; align-items: center; justify-content: center; gap: 6px; color: var(--av-blue-700); }
@@ -412,6 +417,23 @@ button.lp-add-row:disabled { color: var(--av-muted); cursor: default; }
 /* "Preferencias de cookies" en el pie: se ve como los demás enlaces. */
 .lp-foot__btn { padding: 0; border: 0; background: none; font: inherit; color: var(--av-muted); cursor: pointer; }
 .lp-foot__btn:hover { color: var(--av-blue-700); }
+
+/* ----- Video demo (Míralo funcionar) ----- */
+.lp-video {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  overflow: hidden; border: 1px solid var(--av-line-strong); border-radius: var(--av-radius-lg);
+  background: #05070f; box-shadow: var(--av-shadow-md);
+}
+.lp-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.lp-video__portada { position: absolute; inset: 0; display: grid; place-items: center; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+.lp-video__portada img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.lp-video__play {
+  position: relative; display: grid; place-items: center; width: 76px; height: 76px; padding-left: 4px;
+  border-radius: 50%; background: var(--av-blue-600); color: #fff; box-shadow: var(--av-shadow-primary);
+  transition: transform 0.2s var(--av-ease-out), background 0.2s;
+}
+@media (hover: hover) { .lp-video__portada:hover .lp-video__play { transform: scale(1.08); background: #1d4ed8; } }
+.lp-video__portada:focus-visible { outline: none; box-shadow: inset 0 0 0 4px var(--av-blue-400); }
 
 /* ----- Barra fija móvil ----- */
 .lp-sticky {

@@ -41,7 +41,7 @@ export const FUTURE = [
 export const FAQS: { q: string; a: string }[] = [
   { q: "¿Tiene costo participar?", a: "No. El programa es gratis y no pedimos tarjeta. Al terminar, decides si continúas con un plan, con un precio preferente durante los dos primeros meses." },
   { q: "¿Qué pasa cuando termina el programa?", a: "No se cobra nada automáticamente, porque no tenemos tu tarjeta. Te contactamos para conversar si quieres seguir con un plan a precio preferente." },
-  { q: "¿Necesito conocimientos técnicos?", a: "La plataforma está diseñada para que no necesites conocimientos de programación. Igual te acompañamos en la configuración de tu academia, incluida la conexión de tu dominio si hace falta." },
+  { q: "¿Necesito conocimientos técnicos?", a: "La plataforma está diseñada para que no necesites conocimientos de programación. De todas formas te acompañamos en la configuración de tu academia, incluida la conexión de tu dominio si hace falta." },
   { q: "¿Cuánto cuestan los planes?", a: "Estamos definiendo los planes junto con el primer grupo. Como fundador, accedes a un precio preferente durante los dos primeros meses." },
   { q: "¿Cobran comisión por las ventas de mis cursos?", a: "No. No cobramos comisión por las ventas de tus cursos." },
   { q: "¿Con qué medios de pago pueden pagar mis alumnos?", a: "En esta etapa inicial deben gestionar directamente el pago contigo, en el futuro será automático a través de una pasarela de pago." },
@@ -106,7 +106,7 @@ export function agendaHref(): string {
 // Cupos del programa fundador. Deben ser los números reales: se muestran en el hero,
 // en la sección fundador y en la barra móvil (no inventar escasez; Ley 19.496 art. 28).
 export const CUPOS_FUNDADOR_TOTAL: number = 5; // cupos del primer grupo
-export const CUPOS_FUNDADOR: number = 4; // cupos que quedan disponibles
+export const CUPOS_FUNDADOR: number = 1; // cupos que quedan disponibles
 
 /** "4 cupos de 5", "1 cupo de 5" o "Cupos completos". */
 export function textoCupos(): string {
@@ -117,3 +117,10 @@ export function textoCupos(): string {
 // Mínimo de alumnos para postular al programa fundador. Lo decide el equipo:
 // mientras sea null, el perfil dice solo "tienes alumnos" (no inventar el número).
 export const MIN_ALUMNOS_FUNDADOR: number | null = null;
+
+// Video demo de la plataforma en "Míralo funcionar" (YouTube). Para cambiarlo, pega
+// aquí el id: lo que va después de "watch?v=" en el enlace.
+export const VIDEO_DEMO = {
+  id: "zUr9JNuhwiA",
+  titulo: "Demo de Avantia: así se crea tu academia",
+};

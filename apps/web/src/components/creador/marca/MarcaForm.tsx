@@ -179,6 +179,17 @@ export function MarcaForm({ tenant }: { tenant: TenantCreador }) {
       </div>
 
       <PreviewMarca nombre={v.nombre} frase={v.frase} logoUrl={logoParaVista} logoModo={v.modo} color={v.color} />
+      <PreviewMarca
+        nombre={v.nombre}
+        frase={v.frase}
+        logoUrl={logoParaVista}
+        logoModo={v.modo}
+        color={v.color}
+        colorOscuro={v.colorOscuro}
+        oscuro
+        idTitulo="mk-prev-osc-h"
+        titulo="Así se verá en modo oscuro"
+      />
 
       {errorGeneral && (
         <Callout tono="danger" titulo="No pudimos guardar los cambios">

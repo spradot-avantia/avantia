@@ -35,6 +35,17 @@ function Lista({ items, icon, color }: { items: string[]; icon: IconName; color:
 export function AntesDespues() {
   const antes = useAparecer();
   const despues = useAparecer();
+
+  // Las burbujas no se activan hasta que la última pieza terminó de aparecer.
+  const animando = antes.clase.includes("lp-pop");
+  const visibles = antes.clase.includes("is-in");
+  const [terminado, setTerminado] = useState(false);
+  useEffect(() => {
+    if (!visibles) return;
+    const t = setTimeout(() => setTerminado(true), 2500); // respaldo si no llega transitionend
+    return () => clearTimeout(t);
+  }, [visibles]);
+  const listas = !animando || terminado;
   const [abierta, setAbierta] = useState<IconName | null>(null);
   const zona = useRef<HTMLDivElement>(null);
 
@@ -60,7 +71,7 @@ export function AntesDespues() {
           <span className="av-overline" style={{ color: "var(--av-muted)" }}>Hoy</span>
           <span className="lp-cmp__pista">Toca cada pieza para ver qué problema trae</span>
         </div>
-        <div className="lp-scatter" ref={zona}>
+        <div className={`lp-scatter${listas ? " lp-piezas-listas" : ""}`} ref={zona}>
           {PIEZAS.map((p, i) => {
             const abiertaAhora = abierta === p.icon;
             return (
@@ -68,7 +79,15 @@ export function AntesDespues() {
                 key={p.icon}
                 className={`lp-pieza${abiertaAhora ? " is-open" : ""}`}
                 // Repartidas de borde a borde: --pz es el tamaño de la pieza (CSS).
-                style={{ top: p.top, left: `calc(${i} * (100% - var(--pz)) / ${PIEZAS.length - 1})` }}
+                style={{ top: p.top, left: `calc(${i} * (100% - var(--pz)) / ${PIEZAS.length - 1})`, "--i": i } as CSSProperties}
+                // La última pieza avisa cuando terminó de aparecer: ahí se activan las burbujas.
+                onTransitionEnd={
+                  i === PIEZAS.length - 1
+                    ? (e) => {
+                        if (e.propertyName === "opacity" && e.target === e.currentTarget) setTerminado(true);
+                      }
+                    : undefined
+                }
                 // Con mouse: pasar sobre otra pieza cierra la que quedó abierta con clic.
                 onPointerEnter={(e) => {
                   if (e.pointerType === "mouse" && abierta && abierta !== p.icon) setAbierta(null);
@@ -79,6 +98,7 @@ export function AntesDespues() {
                   aria-label={p.nombre}
                   aria-expanded={abiertaAhora}
                   aria-describedby={`lp-burbuja-${p.icon}`}
+                  disabled={!listas}
                   style={{ rotate: p.giro }}
                   onClick={() => setAbierta(abiertaAhora ? null : p.icon)}
                 >
